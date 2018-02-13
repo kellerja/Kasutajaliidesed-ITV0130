@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">    
+    <title>Vaata kassid</title>
+    <script src="scripts/vue.js"></script>
+    <link href="styles/main.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+        rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <nav>
+            <ul>
+                <li><a href="#" @click="switchTab(0)" :active="tabNr == 0">Nimekiri</a></li>
+                <li><a href="#" @click="switchTab(1)" :active="tabNr == 1">Lisa kass</a></li>
+            </ul>
+        </nav>
+        <div v-if="tabNr == 0">
+            <h2>Nimekiri kassidest</h2>
+            <ul>
+                <li v-for="(cat, index) in cats">
+                    <div class="info">
+                        <h4>Nimi: {{cat.name}}</h4>
+                        <p>Sünniaasta: {{cat.birthYear}}</p>
+                    </div>
+                    <div class="functions">
+                        <a href="#" @click="removeCat(index)">
+                            <i class="material-icons">delete</i>
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div v-if="tabNr == 1">
+            <h2>Lisa Kass</h2>
+            <form>
+                <label>Kassi nimi</label>
+                <input type="text" v-model="newCat.name" required>
+                <label>Sünniaasta</label>
+                <input type="number" v-model="newCat.birthYear" required>
+                <input type="submit" value="Lisa" @click="addCat()">
+            </form>
+        </div>
+    </div>
+    <script src="scripts/main.js"></script>
+</body>
+</html>

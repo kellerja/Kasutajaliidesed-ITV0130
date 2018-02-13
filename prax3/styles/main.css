@@ -1,0 +1,127 @@
+a {
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 0.3em;
+    color: red;
+}
+
+a:hover {
+    opacity: 0.7;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    align-items: center;
+    padding: 0;
+    display: flex;
+}
+
+nav li {
+    border: none;
+    padding: 0 0;
+    width: 50%;
+}
+
+nav li a {
+    display: inline-block;
+    text-align: center;
+    padding: 0.4em 0;
+    width: 100%;
+    color: black;
+    text-decoration: none;
+    background-color: #eee; 
+}
+
+nav li a:hover, nav li a[active]:hover {
+    color: white;
+    background-color: #aaa;
+}
+
+nav li a[active] {
+    background-color: #bbb;
+    color: black;
+    text-decoration: none;
+}
+
+h2, h3, label {
+    text-align: center;
+}
+
+h4, p {
+    margin: 0;
+    padding: 0;
+}
+
+li {
+    margin-bottom: 0.3em;
+    border-left: 0.2em solid lightblue;
+    border-bottom: 0.1em solid lightblue;
+    padding-left: 0.2em;
+}
+
+form {
+    padding: 0 0.5em;
+}
+
+label {
+    display: block;
+    padding: 0.2em 0;
+}
+
+input {
+    width: 100%;
+}
+
+input[type=text], input[type=number] {
+    display: block;
+    border-radius: 0.2em;
+    text-align: center;
+    border: 0.1em solid #add8e6;
+    padding: 0.4em 0;
+    border-bottom: 0.2em solid #5d8896;
+}
+
+input[type=submit] {
+    padding: 0.6em;
+    margin: 0.2em 0;
+    border: none;
+    border-radius: 0.2em;
+    background: #bbb;
+    color: black;
+    box-sizing: border-box;
+}
+
+input[type=submit]:hover {
+    color: white;
+    background-color: #aaa;
+    cursor: pointer;
+}
+
+li {
+    display: flex;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0 0.6em;
+}
+
+.info {
+    width: 90%;
+}
+
+.functions {
+    width: 10%;
+}
+
+#app {
+    width: 100%;
+}
+
+@media only screen and (min-width: 1024px) {
+    #app {
+        width: 25%;
+    }
+}
