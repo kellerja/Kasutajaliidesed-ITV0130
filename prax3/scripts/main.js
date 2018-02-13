@@ -26,6 +26,7 @@ vm = new Vue({
                 return;
             }
             this.cats.push(this.newCat);
+            this.tabNr = 0;
             this.newCat = {
                 name: "",
                 birthYear: null
