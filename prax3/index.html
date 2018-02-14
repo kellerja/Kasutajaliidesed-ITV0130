@@ -19,6 +19,7 @@
         </nav>
         <div v-if="tabNr == 0">
             <h2>Nimekiri kassidest</h2>
+            <p v-if="cats.length == 0" style="text-align: center">Ühtegi kassi pole lisatud. Palun kasuta lisa kass funktsionaalsust kasside lisamiseks.</p>
             <ul>
                 <li v-for="(cat, index) in cats">
                     <div class="info">
