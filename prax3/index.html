@@ -11,6 +11,8 @@
 </head>
 <body>
     <div id="app">
+        <h1 v-if="tabNr == 0">Nimekiri kassidest</h1>
+        <h1 v-else>Lisa Kass</h1>
         <nav>
             <ul>
                 <li><a href="#" @click="switchTab(0)" :active="tabNr == 0">Nimekiri</a></li>
@@ -18,7 +20,6 @@
             </ul>
         </nav>
         <div v-if="tabNr == 0">
-            <h2>Nimekiri kassidest</h2>
             <p v-if="cats.length == 0" style="text-align: center">Ühtegi kassi pole lisatud. Palun kasuta lisa kass funktsionaalsust kasside lisamiseks.</p>
             <ul>
                 <li v-for="(cat, index) in cats">
@@ -35,7 +36,6 @@
             </ul>
         </div>
         <div v-if="tabNr == 1">
-            <h2>Lisa Kass</h2>
             <form>
                 <label>Kassi nimi</label>
                 <input type="text" v-model="newCat.name" required>
