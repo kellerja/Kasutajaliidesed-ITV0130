@@ -6,11 +6,64 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <link href="css/bootstrap/bootstrap.css" rel="stylesheet">
-    <link href="css/main.css" rel="stylesheet">    
-    <script src="scripts/bootrstrap/bootstrap.js"></script>
+    <link href="css/main.css" rel="stylesheet">  
+    <script src="scripts/popper/popper.js"></script>
     <script src="scripts/vue/vue.js"></script>
 </head>
 <body>
+    <div id="app" class="container">
+        <div class="row justify-content-center">
+            <div class="col">
+                <h1>Elukohateade</h1>
+            </div>
+        </div>
+        <div class="col">
+            <form>
+                <div class="d-flex flex-wrap">
+                    <div class="person" v-for="(person, index) in formData.people">
+                        <div class="d-flex">
+                            <h4>{{person.isFormFiller ? "Esitaja" : "Registreeritav isik #" + index}}</h4>
+                            <button type="button" tabindex="-1" @click.prevent="removePerson(index)" v-if="!person.isFormFiller">Del</button>
+                        </div>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text w-100" :id="index + '_firstnameLable'">Eesnimi</span>
+                            </div>
+                            <input v-validate="person.firstName" v-model="person.firstName.value" aria-label="Eesnimi" :aria-describedby="index + '_firstnameLable'">
+                        </div>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text w-100" :id="index + '_lastnameLable'">Perenimi</span>
+                            </div>
+                            <input v-validate="person.lastName" v-model="person.lastName.value" aria-label="Perenimi" :aria-describedby="index + '_lastnameLable'" required>
+                        </div>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text w-100" :id="index + '_phoneLable'">Telefon</span>
+                            </div>
+                            <input v-validate="person.phone" v-model="person.phone.value" aria-label="Telefon" :aria-describedby="index + '_phoneLable'" required>
+                        </div>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text w-100" :id="index + '_emailLable'">Email</span>
+                            </div>
+                            <input v-validate="person.email" v-model="person.email.value" aria-label="Email" :aria-describedby="index + '_emailLable'" required>
+                        </div>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text w-100" :id="index + '_idcodeLable'">Isikukood</span>
+                            </div>
+                            <input v-validate="person.idCode" v-model="person.idCode.value" aria-label="Isikukood" :aria-describedby="index + '_idcodeLable'" required>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <button type="button" @click.prevent="addPerson()">Lisa isik</button>
+                </div>
+                <input type="submit"  @click.prevent="moveToTab(2)" value="Järgmine">
+            </form>
+        </div>
+    </div>
     <script src="scripts/main.js"></script>
 </body>
 </html>

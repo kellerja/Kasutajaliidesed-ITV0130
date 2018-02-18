@@ -1,0 +1,8 @@
+.person .input-group-prepend {
+    width: 6em;
+}
+
+.error {
+    opacity: 0.9;
+    z-index: 10001;
+}
