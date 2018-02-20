@@ -1,4 +1,5 @@
-.person .input-group-prepend {
+.person .input-group-prepend,
+.new-address .input-group-prepend {
     width: 6em;
 }
 

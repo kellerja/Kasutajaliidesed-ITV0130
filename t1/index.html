@@ -17,8 +17,8 @@
                 <h1>Elukohateade</h1>
             </div>
         </div>
-        <div class="col">
-            <form>
+        <div class="row">
+            <form class="personal-info">
                 <div class="d-flex flex-wrap">
                     <div class="person" v-for="(person, index) in formData.people">
                         <div class="d-flex">
@@ -27,40 +27,183 @@
                         </div>
                         <div class="input-group">
                             <div class="input-group-prepend">
-                                <span class="input-group-text w-100" :id="index + '_firstnameLable'">Eesnimi</span>
+                                <span class="input-group-text w-100" :id="index + '_firstname_label'">Eesnimi</span>
                             </div>
-                            <input v-validate="person.firstName" v-model="person.firstName.value" aria-label="Eesnimi" :aria-describedby="index + '_firstnameLable'">
+                            <input v-validate="person.firstName" v-model="person.firstName.value" aria-label="Eesnimi" :aria-describedby="index + '_firstname_label'">
                         </div>
                         <div class="input-group">
                             <div class="input-group-prepend">
-                                <span class="input-group-text w-100" :id="index + '_lastnameLable'">Perenimi</span>
+                                <span class="input-group-text w-100" :id="index + '_lastname_label'">Perenimi</span>
                             </div>
-                            <input v-validate="person.lastName" v-model="person.lastName.value" aria-label="Perenimi" :aria-describedby="index + '_lastnameLable'" required>
+                            <input v-validate="person.lastName" v-model="person.lastName.value" aria-label="Perenimi" :aria-describedby="index + '_lastname_label'" required>
                         </div>
                         <div class="input-group">
                             <div class="input-group-prepend">
-                                <span class="input-group-text w-100" :id="index + '_phoneLable'">Telefon</span>
+                                <span class="input-group-text w-100" :id="index + '_phone_label'">Telefon</span>
                             </div>
-                            <input v-validate="person.phone" v-model="person.phone.value" aria-label="Telefon" :aria-describedby="index + '_phoneLable'" required>
+                            <input v-validate="person.phone" v-model="person.phone.value" aria-label="Telefon" :aria-describedby="index + '_phone_label'" required>
                         </div>
                         <div class="input-group">
                             <div class="input-group-prepend">
-                                <span class="input-group-text w-100" :id="index + '_emailLable'">Email</span>
+                                <span class="input-group-text w-100" :id="index + '_email_label'">Email</span>
                             </div>
-                            <input v-validate="person.email" v-model="person.email.value" aria-label="Email" :aria-describedby="index + '_emailLable'" required>
+                            <input v-validate="person.email" v-model="person.email.value" aria-label="Email" :aria-describedby="index + '_email_label'" required>
                         </div>
                         <div class="input-group">
                             <div class="input-group-prepend">
-                                <span class="input-group-text w-100" :id="index + '_idcodeLable'">Isikukood</span>
+                                <span class="input-group-text w-100" :id="index + '_idcode_label'">Isikukood</span>
                             </div>
-                            <input v-validate="person.idCode" v-model="person.idCode.value" aria-label="Isikukood" :aria-describedby="index + '_idcodeLable'" required>
+                            <input v-validate="person.idCode" v-model="person.idCode.value" aria-label="Isikukood" :aria-describedby="index + '_idcode_label'" required>
                         </div>
                     </div>
                 </div>
                 <div>
                     <button type="button" @click.prevent="addPerson()">Lisa isik</button>
                 </div>
-                <input type="submit"  @click.prevent="moveToTab(2)" value="Järgmine">
+                <input type="submit" @click.prevent="moveToTab(2)" value="Järgmine">
+            </form>
+        </div>
+        <div class="row">
+            <form class="new-address">
+                <h4>Uue elukoha aadress</h4>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text w-100" id="new_address_country_label">Riik</span>
+                    </div>
+                    <input aria-label="Riik" aria-describedby="new_address_country_label" required>
+                </div>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text w-100" id="new_address_province_label">Maakond</span>
+                    </div>
+                    <input aria-label="Maakond" aria-describedby="new_address_province_label" required>
+                </div>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text w-100" id="new_address_city_label">Vald/linn, alevik, küla</span>
+                    </div>
+                    <input aria-label="Vald/linn, alevik, küla" aria-describedby="new_address_city_label" required>
+                </div>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text w-100" id="new_address_street_label">Tänav/talu, maja nr, korteri nr</span>
+                    </div>
+                    <input aria-label="Tänav/talu, maja nr, korteri nr" aria-describedby="new_address_street_label" required>
+                </div>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text w-100" id="new_address_postal_index_label">Postiindex</span>
+                    </div>
+                    <input aria-label="Postiindex" aria-describedby="new_address_postal_index_label" required>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="new_address_self_registration_checkbox">
+                    <label class="form-check-label" for="new_address_self_registration_checkbox">Esitan uue elukoha ka enda kohta</label>                    
+                </div>
+                <div class="form-group">
+                    <label for="new_address_ownership">Ruumi kasutamisõigus</label>
+                    <select class="form-control" id="new_address_ownership">
+                        <option>Olen ruumi (kaas)omanik</option>
+                        <option>Lisan üürilepingu</option>
+                        <option>Ruumi omanik annab ise elukohateatele nõusoleku</option> <!-- Kas see vajalik? Kuidas implementeerida? -->
+                        <option>Lisan ruumi omaniku nõusoleku eraldi paberil</option>
+                        <option>Ruumi kasutamise muu alus</option>
+                    </select>
+                    <div id="new_address_ownership_proof_div"> <!-- For options 2 & 4 -->
+                        <label for="new_address_ownership_proof">Lisa {INFO HERE}</label>
+                        <input type="file" class="form-control-file" id="new_address_ownership_proof" multiple>
+                    </div>
+                </div>
+                <input type="submit" @click.prevent="moveToTab(1)" value="Eelmine">
+                <input type="submit" @click.prevent="moveToTab(3)" value="Järgmine">
+            </form>
+        </div>
+        <div class="row">
+            <form class="extra-info">
+                <div v-for="(person, index) in formData.people">
+                    <div class="form-group">
+                        <label>Kas eelmine elukoht oli välismaal?</label>
+                        <div class="btn-group btn-toggle">
+                            <button class="btn btn-default">Jah</button>
+                            <button class="btn btn-primary active">Ei</button>
+                        </div>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text w-100" :id="index + '_extra_info_prev_address_label'">Eelmine elukoht välismaal</span>
+                            </div>
+                            <input aria-label="Eelmine elukoht välismaal" :aria-describedby="index + '_extra_info_prev_address_label'">
+                        </div>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text w-100" :id="index + '_extra_info_departed_time_label'">Eestist lahkumise aeg</span>
+                            </div>
+                            <input aria-label="Eestist lahkumise aeg" :aria-describedby="index + '_extra_info_departed_time_label'">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Kas sul on välisriigi isikukood?</label> <!-- Kas saab olla mitu isikukoodi? -->
+                        <div class="btn-group btn-toggle">
+                            <button class="btn btn-default">Jah</button>
+                            <button class="btn btn-primary active">Ei</button>
+                        </div>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text w-100" :id="index + '_extra_info_foreign_id_country_label'">Isikukoodi väljastanud riik</span>
+                            </div>
+                            <input aria-label="Isikukoodi väljastanud riik" :aria-describedby="index + '_extra_info_foreign_id_country_label'">
+                        </div>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text w-100" :id="index + '_extra_info_foreign_id_label'">Välisriigi isikukood</span>
+                            </div>
+                            <input aria-label="Välisriigi isikukood" :aria-describedby="index + '_extra_info_foreign_id_label'">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text w-100" :id="index + '_extra_info_nationality_label'">Rahvus*</span>
+                        </div>
+                        <input aria-label="Rahvus" :aria-describedby="index + '_extra_info_nationality_label'">
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text w-100" :id="index + '_extra_info_mother_tongue_label'">Emakeel*</span>
+                        </div>
+                        <input aria-label="Emakeel" :aria-describedby="index + '_extra_info_mother_tongue_label'">
+                    </div>
+                    <div class="form-group">
+                        <label :for="index + '_extra_info_education'">Omandatud kõrgeim haridustase*</label>
+                        <select class="form-control" :id="index + '_extra_info_education'">
+                            <option value="-">Ei soovi avaldada</option>
+                            <option value="0">Alusharidus (koolieelne haridus) või alghariduseta</option>
+                            <option value="1">Põhiharidus (põhikooli 1.-6. klass), varasem algharidus</option>
+                            <option value="2">Põhiharidus (põhikooli 8.-9. klass)</option>
+                            <option value="35">Kutseharidus või kutseõpe (sh keskeri- või tehnikumiharidus) põhihariduse baasil</option>
+                            <option value="3">Keskharidus</option>
+                            <option value="4">Kutseharidus või kutseõpe keskhariduse baasil</option>
+                            <option value="5">Keskeri- ja tehnikumiharidus keskhariduse baasil</option>
+                            <option value="6">Bakalaureus või sellega võrdsustatud haridus (rakendus- ja kutsekõrgharidus, diplomiõpe)</option>
+                            <option value="7">Magister või sellega võrdsustatud haridus</option>
+                            <option value="8">Doktor või sellega võrdsustatud haridus</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label :for="index + '_extra_info_employment'">Sotsiaal-majanduslik seisund*</label>
+                        <select class="form-control" :id="index + '_extra_info_employment'">
+                            <option value="-">Ei soovi avaldada</option>
+                            <option value="A">töötav</option>
+                            <option value="B">kodune</option>
+                            <option value="C">töötu/tööd otsiv</option>
+                            <option value="D">ajateenija</option>
+                            <option value="E">(üli)õpilane</option>
+                            <option value="F">pensionär</option>
+                            <option value="G">lapsehoolduspuhkusel</option>
+                            <option value="H">muu mittetöötav</option>
+                        </select>
+                    </div>
+                </div>
+                <input type="submit" @click.prevent="moveToTab(2)" value="Eelmine">
+                <input type="submit" @click.prevent="" value="Saada">
             </form>
         </div>
     </div>
