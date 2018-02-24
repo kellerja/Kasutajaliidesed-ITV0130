@@ -1,6 +1,6 @@
 function ExtraData() {
-    this.isPrevResidenceInForeignCountry = '',
-    this.isForeignIdCode = '',
+    this.isPrevResidenceInForeignCountry = false,
+    this.isForeignIdCode = false,
     this.foreignCountry = {
         value: '',
         isValid: false,

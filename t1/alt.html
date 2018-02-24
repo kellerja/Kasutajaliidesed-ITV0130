@@ -103,7 +103,7 @@
                     <h4 v-if="index == 0">Esitaja</h4>
                     <h4 v-else>Registreetitav isik # {{index}}</h4>
                     <div class="form-group">
-                        <input type="checkbox" class="form-check-input" v-model="person.extra.isPrevResidenceInForeignCountry" :id="index + '-extra-info-foreign-country-question'" value="true">
+                        <input type="checkbox" class="form-check-input" v-model="person.extra.isPrevResidenceInForeignCountry" :id="index + '-extra-info-foreign-country-question'">
                         <label :for="index + '-extra-info-foreign-country-question'" class="form-check-label">Kas eelmine elukoht oli välismaal?</label>
                     </div>
                     <div v-if="person.extra.isPrevResidenceInForeignCountry">
@@ -111,7 +111,7 @@
                         <input-group title="Eestist sinna lahkumise aeg" :object.sync="formData.people[index].extra.leftEstoniaTime" :id="index + '-extra-info-left-estonia-time'"></input-group>
                     </div>
                     <div class="form-group">
-                        <input type="checkbox" class="form-check-input" v-model="person.extra.isForeignIdCode" :id="index + '-extra-info-foreign-idcode-question'" value="true">
+                        <input type="checkbox" class="form-check-input" v-model="person.extra.isForeignIdCode" :id="index + '-extra-info-foreign-idcode-question'">
                         <label :for="index + '-extra-info-foreign-idcode-question'" class="form-check-label">Kas sul on välisriigi isikukood?</label>
                     </div>
                     <div v-if="person.extra.isForeignIdCode">
