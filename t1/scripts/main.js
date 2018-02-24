@@ -1,90 +1,237 @@
-function Person(isFormFiller=false) {
-    this.isFormFiller = isFormFiller,
+function ExtraData() {
+    this.isPrevResidenceInForeignCountry = '',
+    this.isForeignIdCode = '',
+    this.foreignCountry = {
+        value: '',
+        isValid: false,
+        errorMsg: 'Palun sisesta oma elukoht välisriigis (riik ja haldusüksus)',
+        firstBlur: false,
+        validate: function() {
+            this.isValid = !!this.value;
+            return this.isValid;
+        }
+    },
+    this.leftEstoniaTime = {
+        value: '',
+        isValid: false,
+        errorMsg: 'Palun sisesta aeg, millal lahkusid Eestist',
+        firstBlur: false,
+        validate: function() {
+            this.isValid = !!this.value;
+            return this.isValid;
+        }
+    },
+    this.foreignCountryForIdCode = {
+        value: '',
+        isValid: false,
+        errorMsg: 'Palun sisesta isikukoodi väljastanud riik',
+        firstBlur: false,
+        validate: function() {
+            this.isValid = !!this.value;
+            return this.isValid;
+        }
+    },
+    this.foreignCountryIdCode = {
+        value: '',
+        isValid: false,
+        errorMsg: 'Palun sisesta välisriigi isikukood',
+        firstBlur: false,
+        validate: function() {
+            this.isValid = !!this.value;
+            return this.isValid;
+        }
+    },
+    this.isNotWillingToRevealNationality = false,
+    this.nationality = {
+        value: '',
+        isValid: false,
+        errorMsg: 'Palun sisesta korrektne rahvus',
+        firstBlur: false,
+        validate: function() {
+            this.isValid = !!this.value;
+            return this.isValid;
+        }
+    },
+    this.isNotWillingToRevealMotherToungue = false,
+    this.motherToungue = {
+        value: '',
+        isValid: false,
+        errorMsg: 'Palun sisesta korrektne emakeel',
+        firstBlur: false,
+        validate: function() {
+            this.isValid = !!this.value;
+            return this.isValid;
+        }
+    },
+    this.education = '-',
+    this.employment = '-'
+}
+
+function Person() {
     this.firstName = {
         value: '',
-        isValid: function() {
-            return !!this.value;
-        },
-        errorMsg: function() {
-            return 'Palun sisesta eesnimi';
-        },
-        tooltip: null
+        isValid: false,
+        errorMsg: 'Palun sisesta eesnimi',
+        firstBlur: false,
+        validate: function() {
+            this.isValid = !!this.value;
+            return this.isValid;
+        }
     },
     this.lastName = {
         value: '',
-        isValid: function() {
-            return !!this.value;
-        },
-        errorMsg: function() {
-            return 'Palun sisesta perenimi';
-        },
-        tooltip: null
+        isValid: false,
+        errorMsg: 'Palun sisesta perenimi',
+        firstBlur: false,
+        validate: function() {
+            this.isValid = !!this.value;
+            return this.isValid;
+        }
     },
     this.phone = {
         value: '',
-        isValid: function() {
-            return !!this.value;
-        },
-        errorMsg: function() {
-            return 'Palun sisesta telefoni number';
-        },
-        tooltip: null
+        isValid: false,
+        errorMsg: 'Palun sisesta telefoni number',
+        firstBlur: false,
+        validate: function() {
+            this.isValid = !!this.value;
+            return this.isValid;
+        }
     },
     this.email = {
         value: '',
-        isValid: function() {
-            return !!this.value;
-        },
-        errorMsg: function() {
-            return 'Palun sisesta email';
-        },
-        tooltip: null
+        isValid: false,
+        errorMsg: 'Palun sisesta email',
+        firstBlur: false,
+        validate: function() {
+            this.isValid = !!this.value;
+            return this.isValid;
+        }
     },
     this.idCode = {
         value: '',
-        isValid: function() {
-            return !!this.value;
-        },
-        errorMsg: function() {
-            return 'Palun sisesta isikukood';
-        },
-        tooltip: null
+        isValid: false,
+        errorMsg: 'Palun sisesta isikukood',
+        firstBlur: false,
+        validate: function() {
+            this.isValid = !!this.value;
+            return this.isValid;
+        }
+    },
+    this.extra = new ExtraData()
+}
+
+function Address() {
+    this.country = {
+        value: '',
+        isValid: false,
+        errorMsg: 'Palun sisesta riik',
+        firstBlur: false,
+        validate: function() {
+            this.isValid = !!this.value;
+            return this.isValid;
+        }
+    },
+    this.county = {
+        value: '',
+        isValid: false,
+        errorMsg: 'Palun sisesta maakond',
+        firstBlur: false,
+        validate: function() {
+            this.isValid = !!this.value;
+            return this.isValid;
+        }
+    },
+    this.city = {
+        value: '',
+        isValid: false,
+        errorMsg: 'Palun sisesta vald/linn, alevik, küla',
+        firstBlur: false,
+        validate: function() {
+            this.isValid = !!this.value;
+            return this.isValid;
+        }
+    },
+    this.street = {
+        value: '',
+        isValid: false,
+        errorMsg: 'Palun sisesta tänav/talu, maja nr, korteri nr',
+        firstBlur: false,
+        validate: function() {
+            this.isValid = !!this.value;
+            return this.isValid;
+        }
+    },
+    this.postalIndex = {
+        value: '',
+        isValid: false,
+        errorMsg: 'Palun sisesta postiindex',
+        firstBlur: false,
+        validate: function() {
+            this.isValid = !!this.value;
+            return this.isValid;
+        }
+    },
+    this.ownership = {
+        value: '0',
+        proof: ''
     }
 }
 
-Vue.directive('validate', {
-    inserted: function(el, binding, vnode) {
-        var pop = document.createElement('div');
-        var popMsg = document.createTextNode(binding.value.errorMsg());
-        pop.classList.add('error');
-        pop.appendChild(popMsg);
-        el.parentNode.appendChild(pop);
-        binding.value.tooltip = new Popper(el, pop, {
-            placement: 'right',
-            removeOnDestroy: true
-        });
+Vue.component('input-group', {
+    props: {
+        title: String, 
+        object: Object, 
+        id: String,
+        disabled: Boolean
     },
-    update: function(el, binding, vnode, oldVnode) {
-        if (binding.value.isValid()) {
-            binding.value.tooltip.popper.classList.remove('visible');            
-            binding.value.tooltip.popper.classList.add('invisible');
-        } else {
-            binding.value.tooltip.popper.classList.remove('invisible');            
-            binding.value.tooltip.popper.classList.add('visible');            
-        }
-    },
-    unbind: function(el, binding, vnode) {
-        var element = binding.value.tooltip.popper;
-        element.parentNode.removeChild(element);
-    }
+    template: '<div class="form-group"> \
+                <label :for="id">{{title}}</label> \
+                <input type="text" \
+                    :class="[\'form-control\', disabled ? \'\' : (object.isValid ? (object.firstBlur ? \'is-valid\' : \'\') : (object.firstBlur ? \'is-invalid\' : \'\'))]" \
+                    :id="id" v-model="object.value" \
+                    @keyup="object.validate()" \
+                    @blur.once="object.firstBlur = true" :disabled="disabled"> \
+                <small class="invalid-feedback">{{object.errorMsg}}</small> \
+              </div>'
 })
 
 vm = new Vue({
     el: '#app',
     data: {
         formData: {
-            people: [new Person(true)]
-        }
+            people: [new Person()],
+            newAddress: new Address(),
+            isSubmitterAlsoNewAddressResident: true,
+            isContactAddressNewAddress: true,
+            contactAddress: {
+                address: new Address(),
+                isValidFrom: false,
+                validFrom: {
+                    value: '',
+                    isValid: false,
+                    errorMsg: 'Palun sisesta kehtivuse algusaeg',
+                    firstBlur: false,
+                    validate: function() {
+                        this.isValid = !!this.value;
+                        return this.isValid;
+                    }
+                },
+                isValidTo: false,
+                validTo: {
+                    value: '',
+                    isValid: false,
+                    errorMsg: 'Palun sisesta kehtivuse lõppaeg',
+                    firstBlur: false,
+                    validate: function() {
+                        this.isValid = !!this.value;
+                        return this.isValid;
+                    }
+                }
+            }
+        },
+        tab: 3,
+        numOfTabs: 4
     },
     methods: {
         addPerson() {
@@ -94,7 +241,7 @@ vm = new Vue({
             this.formData.people.splice(index, 1);
         },
         moveToTab(tabNr) {
-            console.log(tabNr);
+            this.tab = tabNr;
         }
     },
     components: {

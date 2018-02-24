@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link href="css/bootstrap/bootstrap.css" rel="stylesheet">
+    <link href="css/main.css" rel="stylesheet">  
+    <script src="scripts/vue/vue.js"></script>
+</head>
+<body>
+    <div id="app" class="container">
+        <div class="row">
+            <h1>Elukohateade</h1>
+        </div>
+        <div class="row" v-if="tab == 1">
+            <form>
+                <h4>{{tab}}. Esitaja</h4>
+                <input-group title="Eesnimi" :object.sync="formData.people[0].firstName" id="submitter-firstname"></input-group>
+                <input-group title="Perenimi" :object.sync="formData.people[0].lastName" id="submitter-lastname"></input-group>
+                <input-group title="Isikukood" :object.sync="formData.people[0].idCode" id="submitter-idcode"></input-group>
+                <input-group title="E-post" :object.sync="formData.people[0].email" id="submitter-email"></input-group>
+                <input-group title="Phone" :object.sync="formData.people[0].phone" id="submitter-phone"></input-group>
+            </form>
+        </div>
+        <div class="row" v-else-if="tab == 2">
+            <form>
+                <h4>{{tab}}. Uue elukoha aadress</h4>
+                <input-group title="Riik" :object.sync="formData.newAddress.country" id="new-address-country"></input-group>
+                <input-group title="Maakond" :object.sync="formData.newAddress.county" id="new-address-county"></input-group>
+                <input-group title="Vald/linn, alevik, küla" :object.sync="formData.newAddress.city" id="new-address-city"></input-group>
+                <input-group title="Tänav/talu, maja nr, korteri nr" :object.sync="formData.newAddress.street" id="new-address-street"></input-group>
+                <input-group title="Postiindex" :object.sync="formData.newAddress.postalIndex" id="new-address-postal-index"></input-group>
+            </form>
+        </div>
+        <div class="row" v-else-if="tab == 3">
+            <form>
+                <h4>{{tab}}. Isikud, kelle elukoha aadressi muudetakse</h4>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="new-address-self-registration-checkbox" v-model="formData.isSubmitterAlsoNewAddressResident">
+                    <label class="form-check-label" for="new-address-self-registration-checkbox">Esitan uue elukoha ka enda kohta</label>
+                </div>
+                <div class="form-group w-100" v-if="!formData.isSubmitterAlsoNewAddressResident">
+                    <h4>Sideaadress</h4>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="new-address-contact-address-reg-address" v-model="formData.isContactAddressNewAddress">
+                        <label class="form-check-label" for="new-address-contact-address-reg-address">Sideaadress on sama, mis registreeritav aadress</label>
+                    </div>
+                    <div v-if="!formData.isContactAddressNewAddress">
+                        <input-group title="Riik" :object.sync="formData.contactAddress.address.country" id="contact-address-country"></input-group>
+                        <input-group title="Maakond" :object.sync="formData.contactAddress.address.county" id="contact-address-county"></input-group>
+                        <input-group title="Vald/linn, alevik, küla" :object.sync="formData.contactAddress.address.city" id="contact-address-city"></input-group>
+                        <input-group title="Tänav/talu, maja nr, korteri nr" :object.sync="formData.contactAddress.address.street" id="contact-address-street"></input-group>
+                        <input-group title="Postiindex" :object.sync="formData.contactAddress.address.postalIndex" id="contact-address-postal-index"></input-group>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="contact-address-from-question" v-model="formData.contactAddress.isValidFrom">
+                            <label class="form-check-label" for="contact-address-from-question">Kas sideaadressi kasutuselevõtmisel on algusaeg (pole juba kasutuses)?</label>
+                        </div>
+                        <input-group title="Kehtib alates" :object.sync="formData.contactAddress.validFrom" id="contact-address-from" v-if="formData.contactAddress.isValidFrom"></input-group>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="contact-address-to-question" v-model="formData.contactAddress.isValidTo">
+                            <label class="form-check-label" for="contact-address-to-question">Kas sideaadressi kasutuse lõpetamise kohta on teada lõppaeg?</label>
+                        </div>
+                        <input-group title="Kehtib kuni" :object.sync="formData.contactAddress.validTo" id="contact-address-to" v-if="formData.contactAddress.isValidTo"></input-group>
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap">
+                    <div class="person" v-for="(person, index) in formData.people.slice(1)">
+                        <div class="d-flex">
+                            <h4>Registreeritav isik # {{index + 1}}</h4>
+                            <button type="button" class="btn" tabindex="-1" @click.prevent="removePerson(index + 1)">Del</button>
+                        </div>
+                        <input-group title="Eesnimi" :object.sync="formData.people[index + 1].firstName" :id="index + '-person-firstname'"></input-group>
+                        <input-group title="Perenimi" :object.sync="formData.people[index + 1].lastName" :id="index + '-person-lastname'"></input-group>
+                        <input-group title="Telefon" :object.sync="formData.people[index + 1].phone" :id="index + '-person-phone'"></input-group>
+                        <input-group title="Email" :object.sync="formData.people[index + 1].email" :id="index + '-person-email'"></input-group>
+                        <input-group title="Isikukood" :object.sync="formData.people[index + 1].idCode" :id="index + '-person-idcode'"></input-group>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn" @click.prevent="addPerson()">Lisa isik</button>
+                </div>
+            </form>
+        </div>
+        <div class="row" v-else-if="tab == 4">
+            <form>
+                <h4>{{tab}}. Lisainformatsioon</h4>
+                <div v-for="(person, index) in formData.people">
+                    <h4 v-if="index == 0">Esitaja</h4>
+                    <h4 v-else>Registreetitav isik # {{index}}</h4>
+                    <div class="form-group">
+                        <input type="checkbox" class="form-check-input" v-model="person.extra.isPrevResidenceInForeignCountry" :id="index + '-extra-info-foreign-country-question'" value="true">
+                        <label :for="index + '-extra-info-foreign-country-question'" class="form-check-label">Kas eelmine elukoht oli välismaal?</label>
+                    </div>
+                    <div v-if="person.extra.isPrevResidenceInForeignCountry">
+                        <input-group title="Elukoht välisriigis (riik ja haldusüksus)" :object.sync="formData.people[index].extra.foreignCountry" :id="index + '-extra-info-foreign-country'"></input-group>
+                        <input-group title="Eestist sinna lahkumise aeg" :object.sync="formData.people[index].extra.leftEstoniaTime" :id="index + '-extra-info-left-estonia-time'"></input-group>
+                    </div>
+                    <div class="form-group">
+                        <input type="checkbox" class="form-check-input" v-model="person.extra.isForeignIdCode" :id="index + '-extra-info-foreign-idcode-question'" value="true">
+                        <label :for="index + '-extra-info-foreign-idcode-question'" class="form-check-label">Kas sul on välisriigi isikukood?</label>
+                    </div>
+                    <div v-if="person.extra.isForeignIdCode">
+                        <input-group title="Isikukoodi väljastanud riik" :object.sync="formData.people[index].extra.foreignCountryForIdCode" :id="index + '-extra-info-foreign-country-for-idcode'"></input-group>
+                        <input-group title="Välisriigi isikukood" :object.sync="formData.people[index].extra.foreignCountryIdCode" :id="index + '-extra-info-foreign-country-idcode'"></input-group>
+                    </div>
+                    <div class="d-flex">
+                        <input-group title="Rahvus" :object.sync="formData.people[index].extra.nationality" :id="index + '-extra-info-nationality'" :disabled="person.extra.isNotWillingToRevealNationality"></input-group>
+                        <div>
+                            <input type="checkbox" class="form-check-input" v-model="person.extra.isNotWillingToRevealNationality" :id="index + '-extra-info-nationality-optional'">
+                            <label :for="index + '-extra-info-nationality-optional'" class="form-check-label">Ei soovi avalikustada</label>
+                        </div>
+                    </div>
+                    <div class="d-flex">
+                        <input-group title="Emakeel" :object.sync="formData.people[index].extra.motherToungue" :id="index + '-extra-info-mother-tongue'" :disabled="person.extra.isNotWillingToRevealMotherToungue"></input-group>
+                        <div>
+                            <input type="checkbox" class="form-check-input" v-model="person.extra.isNotWillingToRevealMotherToungue" :id="index + '-extra-info-mother-tongue-optional'">
+                            <label :for="index + '-extra-info-mother-tongue-optional'" class="form-check-label">Ei soovi avalikustada</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label :for="index + '_extra_info_education'">Omandatud kõrgeim haridustase</label>
+                        <select class="form-control" v-model="person.extra.education" :id="index + '_extra_info_education'">
+                            <option value="-">Ei soovi avaldada</option>
+                            <option value="0">Alusharidus (koolieelne haridus) või alghariduseta</option>
+                            <option value="1">Põhiharidus (põhikooli 1.-6. klass), varasem algharidus</option>
+                            <option value="2">Põhiharidus (põhikooli 8.-9. klass)</option>
+                            <option value="35">Kutseharidus või kutseõpe (sh keskeri- või tehnikumiharidus) põhihariduse baasil</option>
+                            <option value="3">Keskharidus</option>
+                            <option value="4">Kutseharidus või kutseõpe keskhariduse baasil</option>
+                            <option value="5">Keskeri- ja tehnikumiharidus keskhariduse baasil</option>
+                            <option value="6">Bakalaureus või sellega võrdsustatud haridus (rakendus- ja kutsekõrgharidus, diplomiõpe)</option>
+                            <option value="7">Magister või sellega võrdsustatud haridus</option>
+                            <option value="8">Doktor või sellega võrdsustatud haridus</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label :for="index + '_extra_info_employment'">Sotsiaal-majanduslik seisund</label>
+                        <select class="form-control" v-model="person.extra.employment" :id="index + '_extra_info_employment'">
+                            <option value="-">Ei soovi avaldada</option>
+                            <option value="A">töötav</option>
+                            <option value="B">kodune</option>
+                            <option value="C">töötu/tööd otsiv</option>
+                            <option value="D">ajateenija</option>
+                            <option value="E">(üli)õpilane</option>
+                            <option value="F">pensionär</option>
+                            <option value="G">lapsehoolduspuhkusel</option>
+                            <option value="H">muu mittetöötav</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <input type="submit" class="btn" @click="moveToTab(tab-1)" value="Eelmine" v-if="tab > 1">
+        <input type="submit" class="btn" @click="moveToTab(tab+1)" value="Järgmine" v-if="tab < numOfTabs">
+        <input type="submit" class="btn" @click="console.log('SUBMIT')" value="Saada" v-if="tab == numOfTabs">
+    </div>
+    <script src="scripts/main.js"></script>
+</body>
+</html>

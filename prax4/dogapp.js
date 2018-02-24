@@ -30,6 +30,7 @@ function NewEntry() {
     value: '',
     isValid: false,
     errMsg: '',
+    firstBlur: true,
     validate: function() {
       if (!this.value) {
         this.isValid = false;
@@ -45,6 +46,7 @@ function NewEntry() {
     value: '',
     isValid: false,
     errMsg: '',
+    firstBlur: true,    
     validate: function() {
       if (this.value.indexOf('@') === -1) {
         this.isValid = false;
@@ -93,13 +95,13 @@ const Add = Vue.component('add-view', ({
   <h2>Lisamine</h2>
   <form>
   <label for="name">Name</label>
-  <input type="text" id="name" @keyup="newEntry.name.validate()" @blur="newEntry.name.validate()" v-model="newEntry.name.value"/>
-  <small class="error" :hidden="newEntry.name.isValid">{{ newEntry.name.errMsg }}</small>
+  <input type="text" id="name" @keyup="newEntry.name.validate()" @blur.once="newEntry.name.firstBlur = false" v-model="newEntry.name.value"/>
+  <small class="error" :hidden="newEntry.name.isValid || newEntry.name.firstBlur">{{ newEntry.name.errMsg }}</small>
   <label for="email">Email</label>
-  <input type="email" id="email" @keyup="newEntry.email.validate()" @blur="newEntry.email.validate()" v-model="newEntry.email.value">
-  <small class="error" :hidden="newEntry.email.isValid">{{ newEntry.email.errMsg }}</small>
+  <input type="email" :class="{error: !newEntry.email.isValid && !newEntry.email.firstBlur}" id="email" @keyup="newEntry.email.validate()" @blur.once="newEntry.email.firstBlur = false" v-model="newEntry.email.value">
+  <small class="error" :hidden="newEntry.email.isValid || newEntry.email.firstBlur">{{ newEntry.email.errMsg }}</small>
   <br>
-  <input type="submit" @click="addNew"/>
+  <input type="submit" @click.prevent="addNew"/>
   </form>
   </div>
   `
