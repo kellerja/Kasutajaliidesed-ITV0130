@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <link href="css/bootstrap/bootstrap.css" rel="stylesheet">
     <link href="css/main.css" rel="stylesheet">  
@@ -32,6 +31,20 @@
                 <input-group title="Vald/linn, alevik, küla" :object.sync="formData.newAddress.city" id="new-address-city"></input-group>
                 <input-group title="Tänav/talu, maja nr, korteri nr" :object.sync="formData.newAddress.street" id="new-address-street"></input-group>
                 <input-group title="Postiindex" :object.sync="formData.newAddress.postalIndex" id="new-address-postal-index"></input-group>
+                <div class="form-group">
+                    <label for="new_address_ownership">Ruumi kasutamisõigus</label>
+                    <select class="form-control" id="new_address_ownership" v-model="formData.newAddress.ownership.value">
+                        <option value="0">Olen ruumi (kaas)omanik</option>
+                        <option value="1">Lisan üürilepingu</option>
+                        <option value="2">Ruumi omanik annab ise elukohateatele nõusoleku</option> <!-- Kas see vajalik? Kuidas implementeerida? -->
+                        <option value="3">Lisan ruumi omaniku nõusoleku eraldi paberil</option>
+                        <option value="4">Ruumi kasutamise muu alus</option>
+                    </select>
+                </div>
+                <div class="form-group" v-if="formData.newAddress.ownership.value == '1' || formData.newAddress.ownership.value == '3'">
+                    <label for="new_address_ownership_proof">Lisa {{formData.newAddress.ownership.value == '1' ? 'üürileping' : 'ruumi omaniku nõusolek'}}</label>
+                    <input type="file" class="form-control-file" id="new_address_ownership_proof" multiple>
+                </div>
             </form>
         </div>
         <div class="row" v-else-if="tab == 3">
