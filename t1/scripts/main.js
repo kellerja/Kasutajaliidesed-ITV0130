@@ -247,22 +247,56 @@ vm = new Vue({
         },
         tabs: [
             {
-                isActive: false
+                isActive: false,
+                isValid: false,
+                validate: function() {
+                    this.isValid = vm.formData.people[0].validate(false);
+                    return this.isValid;
+                }
             },
             {
-                isActive: false
+                isActive: false,
+                isValid: false,
+                validate() {
+                    this.isValid = vm.formData.newAddress.validate();
+                    return this.isValid;
+                }
             },
             {
-                isActive: false
+                isActive: false,
+                isValid: false,
+                validate() {
+                    this.isValid = vm.formData.people.slice(1).every(function(person){
+                        return person.validate(false);
+                    });
+                    return this.isValid;
+                }
             },
             {
-                isActive: false
+                isActive: false,
+                isValid: false,
+                validate() {
+                    this.isValid = vm.formData.isSubmitterAlsoNewAddressResident || 
+                        vm.formData.isContactAddressNewAddress || 
+                        (vm.formData.contactAddress.address.validate() && 
+                            (vm.formData.contactAddress.isValidFrom || vm.formData.contactAddress.validFrom.isValid) &&
+                            (vm.formData.contactAddress.isValidTo || vm.formData.contactAddress.validTo.isValid)
+                        );
+                    return this.isValid;
+                }
             },
             {
-                isActive: false
+                isActive: false,
+                isValid: false,
+                validate() {
+                    this.isValid = vm.formData.people.every(function(person) {
+                        return person.extra.validate();
+                    });
+                    return this.isValid;
+                }
             }
         ],
-        isTabValid: [false, false, false, false, false]
+        isFormValid: false
     },
     methods: {
         addPerson() {
@@ -271,48 +305,23 @@ vm = new Vue({
         removePerson(index) {
             this.formData.people.splice(index, 1);
         },
-        moveToTab(tabNr) {
-            if (tabNr > this.progressionTab) {
-                this.progressionTab = tabNr;
-            }
-            this.tab = tabNr;
-            this.validate(this.tab);
-        },
-        validate(tabNr) {
-            if (tabNr > this.numOfTabs) {
-                return;
-            }
-            for (tab = 1; tab <= tabNr; tab++) {
-                switch(tab) {
-                    case 1:
-                        this.isTabValid[tab - 1] = this.formData.people[0].validate(false);
-                        break;
-                    case 2:
-                        this.isTabValid[tab - 1] = this.formData.newAddress.validate();
-                        break;
-                    case 3:
-                        this.isTabValid[tab - 1] = this.formData.people.slice(1).every(function(person){
-                            return person.validate(false);
-                        });
-                        break;
-                    case 4:
-                        this.isTabValid[tab - 1] = this.formData.isSubmitterAlsoNewAddressResident || 
-                            this.formData.isContactAddressNewAddress || 
-                            (this.formData.contactAddress.address.validate() && 
-                                (this.formData.contactAddress.isValidFrom || this.formData.contactAddress.validFrom.isValid) &&
-                                (this.formData.contactAddress.isValidTo || this.formData.contactAddress.validTo.isValid)
-                            );
-                        break;
-                    case 5: 
-                        this.isTabValid[tab - 1] = this.formData.people.every(function(person) {
-                            return person.extra.validate();
-                        });
-                        break;
+        toggleTab(tabNr) {
+            /*
+            this.tabs.forEach(function(tab, index) {
+                if (index == tabNr) {
+                    return;
                 }
-            }
-            return this.isTabValid[tabNr - 1];
+                tab.isActive = false
+            });*/
+            this.tabs[tabNr].isActive = !this.tabs[tabNr].isActive;
+            this.tabs[tabNr].validate();
+            this.validate();
+        },
+        validate() {
+            this.isFormValid = this.tabs.every(function(tab) {
+                return tab.validate();
+            });
+            return this.isFormValid;
         }
-    },
-    components: {
     }
 });

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="css/bootstrap/bootstrap.css" rel="stylesheet">
     <link href="css/main.css" rel="stylesheet">  
     <script src="scripts/vue/vue.js"></script>
@@ -14,11 +15,13 @@
             <h1>Elukohateade</h1>
         </div>
         <div class="row">
-            <input type="button"
-                :class="'btn'" 
-                value="1. Esitaja andmed" @click="moveToTab(1)">
+            <a :class="['btn', 'tab-toggle-button', {'tab-toggle-button-active': tabs[0].isActive},
+                    tabs[0].isValid ? 'btn-success' : 'btn-danger']" @click="toggleTab(0)" href="#">
+                <i class="material-icons light align-middle" aria-hidden="true">{{tabs[0].isActive ? 'keyboard_arrow_down' : 'keyboard_arrow_right'}}</i>
+                1. Esitaja andmed
+            </a>
         </div>
-        <div v-if="tab == 1">
+        <div v-if="tabs[0].isActive">
             <div class="row">
                 <form class="w-100">
                     <input-group title="Eesnimi" :object.sync="formData.people[0].firstName" id="submitter-firstname"></input-group>
@@ -28,16 +31,15 @@
                     <input-group title="Phone" :object.sync="formData.people[0].phone" id="submitter-phone"></input-group>
                 </form>
             </div>
-            <input type="submit" class="btn" @click="moveToTab(tab+1)" value="Järgmine">
         </div>
         <div class="row">
-            <input type="button"
-                :class="['btn', 'tab-change-button', 
-                    {'tab-change-button-active': 2 == tab}, 
-                    2 > progressionTab ? 'tab-change-button-initial' : (isTabValid[1] ? 'btn-success' : 'btn-danger')]" 
-                value="2. Uue elukoha aadress" @click="moveToTab(2)">
+            <a :class="['btn', 'tab-toggle-button', {'tab-toggle-button-active': tabs[1].isActive},
+                    tabs[1].isValid ? 'btn-success' : 'btn-danger']" @click="toggleTab(1)" href="#">
+                <i class="material-icons light align-middle" aria-hidden="true">{{tabs[1].isActive ? 'keyboard_arrow_down' : 'keyboard_arrow_right'}}</i>
+                2. Uue elukoha aadress
+            </a>
         </div>
-        <div v-if="tab == 2">
+        <div v-if="tabs[1].isActive">
             <div class="row">
                 <form class="w-100">
                     <input-group title="Riik" :object.sync="formData.newAddress.country" id="new-address-country"></input-group>
@@ -61,13 +63,17 @@
                     </div>
                 </form>
             </div>
-            <input type="submit" class="btn" @click="moveToTab(tab-1)" value="Eelmine">
-            <input type="submit" class="btn" @click="moveToTab(tab+1)" value="Järgmine">
         </div>
-        <div v-else-if="tab == 3">
+        <div class="row">
+            <a :class="['btn', 'tab-toggle-button', {'tab-toggle-button-active': tabs[2].isActive},
+                    tabs[2].isValid ? 'btn-success' : 'btn-danger']" @click="toggleTab(2)" href="#">
+                <i class="material-icons light align-middle" aria-hidden="true">{{tabs[2].isActive ? 'keyboard_arrow_down' : 'keyboard_arrow_right'}}</i>
+                3. Isikud, kelle elukoha aadressi muudetakse
+            </a>
+        </div>
+        <div v-if="tabs[2].isActive">
             <div class="row">
                 <form class="w-100">
-                    <h4>{{tab}}. Isikud, kelle elukoha aadressi muudetakse</h4>
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input" id="new-address-self-registration-checkbox" v-model="formData.isSubmitterAlsoNewAddressResident">
                         <label class="form-check-label" for="new-address-self-registration-checkbox">Esitan uue elukoha ka enda kohta</label>
@@ -90,48 +96,55 @@
                     </div>
                 </form>
             </div>
-            <input type="submit" class="btn" @click="moveToTab(tab-1)" value="Eelmine">
-            <input type="submit" class="btn" @click="moveToTab(tab+ (!formData.isSubmitterAlsoNewAddressResident ? 1 : 2))" value="Järgmine">
         </div>
-        <div v-else-if="tab == 4">
+        <div class="row">
+            <a :class="['btn', 'tab-toggle-button', {'tab-toggle-button-active': tabs[3].isActive},
+                    tabs[3].isValid ? 'btn-success' : 'btn-danger']" @click="toggleTab(3)" href="#">
+                <i class="material-icons light align-middle" aria-hidden="true">{{tabs[3].isActive ? 'keyboard_arrow_down' : 'keyboard_arrow_right'}}</i>
+                4. Sideaadress
+            </a>
+        </div>
+        <div v-if="tabs[3].isActive">
             <div class="row">
                 <form class="w-100">
-                    <div class="form-group">
-                        <h4>{{tab}}. Sideaadress</h4>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="new-address-contact-address-reg-address" v-model="formData.isContactAddressNewAddress">
+                        <label class="form-check-label" for="new-address-contact-address-reg-address">Sideaadress on sama, mis registreeritav aadress</label>
+                    </div>
+                    <div v-if="!formData.isContactAddressNewAddress">
+                        <input-group title="Riik" :object.sync="formData.contactAddress.address.country" id="contact-address-country"></input-group>
+                        <input-group title="Maakond" :object.sync="formData.contactAddress.address.county" id="contact-address-county"></input-group>
+                        <input-group title="Vald/linn, alevik, küla" :object.sync="formData.contactAddress.address.city" id="contact-address-city"></input-group>
+                        <input-group title="Tänav/talu, maja nr, korteri nr" :object.sync="formData.contactAddress.address.street" id="contact-address-street"></input-group>
+                        <input-group title="Postiindex" :object.sync="formData.contactAddress.address.postalIndex" id="contact-address-postal-index"></input-group>
                         <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="new-address-contact-address-reg-address" v-model="formData.isContactAddressNewAddress">
-                            <label class="form-check-label" for="new-address-contact-address-reg-address">Sideaadress on sama, mis registreeritav aadress</label>
+                            <input type="checkbox" class="form-check-input" id="contact-address-from-question" v-model="formData.contactAddress.isValidFrom">
+                            <label class="form-check-label" for="contact-address-from-question">Kas sideaadressi kasutuselevõtmisel on algusaeg (pole juba kasutuses)?</label>
                         </div>
-                        <div v-if="!formData.isContactAddressNewAddress">
-                            <input-group title="Riik" :object.sync="formData.contactAddress.address.country" id="contact-address-country"></input-group>
-                            <input-group title="Maakond" :object.sync="formData.contactAddress.address.county" id="contact-address-county"></input-group>
-                            <input-group title="Vald/linn, alevik, küla" :object.sync="formData.contactAddress.address.city" id="contact-address-city"></input-group>
-                            <input-group title="Tänav/talu, maja nr, korteri nr" :object.sync="formData.contactAddress.address.street" id="contact-address-street"></input-group>
-                            <input-group title="Postiindex" :object.sync="formData.contactAddress.address.postalIndex" id="contact-address-postal-index"></input-group>
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="contact-address-from-question" v-model="formData.contactAddress.isValidFrom">
-                                <label class="form-check-label" for="contact-address-from-question">Kas sideaadressi kasutuselevõtmisel on algusaeg (pole juba kasutuses)?</label>
-                            </div>
-                            <input-group title="Kehtib alates" :object.sync="formData.contactAddress.validFrom" id="contact-address-from" v-if="formData.contactAddress.isValidFrom"></input-group>
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="contact-address-to-question" v-model="formData.contactAddress.isValidTo">
-                                <label class="form-check-label" for="contact-address-to-question">Kas sideaadressi kasutuse lõpetamise kohta on teada lõppaeg?</label>
-                            </div>
-                            <input-group title="Kehtib kuni" :object.sync="formData.contactAddress.validTo" id="contact-address-to" v-if="formData.contactAddress.isValidTo"></input-group>
+                        <input-group title="Kehtib alates" :object.sync="formData.contactAddress.validFrom" id="contact-address-from" v-if="formData.contactAddress.isValidFrom"></input-group>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="contact-address-to-question" v-model="formData.contactAddress.isValidTo">
+                            <label class="form-check-label" for="contact-address-to-question">Kas sideaadressi kasutuse lõpetamise kohta on teada lõppaeg?</label>
                         </div>
+                        <input-group title="Kehtib kuni" :object.sync="formData.contactAddress.validTo" id="contact-address-to" v-if="formData.contactAddress.isValidTo"></input-group>
                     </div>
                 </form>
             </div>
-            <input type="submit" class="btn" @click="moveToTab(tab-1)" value="Eelmine">
-            <input type="submit" class="btn" @click="moveToTab(tab+1)" value="Järgmine">
         </div>
-        <div v-else-if="tab == 5">
+        <div class="row">
+            <a :class="['btn', 'tab-toggle-button', {'tab-toggle-button-active': tabs[4].isActive},
+                    tabs[4].isValid ? 'btn-success' : 'btn-danger']" @click="toggleTab(4)" href="#">
+                <i class="material-icons light align-middle" aria-hidden="true">{{tabs[4].isActive ? 'keyboard_arrow_down' : 'keyboard_arrow_right'}}</i>
+                5. Lisainformatsioon
+            </a>
+        </div>
+        <div v-if="tabs[4].isActive">
             <div class="row">
-                <form class="w-100">
-                    <h4>{{tab}}. Lisainformatsioon</h4>
-                    <div v-for="(person, index) in formData.people">
+                <form class="d-flex flex-wrap">
+                    <div v-for="(person, index) in formData.people" class="person">
                         <h4 v-if="index == 0">Esitaja</h4>
                         <h4 v-else>Registreetitav isik # {{index}}</h4>
+                        <p>Nimi: {{person.firstName.value + ' ' + person.lastName.value}}</p>
                         <div class="form-group">
                             <input type="checkbox" class="form-check-input" v-model="person.extra.isPrevResidenceInForeignCountry" :id="index + '-extra-info-foreign-country-question'">
                             <label :for="index + '-extra-info-foreign-country-question'" class="form-check-label">Kas eelmine elukoht oli välismaal?</label>
@@ -195,8 +208,9 @@
                     </div>
                 </form>
             </div>
-            <input type="submit" class="btn" @click="moveToTab(tab- (!formData.isSubmitterAlsoNewAddressResident ? 1 : 2))" value="Eelmine">
-            <input type="submit" class="btn" @click="moveToTab(tab + 1)" value="Saada">
+        </div>
+        <div class="row">
+            <input type="submit" class="btn tab-toggle-button w-100" @click="" value="Saada ära" :disabled="!isFormValid">
         </div>
     </div>
     <script src="scripts/main.js"></script>

@@ -1,11 +1,14 @@
-.tab-change-button {
-    padding: 1em 3em;
-    margin: 0 0.3em;
+.tab-toggle-button {
+    padding: 1rem 3rem;
+    margin: 0 0.3rem;
+    width: 100%;
 }
 
-.tab-change-button-active {
-    border: black solid 0.1em;
+.tab-toggle-button-active {
+    border: black solid 0.2em;
 }
 
-.tab-change-button-initial {
+.person {
+    width: 20rem;
+    margin: 0 0.5rem;
 }
