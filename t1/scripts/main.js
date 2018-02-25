@@ -306,13 +306,12 @@ vm = new Vue({
             this.formData.people.splice(index, 1);
         },
         toggleTab(tabNr) {
-            /*
             this.tabs.forEach(function(tab, index) {
                 if (index == tabNr) {
                     return;
                 }
                 tab.isActive = false
-            });*/
+            });
             this.tabs[tabNr].isActive = !this.tabs[tabNr].isActive;
             this.tabs[tabNr].validate();
             this.validate();
