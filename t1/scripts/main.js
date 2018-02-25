@@ -64,7 +64,13 @@ function ExtraData() {
         }
     },
     this.education = '-',
-    this.employment = '-'
+    this.employment = '-',
+    this.validate = function() {
+        return (!this.isPrevResidenceInForeignCountry || (this.foreignCountry.isValid && this.leftEstoniaTime.isValid)) && 
+            (!this.isForeignIdCode || (this.foreignCountryForIdCode.isValid && this.foreignCountryIdCode.isValid)) &&
+            (this.isNotWillingToRevealNationality || this.nationality.isValid) && 
+            (this.isNotWillingToRevealMotherToungue || this.motherToungue.isValid);
+    }
 }
 
 function Person() {
@@ -118,7 +124,12 @@ function Person() {
             return this.isValid;
         }
     },
-    this.extra = new ExtraData()
+    this.extra = new ExtraData(),
+    this.validate = function(includeExtra = true) {
+        return (!includeExtra || this.extra.validate()) && this.firstName.isValid && 
+            this.lastName.isValid && this.phone.isValid && 
+            this.email.isValid && this.idCode.isValid;
+    }
 }
 
 function Address() {
@@ -175,6 +186,10 @@ function Address() {
     this.ownership = {
         value: '0',
         proof: ''
+    },
+    this.validate = function() {
+        return this.country.isValid && this.county.isValid && 
+            this.city.isValid && this.street.isValid && this.postalIndex.isValid;
     }
 }
 
@@ -230,8 +245,24 @@ vm = new Vue({
                 }
             }
         },
-        tab: 3,
-        numOfTabs: 4
+        tabs: [
+            {
+                isActive: false
+            },
+            {
+                isActive: false
+            },
+            {
+                isActive: false
+            },
+            {
+                isActive: false
+            },
+            {
+                isActive: false
+            }
+        ],
+        isTabValid: [false, false, false, false, false]
     },
     methods: {
         addPerson() {
@@ -241,7 +272,45 @@ vm = new Vue({
             this.formData.people.splice(index, 1);
         },
         moveToTab(tabNr) {
+            if (tabNr > this.progressionTab) {
+                this.progressionTab = tabNr;
+            }
             this.tab = tabNr;
+            this.validate(this.tab);
+        },
+        validate(tabNr) {
+            if (tabNr > this.numOfTabs) {
+                return;
+            }
+            for (tab = 1; tab <= tabNr; tab++) {
+                switch(tab) {
+                    case 1:
+                        this.isTabValid[tab - 1] = this.formData.people[0].validate(false);
+                        break;
+                    case 2:
+                        this.isTabValid[tab - 1] = this.formData.newAddress.validate();
+                        break;
+                    case 3:
+                        this.isTabValid[tab - 1] = this.formData.people.slice(1).every(function(person){
+                            return person.validate(false);
+                        });
+                        break;
+                    case 4:
+                        this.isTabValid[tab - 1] = this.formData.isSubmitterAlsoNewAddressResident || 
+                            this.formData.isContactAddressNewAddress || 
+                            (this.formData.contactAddress.address.validate() && 
+                                (this.formData.contactAddress.isValidFrom || this.formData.contactAddress.validFrom.isValid) &&
+                                (this.formData.contactAddress.isValidTo || this.formData.contactAddress.validTo.isValid)
+                            );
+                        break;
+                    case 5: 
+                        this.isTabValid[tab - 1] = this.formData.people.every(function(person) {
+                            return person.extra.validate();
+                        });
+                        break;
+                }
+            }
+            return this.isTabValid[tabNr - 1];
         }
     },
     components: {
