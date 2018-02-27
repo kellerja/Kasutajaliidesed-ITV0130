@@ -125,10 +125,13 @@ function Person() {
         }
     },
     this.extra = new ExtraData(),
-    this.validate = function(includeExtra = true) {
+    this.validate = function(includeExtra = false) {
         return (!includeExtra || this.extra.validate()) && this.firstName.isValid && 
             this.lastName.isValid && this.phone.isValid && 
             this.email.isValid && this.idCode.isValid;
+    },
+    this.tab = {
+        value = 0
     }
 }
 

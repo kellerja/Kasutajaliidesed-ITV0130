@@ -1,14 +1,29 @@
 .tab-toggle-button {
     padding: 1rem 3rem;
     width: 100%;
-    border: #443733 solid 0.1em;
+    border: #443733 solid 0.1rem;
 }
 
-.tab-toggle-button-active {
-    border: black solid 0.2em;
+.tab-toggle-button::selection, .tab-toggle-button:focus {
+    border: #443733 solid 0.1rem;
+}
+
+.tab-toggle-button-active, .tab-toggle-button-active::selection, .tab-toggle-button-active:focus {
+    border: #443733 solid 0.2rem;
 }
 
 .person {
-    width: 20rem;
-    margin: 0 0.5rem;
+    padding: 0.5rem 0.5rem;
+    background: #FCFCFC;
+    box-sizing: border-box;
+    border: solid 0.1rem #FFFFFF;
+}
+
+.person .form-group {
+    margin-bottom: 0.5rem;
+}
+
+.add-person-btn {
+    margin-top: 0.5rem;
+    min-height: 3rem;
 }
