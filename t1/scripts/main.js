@@ -1,65 +1,96 @@
-function ExtraData() {
+function ExtraData(parent) {
+    this.parent = parent,
     this.isPrevResidenceInForeignCountry = false,
     this.isForeignIdCode = false,
     this.foreignCountry = {
+        self: this,
         value: '',
         isValid: false,
         errorMsg: 'Palun sisesta oma elukoht välisriigis (riik ja haldusüksus)',
         firstBlur: false,
         validate: function() {
+            const prevIsValid = this.isValid;
             this.isValid = !!this.value;
+            if (prevIsValid != this.isValid) {
+                this.self.parent.tab.validateExtra();
+            }
             return this.isValid;
         }
     },
     this.leftEstoniaTime = {
+        self: this,
         value: '',
         isValid: false,
         errorMsg: 'Palun sisesta aeg, millal lahkusid Eestist',
         firstBlur: false,
         validate: function() {
+            const prevIsValid = this.isValid;
             this.isValid = !!this.value;
+            if (prevIsValid != this.isValid) {
+                this.self.parent.tab.validateExtra();
+            }
             return this.isValid;
         }
     },
     this.foreignCountryForIdCode = {
+        self: this,
         value: '',
         isValid: false,
         errorMsg: 'Palun sisesta isikukoodi väljastanud riik',
         firstBlur: false,
         validate: function() {
+            const prevIsValid = this.isValid;
             this.isValid = !!this.value;
+            if (prevIsValid != this.isValid) {
+                this.self.parent.tab.validateExtra();
+            }
             return this.isValid;
         }
     },
     this.foreignCountryIdCode = {
+        self: this,
         value: '',
         isValid: false,
         errorMsg: 'Palun sisesta välisriigi isikukood',
         firstBlur: false,
         validate: function() {
+            const prevIsValid = this.isValid;
             this.isValid = !!this.value;
+            if (prevIsValid != this.isValid) {
+                this.self.parent.tab.validateExtra();
+            }
             return this.isValid;
         }
     },
     this.isNotWillingToRevealNationality = false,
     this.nationality = {
+        self: this,
         value: '',
         isValid: false,
         errorMsg: 'Palun sisesta korrektne rahvus',
         firstBlur: false,
         validate: function() {
+            const prevIsValid = this.isValid;
             this.isValid = !!this.value;
+            if (prevIsValid != this.isValid) {
+                this.self.parent.tab.validateExtra();
+            }
             return this.isValid;
         }
     },
     this.isNotWillingToRevealMotherToungue = false,
     this.motherToungue = {
+        self: this,
         value: '',
         isValid: false,
         errorMsg: 'Palun sisesta korrektne emakeel',
         firstBlur: false,
         validate: function() {
+            const prevIsValid = this.isValid;
             this.isValid = !!this.value;
+            if (prevIsValid != this.isValid) {
+                this.self.parent.tab.validateExtra();
+            }
             return this.isValid;
         }
     },
@@ -95,43 +126,69 @@ function Person() {
         }
     },
     this.phone = {
+        self: this,
         value: '',
         isValid: false,
         errorMsg: 'Palun sisesta telefoni number',
         firstBlur: false,
         validate: function() {
+            const prevIsValid = this.isValid;
             this.isValid = !!this.value;
+            if (prevIsValid != this.isValid) {
+                this.self.tab.validate();
+            }
             return this.isValid;
         }
     },
     this.email = {
+        self: this,
         value: '',
         isValid: false,
         errorMsg: 'Palun sisesta email',
         firstBlur: false,
         validate: function() {
+            const prevIsValid = this.isValid;
             this.isValid = !!this.value;
+            if (prevIsValid != this.isValid) {
+                this.self.tab.validate();
+            }
             return this.isValid;
         }
     },
     this.idCode = {
+        self: this,
         value: '',
         isValid: false,
         errorMsg: 'Palun sisesta isikukood',
         firstBlur: false,
         validate: function() {
+            const prevIsValid = this.isValid;
             this.isValid = !!this.value;
+            if (prevIsValid != this.isValid) {
+                this.self.tab.validate();
+            }
             return this.isValid;
         }
     },
-    this.extra = new ExtraData(),
+    this.extra = new ExtraData(this),
     this.validate = function(includeExtra = false) {
         return (!includeExtra || this.extra.validate()) && this.firstName.isValid && 
             this.lastName.isValid && this.phone.isValid && 
             this.email.isValid && this.idCode.isValid;
     },
     this.tab = {
-        value = 0
+        self: this,
+        value: 0,
+        isExtraValid: false,
+        validateExtra: function() {
+            this.isExtraValid = this.self.extra.validate();
+            return this.isExtraValid;
+        },
+        isValid: false,
+        validate: function() {
+            this.isValid = this.self.idCode.validate() && this.self.email.validate() && this.self.phone.validate();
+            return this.isValid;
+        }
     }
 }
 
@@ -272,6 +329,9 @@ vm = new Vue({
                     this.isValid = vm.formData.people.slice(1).every(function(person){
                         return person.validate(false);
                     });
+                    this.isValid = this.isValid && vm.formData.people.every(function(person) {
+                        return person.extra.validate();
+                    });
                     return this.isValid;
                 }
             },
@@ -285,16 +345,6 @@ vm = new Vue({
                             (vm.formData.contactAddress.isValidFrom || vm.formData.contactAddress.validFrom.isValid) &&
                             (vm.formData.contactAddress.isValidTo || vm.formData.contactAddress.validTo.isValid)
                         );
-                    return this.isValid;
-                }
-            },
-            {
-                isActive: false,
-                isValid: false,
-                validate() {
-                    this.isValid = vm.formData.people.every(function(person) {
-                        return person.extra.validate();
-                    });
                     return this.isValid;
                 }
             }

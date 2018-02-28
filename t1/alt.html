@@ -72,96 +72,106 @@
             </button>
         </div>
         <div v-if="tabs[2].isActive">
-            <div class="row">
-                <form class="w-100">
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input" id="new-address-self-registration-checkbox" v-model="formData.isSubmitterAlsoNewAddressResident">
-                        <label class="form-check-label" for="new-address-self-registration-checkbox">Esitan uue elukoha ka enda kohta</label>
-                    </div>
-                    <div class="d-flex flex-wrap">
-                        <div class="person col-md-4 col-sm-6 col-xs-12 d-flex flex-wrap" v-for="(person, index) in formData.people.slice(1)">
-                            <div class="d-flex col">
-                                <h4>Registreeritav isik # {{index + 1}}</h4>
-                                <button type="button" class="btn" tabindex="-1" @click.prevent="removePerson(index + 1)">Del</button>
-                            </div>
+            <form class="w-100">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="new-address-self-registration-checkbox" v-model="formData.isSubmitterAlsoNewAddressResident">
+                    <label class="form-check-label" for="new-address-self-registration-checkbox">Esitan uue elukoha ka enda kohta</label>
+                </div>
+                <div class="d-flex flex-wrap">
+                    <div class="person col-md-4 col-sm-6 col-xs-12" v-for="(person, index) in formData.people.slice(1)">
+                        <div class="d-flex col-12">
+                            <h5 class="col-10">Registreeritav isik # {{index + 1}}</h5>
+                            <button type="button" class="btn col-2" tabindex="-1" @click.prevent="removePerson(index + 1)">Del</button>
+                        </div>
+                        <div class="d-flex flex-wrap col-12">
                             <input-group class="col-md-6" title="Eesnimi" :object.sync="formData.people[index + 1].firstName" :id="index + '-person-firstname'"></input-group>
                             <input-group class="col-md-6" title="Perenimi" :object.sync="formData.people[index + 1].lastName" :id="index + '-person-lastname'"></input-group>
-                            <button :class="['col-md-6', 'btn', {'btn-primary': formData.people[index + 1].tab.value == 0}]">Detailid</button>
-                            <button :class="['col-md-6', 'btn', {'btn-primary': formData.people[index + 1].tab.value == 1}]">Lisa</button>
-                            <div class="col-12" v-if="formData.people[index + 1].tab.value == 0">
-                                <input-group class="col-md-12" title="Isikukood" :object.sync="formData.people[index + 1].idCode" :id="index + '-person-idcode'"></input-group>
-                                <input-group class="col-md-12" title="Email" :object.sync="formData.people[index + 1].email" :id="index + '-person-email'"></input-group>
-                                <input-group class="col-md-12" title="Telefon" :object.sync="formData.people[index + 1].phone" :id="index + '-person-phone'"></input-group>
+                        </div>
+                        <div class="d-flex flex-wrap col-12">
+                            <button :class="['col-md-6', 'btn', {'btn-primary': formData.people[index + 1].tab.value == 0}]" @click.prevent="formData.people[index + 1].tab.value = 0">
+                                Andmed
+                                <i class="material-icons light align-middle" v-if="formData.people[index + 1].tab.isValid">done</i>
+                                <i class="material-icons light align-middle" v-else>clear</i>
+                            </button>
+                            <button :class="['col-md-6', 'btn', {'btn-primary': formData.people[index + 1].tab.value == 1}]" @click.prevent="formData.people[index + 1].tab.value = 1">
+                                Detailid
+                                <i class="material-icons light align-middle" v-if="formData.people[index + 1].tab.isExtraValid">done</i>
+                                <i class="material-icons light align-middle" v-else>clear</i>
+                            </button>
+                        </div>
+                        <div class="col-12" v-if="formData.people[index + 1].tab.value == 0">
+                            <input-group class="col-md-12" title="Isikukood" :object.sync="formData.people[index + 1].idCode" :id="index + '-person-idcode'"></input-group>
+                            <input-group class="col-md-12" title="Email" :object.sync="formData.people[index + 1].email" :id="index + '-person-email'"></input-group>
+                            <input-group class="col-md-12" title="Telefon" :object.sync="formData.people[index + 1].phone" :id="index + '-person-phone'"></input-group>
+                        </div>
+                        <div class="col-12" v-else>
+                            <div class="form-group col-12">
+                                <input type="checkbox" class="form-check-input" @change="formData.people[index + 1].tab.validateExtra()" v-model="person.extra.isPrevResidenceInForeignCountry" :id="index + '-extra-info-foreign-country-question'">
+                                <label :for="index + '-extra-info-foreign-country-question'" class="form-check-label">Kas eelmine elukoht oli välismaal?</label>
                             </div>
-                            <div class="col-12" v-else>
-                                <div class="form-group col-12">
-                                    <input type="checkbox" class="form-check-input" v-model="person.extra.isPrevResidenceInForeignCountry" :id="index + '-extra-info-foreign-country-question'">
-                                    <label :for="index + '-extra-info-foreign-country-question'" class="form-check-label">Kas eelmine elukoht oli välismaal?</label>
+                            <div class="col-12" v-if="person.extra.isPrevResidenceInForeignCountry">
+                                <input-group title="Elukoht välisriigis (riik ja haldusüksus)" :object.sync="formData.people[index + 1].extra.foreignCountry" :id="index + '-extra-info-foreign-country'"></input-group>
+                                <input-group title="Eestist sinna lahkumise aeg" :object.sync="formData.people[index + 1].extra.leftEstoniaTime" :id="index + '-extra-info-left-estonia-time'"></input-group>
+                            </div>
+                            <div class="form-group col-12">
+                                <input type="checkbox" class="form-check-input" @change="formData.people[index + 1].tab.validateExtra()" v-model="person.extra.isForeignIdCode" :id="index + '-extra-info-foreign-idcode-question'">
+                                <label :for="index + '-extra-info-foreign-idcode-question'" class="form-check-label">Kas sul on välisriigi isikukood?</label>
+                            </div>
+                            <div class="col-12" v-if="person.extra.isForeignIdCode">
+                                <input-group title="Isikukoodi väljastanud riik" :object.sync="formData.people[index + 1].extra.foreignCountryForIdCode" :id="index + '-extra-info-foreign-country-for-idcode'"></input-group>
+                                <input-group title="Välisriigi isikukood" :object.sync="formData.people[index + 1].extra.foreignCountryIdCode" :id="index + '-extra-info-foreign-country-idcode'"></input-group>
+                            </div>
+                            <div class="d-flex col-12">
+                                <input-group class="col-7" title="Rahvus" :object.sync="formData.people[index + 1].extra.nationality" :id="index + '-extra-info-nationality'" :disabled="person.extra.isNotWillingToRevealNationality"></input-group>
+                                <div class="col-5">
+                                    <input type="checkbox" class="form-check-input" v-model="person.extra.isNotWillingToRevealNationality" :id="index + '-extra-info-nationality-optional'" @change="formData.people[index + 1].tab.validateExtra()">
+                                    <label :for="index + '-extra-info-nationality-optional'" class="form-check-label">Ei soovi avalikustada</label>
                                 </div>
-                                <div class="col-12" v-if="person.extra.isPrevResidenceInForeignCountry">
-                                    <input-group title="Elukoht välisriigis (riik ja haldusüksus)" :object.sync="formData.people[index + 1].extra.foreignCountry" :id="index + '-extra-info-foreign-country'"></input-group>
-                                    <input-group title="Eestist sinna lahkumise aeg" :object.sync="formData.people[index + 1].extra.leftEstoniaTime" :id="index + '-extra-info-left-estonia-time'"></input-group>
+                            </div>
+                            <div class="d-flex col-12">
+                                <input-group class="col-7" title="Emakeel" :object.sync="formData.people[index + 1].extra.motherToungue" :id="index + '-extra-info-mother-tongue'" :disabled="person.extra.isNotWillingToRevealMotherToungue"></input-group>
+                                <div class="col-5">
+                                    <input type="checkbox" class="form-check-input" v-model="person.extra.isNotWillingToRevealMotherToungue" :id="index + '-extra-info-mother-tongue-optional'" @change="formData.people[index + 1].tab.validateExtra()">
+                                    <label :for="index + '-extra-info-mother-tongue-optional'" class="form-check-label">Ei soovi avalikustada</label>
                                 </div>
-                                <div class="form-group col-12">
-                                    <input type="checkbox" class="form-check-input" v-model="person.extra.isForeignIdCode" :id="index + '-extra-info-foreign-idcode-question'">
-                                    <label :for="index + '-extra-info-foreign-idcode-question'" class="form-check-label">Kas sul on välisriigi isikukood?</label>
-                                </div>
-                                <div class="col-12" v-if="person.extra.isForeignIdCode">
-                                    <input-group title="Isikukoodi väljastanud riik" :object.sync="formData.people[index + 1].extra.foreignCountryForIdCode" :id="index + '-extra-info-foreign-country-for-idcode'"></input-group>
-                                    <input-group title="Välisriigi isikukood" :object.sync="formData.people[index + 1].extra.foreignCountryIdCode" :id="index + '-extra-info-foreign-country-idcode'"></input-group>
-                                </div>
-                                <div class="d-flex col-12">
-                                    <input-group class="col-7" title="Rahvus" :object.sync="formData.people[index + 1].extra.nationality" :id="index + '-extra-info-nationality'" :disabled="person.extra.isNotWillingToRevealNationality"></input-group>
-                                    <div class="col-5">
-                                        <input type="checkbox" class="form-check-input" v-model="person.extra.isNotWillingToRevealNationality" :id="index + '-extra-info-nationality-optional'">
-                                        <label :for="index + '-extra-info-nationality-optional'" class="form-check-label">Ei soovi avalikustada</label>
-                                    </div>
-                                </div>
-                                <div class="d-flex col-12">
-                                    <input-group class="col-7" title="Emakeel" :object.sync="formData.people[index + 1].extra.motherToungue" :id="index + '-extra-info-mother-tongue'" :disabled="person.extra.isNotWillingToRevealMotherToungue"></input-group>
-                                    <div class="col-5">
-                                        <input type="checkbox" class="form-check-input" v-model="person.extra.isNotWillingToRevealMotherToungue" :id="index + '-extra-info-mother-tongue-optional'">
-                                        <label :for="index + '-extra-info-mother-tongue-optional'" class="form-check-label">Ei soovi avalikustada</label>
-                                    </div>
-                                </div>
-                                <div class="form-group col-12">
-                                    <label :for="index + '_extra_info_education'">Omandatud kõrgeim haridustase</label>
-                                    <select class="form-control" v-model="person.extra.education" :id="index + '_extra_info_education'">
-                                        <option value="-">Ei soovi avaldada</option>
-                                        <option value="0">Alusharidus (koolieelne haridus) või alghariduseta</option>
-                                        <option value="1">Põhiharidus (põhikooli 1.-6. klass), varasem algharidus</option>
-                                        <option value="2">Põhiharidus (põhikooli 8.-9. klass)</option>
-                                        <option value="35">Kutseharidus või kutseõpe (sh keskeri- või tehnikumiharidus) põhihariduse baasil</option>
-                                        <option value="3">Keskharidus</option>
-                                        <option value="4">Kutseharidus või kutseõpe keskhariduse baasil</option>
-                                        <option value="5">Keskeri- ja tehnikumiharidus keskhariduse baasil</option>
-                                        <option value="6">Bakalaureus või sellega võrdsustatud haridus (rakendus- ja kutsekõrgharidus, diplomiõpe)</option>
-                                        <option value="7">Magister või sellega võrdsustatud haridus</option>
-                                        <option value="8">Doktor või sellega võrdsustatud haridus</option>
-                                    </select>
-                                </div>
-                                <div class="form-group col-12">
-                                    <label :for="index + '_extra_info_employment'">Sotsiaal-majanduslik seisund</label>
-                                    <select class="form-control" v-model="person.extra.employment" :id="index + '_extra_info_employment'">
-                                        <option value="-">Ei soovi avaldada</option>
-                                        <option value="A">töötav</option>
-                                        <option value="B">kodune</option>
-                                        <option value="C">töötu/tööd otsiv</option>
-                                        <option value="D">ajateenija</option>
-                                        <option value="E">(üli)õpilane</option>
-                                        <option value="F">pensionär</option>
-                                        <option value="G">lapsehoolduspuhkusel</option>
-                                        <option value="H">muu mittetöötav</option>
-                                    </select>
-                                </div>
+                            </div>
+                            <div class="form-group col-12">
+                                <label :for="index + '_extra_info_education'">Omandatud kõrgeim haridustase</label>
+                                <select class="form-control" v-model="person.extra.education" :id="index + '_extra_info_education'">
+                                    <option value="-">Ei soovi avaldada</option>
+                                    <option value="0">Alusharidus (koolieelne haridus) või alghariduseta</option>
+                                    <option value="1">Põhiharidus (põhikooli 1.-6. klass), varasem algharidus</option>
+                                    <option value="2">Põhiharidus (põhikooli 8.-9. klass)</option>
+                                    <option value="35">Kutseharidus või kutseõpe (sh keskeri- või tehnikumiharidus) põhihariduse baasil</option>
+                                    <option value="3">Keskharidus</option>
+                                    <option value="4">Kutseharidus või kutseõpe keskhariduse baasil</option>
+                                    <option value="5">Keskeri- ja tehnikumiharidus keskhariduse baasil</option>
+                                    <option value="6">Bakalaureus või sellega võrdsustatud haridus (rakendus- ja kutsekõrgharidus, diplomiõpe)</option>
+                                    <option value="7">Magister või sellega võrdsustatud haridus</option>
+                                    <option value="8">Doktor või sellega võrdsustatud haridus</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-12">
+                                <label :for="index + '_extra_info_employment'">Sotsiaal-majanduslik seisund</label>
+                                <select class="form-control" v-model="person.extra.employment" :id="index + '_extra_info_employment'">
+                                    <option value="-">Ei soovi avaldada</option>
+                                    <option value="A">töötav</option>
+                                    <option value="B">kodune</option>
+                                    <option value="C">töötu/tööd otsiv</option>
+                                    <option value="D">ajateenija</option>
+                                    <option value="E">(üli)õpilane</option>
+                                    <option value="F">pensionär</option>
+                                    <option value="G">lapsehoolduspuhkusel</option>
+                                    <option value="H">muu mittetöötav</option>
+                                </select>
                             </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <button type="button" class="btn col add-person-btn" @click.prevent="addPerson()">Lisa isik</button>
-                    </div>
-                </form>
-            </div>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn col add-person-btn" @click.prevent="addPerson()">Lisa isik</button>
+                </div>
+            </form>
         </div>
         <div class="row">
             <button :class="['btn', 'tab-toggle-button', {'tab-toggle-button-active': tabs[3].isActive},
@@ -193,84 +203,6 @@
                             <label class="form-check-label" for="contact-address-to-question">Kas sideaadressi kasutuse lõpetamise kohta on teada lõppaeg?</label>
                         </div>
                         <input-group class="col-md-4 col-xs-12" title="Kehtib kuni" :object.sync="formData.contactAddress.validTo" id="contact-address-to" v-if="formData.contactAddress.isValidTo"></input-group>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <div class="row">
-            <button :class="['btn', 'tab-toggle-button', {'tab-toggle-button-active': tabs[4].isActive},
-                    tabs[4].isValid ? 'btn-success' : 'btn-danger']" @click="toggleTab(4)">
-                <i class="material-icons light align-middle" aria-hidden="true">{{tabs[4].isActive ? 'keyboard_arrow_down' : 'keyboard_arrow_right'}}</i>
-                5. Lisainformatsioon
-            </button>
-        </div>
-        <div v-if="tabs[4].isActive">
-            <div class="row">
-                <form class="d-flex flex-wrap">
-                    <div v-for="(person, index) in formData.people" class="person col-md-4 col-sm-6 col-xs-12 d-flex flex-wrap">
-                        <h4 class="col-12" v-if="index == 0">Esitaja</h4>
-                        <h4 class="col-12" v-else>Registreetitav isik # {{index}}</h4>
-                        <p class="col-12">Nimi: {{person.firstName.value + ' ' + person.lastName.value}}</p>
-                        <div class="form-group col-12">
-                            <input type="checkbox" class="form-check-input" v-model="person.extra.isPrevResidenceInForeignCountry" :id="index + '-extra-info-foreign-country-question'">
-                            <label :for="index + '-extra-info-foreign-country-question'" class="form-check-label">Kas eelmine elukoht oli välismaal?</label>
-                        </div>
-                        <div class="col-12" v-if="person.extra.isPrevResidenceInForeignCountry">
-                            <input-group title="Elukoht välisriigis (riik ja haldusüksus)" :object.sync="formData.people[index].extra.foreignCountry" :id="index + '-extra-info-foreign-country'"></input-group>
-                            <input-group title="Eestist sinna lahkumise aeg" :object.sync="formData.people[index].extra.leftEstoniaTime" :id="index + '-extra-info-left-estonia-time'"></input-group>
-                        </div>
-                        <div class="form-group col-12">
-                            <input type="checkbox" class="form-check-input" v-model="person.extra.isForeignIdCode" :id="index + '-extra-info-foreign-idcode-question'">
-                            <label :for="index + '-extra-info-foreign-idcode-question'" class="form-check-label">Kas sul on välisriigi isikukood?</label>
-                        </div>
-                        <div class="col-12" v-if="person.extra.isForeignIdCode">
-                            <input-group title="Isikukoodi väljastanud riik" :object.sync="formData.people[index].extra.foreignCountryForIdCode" :id="index + '-extra-info-foreign-country-for-idcode'"></input-group>
-                            <input-group title="Välisriigi isikukood" :object.sync="formData.people[index].extra.foreignCountryIdCode" :id="index + '-extra-info-foreign-country-idcode'"></input-group>
-                        </div>
-                        <div class="d-flex col-12">
-                            <input-group class="col-7" title="Rahvus" :object.sync="formData.people[index].extra.nationality" :id="index + '-extra-info-nationality'" :disabled="person.extra.isNotWillingToRevealNationality"></input-group>
-                            <div class="col-5">
-                                <input type="checkbox" class="form-check-input" v-model="person.extra.isNotWillingToRevealNationality" :id="index + '-extra-info-nationality-optional'">
-                                <label :for="index + '-extra-info-nationality-optional'" class="form-check-label">Ei soovi avalikustada</label>
-                            </div>
-                        </div>
-                        <div class="d-flex col-12">
-                            <input-group class="col-7" title="Emakeel" :object.sync="formData.people[index].extra.motherToungue" :id="index + '-extra-info-mother-tongue'" :disabled="person.extra.isNotWillingToRevealMotherToungue"></input-group>
-                            <div class="col-5">
-                                <input type="checkbox" class="form-check-input" v-model="person.extra.isNotWillingToRevealMotherToungue" :id="index + '-extra-info-mother-tongue-optional'">
-                                <label :for="index + '-extra-info-mother-tongue-optional'" class="form-check-label">Ei soovi avalikustada</label>
-                            </div>
-                        </div>
-                        <div class="form-group col-12">
-                            <label :for="index + '_extra_info_education'">Omandatud kõrgeim haridustase</label>
-                            <select class="form-control" v-model="person.extra.education" :id="index + '_extra_info_education'">
-                                <option value="-">Ei soovi avaldada</option>
-                                <option value="0">Alusharidus (koolieelne haridus) või alghariduseta</option>
-                                <option value="1">Põhiharidus (põhikooli 1.-6. klass), varasem algharidus</option>
-                                <option value="2">Põhiharidus (põhikooli 8.-9. klass)</option>
-                                <option value="35">Kutseharidus või kutseõpe (sh keskeri- või tehnikumiharidus) põhihariduse baasil</option>
-                                <option value="3">Keskharidus</option>
-                                <option value="4">Kutseharidus või kutseõpe keskhariduse baasil</option>
-                                <option value="5">Keskeri- ja tehnikumiharidus keskhariduse baasil</option>
-                                <option value="6">Bakalaureus või sellega võrdsustatud haridus (rakendus- ja kutsekõrgharidus, diplomiõpe)</option>
-                                <option value="7">Magister või sellega võrdsustatud haridus</option>
-                                <option value="8">Doktor või sellega võrdsustatud haridus</option>
-                            </select>
-                        </div>
-                        <div class="form-group col-12">
-                            <label :for="index + '_extra_info_employment'">Sotsiaal-majanduslik seisund</label>
-                            <select class="form-control" v-model="person.extra.employment" :id="index + '_extra_info_employment'">
-                                <option value="-">Ei soovi avaldada</option>
-                                <option value="A">töötav</option>
-                                <option value="B">kodune</option>
-                                <option value="C">töötu/tööd otsiv</option>
-                                <option value="D">ajateenija</option>
-                                <option value="E">(üli)õpilane</option>
-                                <option value="F">pensionär</option>
-                                <option value="G">lapsehoolduspuhkusel</option>
-                                <option value="H">muu mittetöötav</option>
-                            </select>
-                        </div>
                     </div>
                 </form>
             </div>
