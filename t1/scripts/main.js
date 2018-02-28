@@ -322,17 +322,19 @@ vm = new Vue({
                         return this.isValid;
                     }
                 }
+            },
+            isContactAddressValid: false,
+            validateContactAddress: function() {
+                this.isContactAddressValid = this.isSubmitterAlsoNewAddressResident ||
+                    this.isContactAddressNewAddress || (
+                        this.contactAddress.address.validate() && 
+                        (this.contactAddress.isValidFrom || this.contactAddress.validFrom.validate()) &&
+                        (this.contactAddress.isValidTo || this.contactAddress.validTo.validate())
+                    );
+                return this.isContactAddressValid;
             }
         },
         tabs: [
-            {
-                isActive: false,
-                isValid: false,
-                validate: function() {
-                    this.isValid = vm.formData.people[0].validate(false);
-                    return this.isValid;
-                }
-            },
             {
                 isActive: false,
                 isValid: false,
@@ -345,25 +347,11 @@ vm = new Vue({
                 isActive: false,
                 isValid: false,
                 validate() {
-                    this.isValid = vm.formData.people.slice(1).every(function(person){
-                        return person.validate(false);
+                    var temp = vm.formData.validateContactAddress();
+                    vm.formData.people.forEach(function(person){
+                        temp = person.firstName.validate() && person.lastName.validate() && person.tab.validate() && person.tab.validateExtra() && temp;
                     });
-                    this.isValid = this.isValid && vm.formData.people.every(function(person) {
-                        return person.extra.validate();
-                    });
-                    return this.isValid;
-                }
-            },
-            {
-                isActive: false,
-                isValid: false,
-                validate() {
-                    this.isValid = vm.formData.isSubmitterAlsoNewAddressResident || 
-                        vm.formData.isContactAddressNewAddress || 
-                        (vm.formData.contactAddress.address.validate() && 
-                            (vm.formData.contactAddress.isValidFrom || vm.formData.contactAddress.validFrom.isValid) &&
-                            (vm.formData.contactAddress.isValidTo || vm.formData.contactAddress.validTo.isValid)
-                        );
+                    this.isValid = temp;
                     return this.isValid;
                 }
             }
