@@ -73,67 +73,89 @@
         </div>
         <div v-if="tabs[2].isActive">
             <form class="w-100">
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="new-address-self-registration-checkbox" v-model="formData.isSubmitterAlsoNewAddressResident">
-                    <label class="form-check-label" for="new-address-self-registration-checkbox">Esitan uue elukoha ka enda kohta</label>
-                </div>
                 <div class="d-flex flex-wrap">
-                    <div class="person col-md-4 col-sm-6 col-xs-12" v-for="(person, index) in formData.people.slice(1)">
+                    <div class="person col-md-4 col-sm-6 col-xs-12" v-for="(person, index) in formData.people">
                         <div class="d-flex col-12">
-                            <h5 class="col-10">Registreeritav isik # {{index + 1}}</h5>
-                            <button type="button" class="btn col-2" tabindex="-1" @click.prevent="removePerson(index + 1)">Del</button>
+                            <h5 class="col-10" v-if="index == 0">Esitaja</h5>
+                            <h5 class="col-10" v-else>Registreeritav isik # {{index}}</h5>
+                            <button type="button" class="btn col-2" tabindex="-1" @click.prevent="removePerson(index)" v-if="index != 0">Del</button>
                         </div>
                         <div class="d-flex flex-wrap col-12">
-                            <input-group class="col-md-6" title="Eesnimi" :object.sync="formData.people[index + 1].firstName" :id="index + '-person-firstname'"></input-group>
-                            <input-group class="col-md-6" title="Perenimi" :object.sync="formData.people[index + 1].lastName" :id="index + '-person-lastname'"></input-group>
+                            <input-group class="col-md-6" title="Eesnimi" :object.sync="formData.people[index].firstName" :id="index + '-person-firstname'"></input-group>
+                            <input-group class="col-md-6" title="Perenimi" :object.sync="formData.people[index].lastName" :id="index + '-person-lastname'"></input-group>
+                            <div class="form-check col-12" v-if="index == 0">
+                                <input type="checkbox" class="form-check-input" id="new-address-self-registration-checkbox" v-model="formData.isSubmitterAlsoNewAddressResident">
+                                <label class="form-check-label" for="new-address-self-registration-checkbox">Esitan uue elukoha ka enda kohta</label>
+                            </div>
                         </div>
-                        <div class="d-flex flex-wrap col-12">
-                            <button :class="['col-md-6', 'btn', {'btn-primary': formData.people[index + 1].tab.value == 0}]" @click.prevent="formData.people[index + 1].tab.value = 0">
+                        <div class="d-flex flex-wrap col-12" v-if="index == 0">
+                            <button :class="['col-md-6', 'btn', {'btn-primary': formData.people[index].tab.value == 0 || (formData.people[index].tab.value == 2 && formData.isSubmitterAlsoNewAddressResident)}]" @click.prevent="formData.people[index].tab.value = 0">
                                 Andmed
-                                <i class="material-icons light align-middle" v-if="formData.people[index + 1].tab.isValid">done</i>
+                                <i class="material-icons light align-middle" v-if="formData.people[index].tab.isValid">done</i>
                                 <i class="material-icons light align-middle" v-else>clear</i>
                             </button>
-                            <button :class="['col-md-6', 'btn', {'btn-primary': formData.people[index + 1].tab.value == 1}]" @click.prevent="formData.people[index + 1].tab.value = 1">
+                            <button :class="['col-md-6', 'btn', {'btn-primary': formData.people[index].tab.value == 1}]" @click.prevent="formData.people[index].tab.value = 1" @click.once="formData.people[index].tab.validateExtra()">
                                 Detailid
-                                <i class="material-icons light align-middle" v-if="formData.people[index + 1].tab.isExtraValid">done</i>
+                                <i class="material-icons light align-middle" v-if="formData.people[index].tab.isExtraValid">done</i>
+                                <i class="material-icons light align-middle" v-else>clear</i>
+                            </button>
+                            <button :class="['col-md-6', 'btn', {'btn-primary': formData.people[index].tab.value == 2 && !formData.isSubmitterAlsoNewAddressResident}]" @click.prevent="formData.people[index].tab.value = 2" :disabled="formData.isSubmitterAlsoNewAddressResident">
+                                Sideaadress
+                                <i class="material-icons light align-middle" v-if="formData.people[index].tab.isValid">done</i>
                                 <i class="material-icons light align-middle" v-else>clear</i>
                             </button>
                         </div>
-                        <div class="col-12" v-if="formData.people[index + 1].tab.value == 0">
-                            <input-group class="col-md-12" title="Isikukood" :object.sync="formData.people[index + 1].idCode" :id="index + '-person-idcode'"></input-group>
-                            <input-group class="col-md-12" title="Email" :object.sync="formData.people[index + 1].email" :id="index + '-person-email'"></input-group>
-                            <input-group class="col-md-12" title="Telefon" :object.sync="formData.people[index + 1].phone" :id="index + '-person-phone'"></input-group>
+                        <div class="d-flex flex-wrap col-12" v-else>
+                            <button :class="['col-md-6', 'btn', {'btn-primary': formData.people[index].tab.value == 0}]" @click.prevent="formData.people[index].tab.value = 0">
+                                Andmed
+                                <i class="material-icons light align-middle" v-if="formData.people[index].tab.isValid">done</i>
+                                <i class="material-icons light align-middle" v-else>clear</i>
+                            </button>
+                            <button :class="['col-md-6', 'btn', {'btn-primary': formData.people[index].tab.value == 1}]" @click.prevent="formData.people[index].tab.value = 1" @click.once="formData.people[index].tab.validateExtra()">
+                                Detailid
+                                <i class="material-icons light align-middle" v-if="formData.people[index].tab.isExtraValid">done</i>
+                                <i class="material-icons light align-middle" v-else>clear</i>
+                            </button>
                         </div>
-                        <div class="col-12" v-else>
+                        <div class="col-12" v-if="formData.people[index].tab.value == 2 && !formData.isSubmitterAlsoNewAddressResident">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="new-address-contact-address-reg-address" v-model="formData.isContactAddressNewAddress">
+                                <label class="form-check-label" for="new-address-contact-address-reg-address">Sideaadress on sama, mis registreeritav aadress</label>
+                            </div>
+                            <div class="w-100 d-flex flex-wrap" v-if="!formData.isContactAddressNewAddress">
+                                <input-group class="col-12" title="Riik" :object.sync="formData.contactAddress.address.country" id="contact-address-country"></input-group>
+                                <input-group class="col-12" title="Maakond" :object.sync="formData.contactAddress.address.county" id="contact-address-county"></input-group>
+                                <input-group class="col-12" title="Vald/linn, alevik, küla" :object.sync="formData.contactAddress.address.city" id="contact-address-city"></input-group>
+                                <input-group class="col-12" title="Tänav/talu, maja nr, korteri nr" :object.sync="formData.contactAddress.address.street" id="contact-address-street"></input-group>
+                                <input-group class="col-12" title="Postiindex" :object.sync="formData.contactAddress.address.postalIndex" id="contact-address-postal-index"></input-group>
+                                <div class="form-check col-12">
+                                    <input type="checkbox" class="form-check-input" id="contact-address-from-question" v-model="formData.contactAddress.isValidFrom">
+                                    <label class="form-check-label" for="contact-address-from-question">Kas sideaadressi kasutuselevõtmisel on algusaeg (pole juba kasutuses)?</label>
+                                </div>
+                                <input-group class="col-12" title="Kehtib alates" :object.sync="formData.contactAddress.validFrom" id="contact-address-from" v-if="formData.contactAddress.isValidFrom"></input-group>
+                                <div class="form-check col-12">
+                                    <input type="checkbox" class="form-check-input" id="contact-address-to-question" v-model="formData.contactAddress.isValidTo">
+                                    <label class="form-check-label" for="contact-address-to-question">Kas sideaadressi kasutuse lõpetamise kohta on teada lõppaeg?</label>
+                                </div>
+                                <input-group class="col-12" title="Kehtib kuni" :object.sync="formData.contactAddress.validTo" id="contact-address-to" v-if="formData.contactAddress.isValidTo"></input-group>
+                            </div>
+                        </div>
+                        <div class="col-12" v-else-if="formData.people[index].tab.value == 1">
                             <div class="form-group col-12">
-                                <input type="checkbox" class="form-check-input" @change="formData.people[index + 1].tab.validateExtra()" v-model="person.extra.isPrevResidenceInForeignCountry" :id="index + '-extra-info-foreign-country-question'">
+                                <input type="checkbox" class="form-check-input" @change="formData.people[index].tab.validateExtra()" v-model="person.extra.isPrevResidenceInForeignCountry" :id="index + '-extra-info-foreign-country-question'">
                                 <label :for="index + '-extra-info-foreign-country-question'" class="form-check-label">Kas eelmine elukoht oli välismaal?</label>
                             </div>
                             <div class="col-12" v-if="person.extra.isPrevResidenceInForeignCountry">
-                                <input-group title="Elukoht välisriigis (riik ja haldusüksus)" :object.sync="formData.people[index + 1].extra.foreignCountry" :id="index + '-extra-info-foreign-country'"></input-group>
-                                <input-group title="Eestist sinna lahkumise aeg" :object.sync="formData.people[index + 1].extra.leftEstoniaTime" :id="index + '-extra-info-left-estonia-time'"></input-group>
+                                <input-group title="Elukoht välisriigis (riik ja haldusüksus)" :object.sync="formData.people[index].extra.foreignCountry" :id="index + '-extra-info-foreign-country'"></input-group>
+                                <input-group title="Eestist sinna lahkumise aeg" :object.sync="formData.people[index].extra.leftEstoniaTime" :id="index + '-extra-info-left-estonia-time'"></input-group>
                             </div>
                             <div class="form-group col-12">
-                                <input type="checkbox" class="form-check-input" @change="formData.people[index + 1].tab.validateExtra()" v-model="person.extra.isForeignIdCode" :id="index + '-extra-info-foreign-idcode-question'">
+                                <input type="checkbox" class="form-check-input" @change="formData.people[index].tab.validateExtra()" v-model="person.extra.isForeignIdCode" :id="index + '-extra-info-foreign-idcode-question'">
                                 <label :for="index + '-extra-info-foreign-idcode-question'" class="form-check-label">Kas sul on välisriigi isikukood?</label>
                             </div>
                             <div class="col-12" v-if="person.extra.isForeignIdCode">
-                                <input-group title="Isikukoodi väljastanud riik" :object.sync="formData.people[index + 1].extra.foreignCountryForIdCode" :id="index + '-extra-info-foreign-country-for-idcode'"></input-group>
-                                <input-group title="Välisriigi isikukood" :object.sync="formData.people[index + 1].extra.foreignCountryIdCode" :id="index + '-extra-info-foreign-country-idcode'"></input-group>
-                            </div>
-                            <div class="d-flex col-12">
-                                <input-group class="col-7" title="Rahvus" :object.sync="formData.people[index + 1].extra.nationality" :id="index + '-extra-info-nationality'" :disabled="person.extra.isNotWillingToRevealNationality"></input-group>
-                                <div class="col-5">
-                                    <input type="checkbox" class="form-check-input" v-model="person.extra.isNotWillingToRevealNationality" :id="index + '-extra-info-nationality-optional'" @change="formData.people[index + 1].tab.validateExtra()">
-                                    <label :for="index + '-extra-info-nationality-optional'" class="form-check-label">Ei soovi avalikustada</label>
-                                </div>
-                            </div>
-                            <div class="d-flex col-12">
-                                <input-group class="col-7" title="Emakeel" :object.sync="formData.people[index + 1].extra.motherToungue" :id="index + '-extra-info-mother-tongue'" :disabled="person.extra.isNotWillingToRevealMotherToungue"></input-group>
-                                <div class="col-5">
-                                    <input type="checkbox" class="form-check-input" v-model="person.extra.isNotWillingToRevealMotherToungue" :id="index + '-extra-info-mother-tongue-optional'" @change="formData.people[index + 1].tab.validateExtra()">
-                                    <label :for="index + '-extra-info-mother-tongue-optional'" class="form-check-label">Ei soovi avalikustada</label>
-                                </div>
+                                <input-group title="Isikukoodi väljastanud riik" :object.sync="formData.people[index].extra.foreignCountryForIdCode" :id="index + '-extra-info-foreign-country-for-idcode'"></input-group>
+                                <input-group title="Välisriigi isikukood" :object.sync="formData.people[index].extra.foreignCountryIdCode" :id="index + '-extra-info-foreign-country-idcode'"></input-group>
                             </div>
                             <div class="form-group col-12">
                                 <label :for="index + '_extra_info_education'">Omandatud kõrgeim haridustase</label>
@@ -164,6 +186,25 @@
                                     <option value="G">lapsehoolduspuhkusel</option>
                                     <option value="H">muu mittetöötav</option>
                                 </select>
+                            </div>
+                        </div>
+                        <div class="col-12" v-else>
+                            <input-group class="col-md-12" title="Isikukood" :object.sync="formData.people[index].idCode" :id="index + '-person-idcode'"></input-group>
+                            <input-group class="col-md-12" title="Email" :object.sync="formData.people[index].email" :id="index + '-person-email'"></input-group>
+                            <input-group class="col-md-12" title="Telefon" :object.sync="formData.people[index].phone" :id="index + '-person-phone'"></input-group>
+                            <div class="d-flex col-12">
+                                <input-group class="col-7" title="Rahvus" :object.sync="formData.people[index].extra.nationality" :id="index + '-extra-info-nationality'" :disabled="person.extra.isNotWillingToRevealNationality"></input-group>
+                                <div class="col-5">
+                                    <input type="checkbox" class="form-check-input" v-model="person.extra.isNotWillingToRevealNationality" :id="index + '-extra-info-nationality-optional'" @change="formData.people[index].tab.validate()">
+                                    <label :for="index + '-extra-info-nationality-optional'" class="form-check-label">Ei soovi avalikustada</label>
+                                </div>
+                            </div>
+                            <div class="d-flex col-12">
+                                <input-group class="col-7" title="Emakeel" :object.sync="formData.people[index].extra.motherToungue" :id="index + '-extra-info-mother-tongue'" :disabled="person.extra.isNotWillingToRevealMotherToungue"></input-group>
+                                <div class="col-5">
+                                    <input type="checkbox" class="form-check-input" v-model="person.extra.isNotWillingToRevealMotherToungue" :id="index + '-extra-info-mother-tongue-optional'" @change="formData.people[index].tab.validate()">
+                                    <label :for="index + '-extra-info-mother-tongue-optional'" class="form-check-label">Ei soovi avalikustada</label>
+                                </div>
                             </div>
                         </div>
                     </div>

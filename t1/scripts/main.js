@@ -73,7 +73,7 @@ function ExtraData(parent) {
             const prevIsValid = this.isValid;
             this.isValid = !!this.value;
             if (prevIsValid != this.isValid) {
-                this.self.parent.tab.validateExtra();
+                this.self.parent.tab.validate();
             }
             return this.isValid;
         }
@@ -89,7 +89,7 @@ function ExtraData(parent) {
             const prevIsValid = this.isValid;
             this.isValid = !!this.value;
             if (prevIsValid != this.isValid) {
-                this.self.parent.tab.validateExtra();
+                this.self.parent.tab.validate();
             }
             return this.isValid;
         }
@@ -181,12 +181,31 @@ function Person() {
         value: 0,
         isExtraValid: false,
         validateExtra: function() {
-            this.isExtraValid = this.self.extra.validate();
+            this.isExtraValid = (
+                !this.self.extra.isPrevResidenceInForeignCountry || 
+                    (this.self.extra.foreignCountry.validate() && 
+                    this.self.extra.leftEstoniaTime.validate())
+                ) && 
+                (
+                    !this.self.extra.isForeignIdCode || 
+                        (this.self.extra.foreignCountryForIdCode.validate() && 
+                        this.self.extra.foreignCountryIdCode.validate())
+                );
             return this.isExtraValid;
         },
         isValid: false,
         validate: function() {
-            this.isValid = this.self.idCode.validate() && this.self.email.validate() && this.self.phone.validate();
+            this.isValid = this.self.idCode.validate() && 
+                this.self.email.validate() && 
+                this.self.phone.validate() && 
+                (
+                    this.self.extra.isNotWillingToRevealNationality || 
+                    this.self.extra.nationality.validate()
+                ) &&
+                (
+                    this.self.extra.isNotWillingToRevealMotherToungue || 
+                    this.self.extra.motherToungue.validate()
+                );
             return this.isValid;
         }
     }
