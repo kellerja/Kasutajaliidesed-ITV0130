@@ -297,7 +297,7 @@ vm = new Vue({
             people: [new Person()],
             newAddress: new Address(),
             isSubmitterAlsoNewAddressResident: true,
-            isContactAddressNewAddress: true,
+            isContactAddressNewAddress: false,
             contactAddress: {
                 address: new Address(),
                 isValidFrom: false,

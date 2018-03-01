@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+    <title>Document</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="css/bootstrap/bootstrap.css" rel="stylesheet">
+    <link href="css/alt.css" rel="stylesheet">  
+    <script src="scripts/vue/vue.js"></script>
+</head>
+<body>
+    <div id="app" class="container">
+        <new-address :address.sync="formData.address"></new-address>
+        <people :people.sync="formData.people"></people>
+    </div>
+    <script src="scripts/alt.js"></script>
+</body>
+</html>
