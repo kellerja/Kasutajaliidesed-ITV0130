@@ -123,7 +123,33 @@ function Person() {
 }
 
 function Sender() {
-    var person = new Person()
+    var person = new Person();
+    person.isAddressRegistration = true;
+    person.contactAddress = new Address();
+    person.contactAddress.isNotSameAsRegAddress = true;
+    person.contactAddress.ownership = undefined;
+    person.contactAddress.isValidFromKnown = false;
+    person.contactAddress.validFrom = {
+        value: '',
+        isValid: false,
+        errorMsg: 'Palun sisesta kehtivuse algusaeg',
+        firstBlur: false,
+        validate: function() {
+            this.isValid = !!this.value;
+            return this.isValid;
+        }
+    }
+    person.contactAddress.isValidToKnown = false;
+    person.contactAddress.validTo = {
+        value: '',
+        isValid: false,
+        errorMsg: 'Palun sisesta kehtivuse lõppaeg',
+        firstBlur: false,
+        validate: function() {
+            this.isValid = !!this.value;
+            return this.isValid;
+        }
+    }
     return person;
 }
 
@@ -282,6 +308,32 @@ Vue.component('person', {
                 'F': 'pensionär',
                 'G': 'lapsehoolduspuhkusel',
                 'H': 'muu mittetöötav'
+            },
+            isDetailsTabValid: false,
+            validateDetailsTab: function() {
+                this.isDetailsTabValid = this.person.firstName.validate() && this.person.lastName.validate() &&
+                    this.person.idCode.validate() && this.person.email.validate() && this.person.phone.validate() &&
+                    (this.person.nationality.isNotWillingToReveal || this.person.nationality.validate()) &&
+                    (this.person.motherTongue.isNotWillingToReveal || this.person.motherTongue.validate());
+                return this.isDetailsTabValid;
+            },
+            isExtraDataTabValid: false,
+            validateExtraDataTab: function() {
+                this.isExtraDataTabValid = (this.person.foreignCountry.isPrevResidenceInForeignCountry || (this.person.foreignCountry.addressInForeignCountry.validate() && this.person.foreignCountry.departureTimeFromEstonia.validate())) &&
+                    (this.person.foreignIdCode.isForeignIdCode || (this.person.foreignIdCode.foreignCountry.validate() && this.person.foreignIdCode.idCode.validate()));
+                return this.isExtraDataTabValid;
+            },
+            isContactAddressTabValid: false,
+            validateContactAddressTab: function() {
+                this.isContactAddressTabValid = this.person.isAddressRegistration || this.person.contactAddress.isNotSameAsRegAddress || (
+                    this.person.contactAddress.country.validate() && this.person.contactAddress.county.validate() && this.person.contactAddress.city.validate() &&
+                    this.person.contactAddress.street.validate() && this.person.contactAddress.postalIndex.validate() && (
+                        !this.person.contactAddress.isValidFromKnown || (this.person.contactAddress.isValidFromKnown && this.person.contactAddress.validFrom.validate())
+                    ) && (
+                        !this.person.contactAddress.isValidToKnown || (this.person.contactAddress.isValidToKnown && this.person.contactAddress.validTo.validate())
+                    )
+                );
+                return this.isContactAddressTabValid;
             }
         }
     },
@@ -293,16 +345,48 @@ Vue.component('person', {
                <div class="w-100" v-else> \
                 <div class="d-flex flex-wrap"> \
                     <button :class="[\'btn\', index == 0 ? \'col-md-4\' : \'col-md-6\', \'col-sm-12\', {\'btn-primary\': editTab == 0}]" \
-                        @click.prevent="editTab = 0">Andmed</button> \
+                        @click.prevent="editTab = 0"> \
+                            <i class="material-icons light align-middle" aria-hidden="true">{{isDetailsTabValid ? \'done\' : \'clear\'}}</i> \
+                            Andmed \
+                    </button> \
                     <button :class="[\'btn\', index == 0 ? \'col-md-4\' : \'col-md-6\', \'col-sm-12\', {\'btn-primary\': editTab == 1}]" \
-                        @click.prevent="editTab = 1">Lisainfo</button> \
+                        @click.prevent="editTab = 1"> \
+                            <i class="material-icons light align-middle" aria-hidden="true">{{isExtraDataTabValid ? \'done\' : \'clear\'}}</i> \
+                            Lisainfo \
+                    </button> \
                     <button :class="[\'btn\', \'col-md-4\', \'col-sm-12\', {\'btn-primary\': editTab == 2}]" \
-                        @click.prevent="editTab = 2" v-if="index == 0">Elukohainfo</button> \
+                        @click.prevent="editTab = 2" v-if="index == 0"> \
+                            <i class="material-icons light align-middle" aria-hidden="true">{{isContactAddressTabValid ? \'done\' : \'clear\'}}</i> \
+                            Elukohainfo \
+                    </button> \
                 </div> \
                 <div v-if="editTab == 2"> \
                     <div class="form-check"> \
-                        <input type="checkbox" class="form-check-input" id="contact_address_is_reg_address_checkbox" v-model="formData.isContactAddressNewAddress"> \
-                        <label class="form-check-label" for="contact_address_is_reg_address_checkbox">Sideaadress on sama, mis registreeritav aadress</label> \
+                        <input type="checkbox" class="form-check-input" id="person_new_registration_checkbox" v-model="person.isAddressRegistration"> \
+                        <label class="form-check-label" for="person_new_registration_checkbox">Esitan uue elukoha ka enda kohta</label> \
+                    </div> \
+                    <div v-if="!person.isAddressRegistration"> \
+                        <div class="form-check"> \
+                            <input type="checkbox" class="form-check-input" id="contact_address_is_reg_address_checkbox" v-model="person.contactAddress.isNotSameAsRegAddress"> \
+                            <label class="form-check-label" for="contact_address_is_reg_address_checkbox">Sideaadress on sama, mis registreeritav aadress</label> \
+                        </div> \
+                        <div v-if="!person.contactAddress.isNotSameAsRegAddress"> \
+                            <input-group class="col-12" title="Riik" :object.sync="person.contactAddress.country" id="contact_address_country"></input-group> \
+                            <input-group class="col-12" title="Maakond" :object.sync="person.contactAddress.county" id="contact_address_county"></input-group> \
+                            <input-group class="col-12" title="Vald/linn, alevik, küla" :object.sync="person.contactAddress.city" id="contact_address_city"></input-group> \
+                            <input-group class="col-12" title="Tänav/talu, maja nr, korteri nr" :object.sync="person.contactAddress.street" id="contact_address_street"></input-group> \
+                            <input-group class="col-12" title="Postiindex" :object.sync="person.contactAddress.postalIndex" id="contact_address_postal_index"></input-group> \
+                            <div class="form-check col-12"> \
+                                <input type="checkbox" class="form-check-input" id="contact_address_from_checkbox" v-model="person.contactAddress.isValidFromKnown"> \
+                                <label class="form-check-label" for="contact_address_from_checkbox">Kas sideaadressi kasutuselevõtmisel on algusaeg (pole juba kasutuses)?</label> \
+                            </div> \
+                            <input-group class="col-12" title="Kehtib alates" :object.sync="person.contactAddress.validFrom" id="contact_address_from" v-if="person.contactAddress.isValidFromKnown"></input-group> \
+                            <div class="form-check col-12"> \
+                                <input type="checkbox" class="form-check-input" id="contact_address_to_checkbox" v-model="person.contactAddress.isValidToKnown"> \
+                                <label class="form-check-label" for="contact_address_to_checkbox">Kas sideaadressi kasutuse lõpetamise kohta on teada lõppaeg?</label> \
+                            </div> \
+                            <input-group class="col-12" title="Kehtib kuni" :object.sync="person.contactAddress.validTo" id="contact_address_to" v-if="person.contactAddress.isValidToKnown"></input-group> \
+                        </div> \
                     </div> \
                 </div> \
                 <div v-else-if="editTab == 1"> \
