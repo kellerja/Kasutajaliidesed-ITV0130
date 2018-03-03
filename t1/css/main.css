@@ -1,37 +1,17 @@
-.tab-toggle-button {
-    padding: 1rem 3rem;
-    width: 100%;
-    border: #443733 solid 0.1rem;
-    box-shadow: none;
+body {
+    background: #fafaff;
 }
 
-.tab-toggle-button::selection, 
-.tab-toggle-button:focus, 
-.tab-toggle-button:active {
-    border: #443733 solid 0.1rem;
-    box-shadow: none;
-}
-
-.tab-toggle-button-active, 
-.tab-toggle-button-active::selection, 
-.tab-toggle-button-active:focus, 
-.tab-toggle-button-active:active {
-    border: #443733 solid 0.2rem;
-    box-shadow: none;
+.address {
+    background: #efefff;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0.5rem;
 }
 
 .person {
-    padding: 0.5rem 0.5rem;
-    background: #FCFCFC;
-    box-sizing: border-box;
-    border: solid 0.1rem #FFFFFF;
-}
-
-.person .form-group {
+    background: #efefff;
+    padding: 0.5rem;
     margin-bottom: 0.5rem;
-}
-
-.add-person-btn {
-    margin-top: 0.5rem;
-    min-height: 3rem;
+    border-radius: 0.5rem;
 }
