@@ -154,6 +154,10 @@ function Person() {
                 }
                 return this.isValid;
             }
+        },
+        validate() {
+            return !this.isPrevResidenceInForeignCountry || 
+                (this.addressInForeignCountry.validate() && this.departureTimeFromEstonia.validate());
         }
     },
     this.foreignIdCode = {
@@ -177,10 +181,20 @@ function Person() {
                 this.isValid = !!this.value;
                 return this.isValid;
             }
+        },
+        validate: function() {
+            return !this.isForeignIdCode || 
+                (this.foreignCountry.validate && this.idCode.validate());
         }
     },
     this.education = '-',
-    this.employment = '-'
+    this.employment = '-',
+    this.validate = function() {
+        return this.firstName.validate() && this.lastName.validate() && 
+            this.phone.validate() && this.email.validate() && this.idCode.validate() && 
+            this.nationality.validate() && this.motherTongue.validate() && 
+            this.foreignCountry.validate() && this.foreignIdCode.validate();
+    }
 }
 
 function Sender() {
@@ -224,6 +238,26 @@ function Sender() {
             }
             return this.isValid;
         }
+    }
+    person.validate = function() {
+        return person.firstName.validate() && person.lastName.validate() && 
+            person.phone.validate() && person.email.validate() && person.idCode.validate() && 
+            person.nationality.validate() && person.motherTongue.validate() && 
+            person.foreignCountry.validate() && person.foreignIdCode.validate() &&
+            (
+                person.isAddressRegistration || person.contactAddress.isNotSameAsRegAddress || 
+                (
+                    person.contactAddress.validate() && 
+                    (
+                        !person.contactAddress.isValidFromKnown || 
+                        person.contactAddress.validFrom.validate()
+                    ) && 
+                    (
+                        !person.contactAddress.isValidToKnown || 
+                        person.contactAddress.validTo.validate()
+                    )
+                )
+            );
     }
     return person;
 }
@@ -288,6 +322,11 @@ function Address() {
     this.ownership = {
         value: '0',
         proof: ''
+    },
+    this.validate = function() {
+        return this.country.validate() && this.county.validate() && 
+            this.city.validate() && this.street.validate() && 
+            this.postalIndex.validate();
     }
 }
 
@@ -444,21 +483,27 @@ Vue.component('person', {
     },
     template: '<div class="w-100"> \
                 <div class="d-flex flex-wrap"> \
-                    <button :class="[\'btn\', index == 0 ? \'col-md-4\' : \'col-md-6\', \'col-sm-12\', {\'btn-primary\': editTab == 0}]" \
-                        @click.prevent="editTab = 0"> \
-                            <i class="material-icons light align-middle" aria-hidden="true">{{isDetailsTabValid ? \'done\' : \'clear\'}}</i> \
-                            Andmed \
-                    </button> \
-                    <button :class="[\'btn\', index == 0 ? \'col-md-4\' : \'col-md-6\', \'col-sm-12\', {\'btn-primary\': editTab == 1}]" \
-                        @click.prevent="editTab = 1"> \
-                            <i class="material-icons light align-middle" aria-hidden="true">{{isExtraDataTabValid ? \'done\' : \'clear\'}}</i> \
-                            Lisainfo \
-                    </button> \
-                    <button :class="[\'btn\', \'col-md-4\', \'col-sm-12\', {\'btn-primary\': editTab == 2}]" \
-                        @click.prevent="editTab = 2" v-if="index == 0" :disabled="person.isAddressRegistration"> \
-                            <i class="material-icons light align-middle" aria-hidden="true">{{isContactAddressTabValid ? \'done\' : \'clear\'}}</i> \
-                            Sideaadress \
-                    </button> \
+                    <div :class="[index == 0 ? \'col-md-4\' : \'col-md-6\', \'col-sm-12\']"> \
+                        <button :class="[\'btn\', \'w-100\', {\'btn-primary\': editTab == 0}]" \
+                            @click.prevent="editTab = 0"> \
+                                <i class="material-icons light align-middle" aria-hidden="true">{{isDetailsTabValid ? \'done\' : \'clear\'}}</i> \
+                                Andmed \
+                        </button> \
+                    </div> \
+                    <div :class="[index == 0 ? \'col-md-4\' : \'col-md-6\', \'col-sm-12\']"> \
+                        <button :class="[\'btn\', \'w-100\', {\'btn-primary\': editTab == 1}]" \
+                            @click.prevent="editTab = 1"> \
+                                <i class="material-icons light align-middle" aria-hidden="true">{{isExtraDataTabValid ? \'done\' : \'clear\'}}</i> \
+                                Lisainfo \
+                        </button> \
+                    </div> \
+                    <div class="col-md-4 col-sm-12" v-if="index == 0"> \
+                        <button :class="[\'btn\', \'w-100\', {\'btn-primary\': editTab == 2}]" \
+                            @click.prevent="editTab = 2" :disabled="person.isAddressRegistration"> \
+                                <i class="material-icons light align-middle" aria-hidden="true">{{isContactAddressTabValid ? \'done\' : \'clear\'}}</i> \
+                                Sideaadress \
+                        </button> \
+                    </div> \
                 </div> \
                 <div v-if="editTab == 2"> \
                     <div v-if="!person.isAddressRegistration"> \
@@ -563,6 +608,9 @@ Vue.component('people', {
         removePerson(index) {
             if (index == 0) return;
             this.people.splice(index, 1);
+        },
+        validate() {
+            vm.validate();
         }
     },
     template: '<div class="w-100"> \
@@ -574,12 +622,12 @@ Vue.component('people', {
                         <div class="person w-100" v-for="(person, index) in people"> \
                             <div class="d-flex flex-wrap p-2"> \
                                 <h5>{{index == 0 ? \'Esitaja\' : \'Registreeritav isik #\' + index}}</h5> \
-                                <button class="btn ml-4" @click.prevent="removePerson(index)" tabindex="-1" v-if="index > 0">Eemalda isik</button> \
+                                <button class="btn btn-danger ml-4" @click.prevent="removePerson(index)" tabindex="-1" v-if="index > 0">Eemalda isik</button> \
                             </div> \
                             <person class="w-100" :person.sync="person" :index="index"></person> \
                         </div> \
                         <button class="col-12 btn" @click.prevent="addPerson()">Lisa isik</button> \
-                        <input class="col-12 btn mt-3" type="submit" value="Saada"> \
+                        <input class="col-12 btn mt-3" type="submit" @click.prevent="validate()" value="Saada"> \
                     </form> \
                 </div> \
                </div>'
@@ -590,5 +638,11 @@ vm = new Vue({
     data: {
         formData: new FormData()
     },
-    methods: {}
+    methods: {
+        validate() {
+            const isValid = this.formData.address.validate() && this.formData.people.every(function(person, index) {
+                return person.validate();
+            });
+        }
+    }
 });
