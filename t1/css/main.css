@@ -2,6 +2,10 @@ body {
     background: #fafaff;
 }
 
+button, input[type=submit] {
+    background: #ced2d6;
+}
+
 .address {
     background: #efefff;
     padding: 0.5rem;
@@ -14,4 +18,30 @@ body {
     padding: 0.5rem;
     margin-bottom: 0.5rem;
     border-radius: 0.5rem;
+}
+
+.question-checkbox-label {
+    padding: 0.3rem;
+    margin-left: 1.2rem;
+}
+
+.question-checkbox-label::before, .question-checkbox-label::after {
+    margin-left: 1rem;
+    padding: 0.8rem;
+}
+
+.question-checkbox-label::before {
+    background: #ced2d6;
+}
+
+.reveal-checkbox-label {
+    padding: 0.1rem;
+}
+
+.reveal-checkbox-label::before, .reveal-checkbox-label::after {
+    padding: 0.6rem;
+}
+
+.reveal-checkbox-label::before {
+    background: #ced2d6;
 }

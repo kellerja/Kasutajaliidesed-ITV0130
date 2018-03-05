@@ -3,16 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
-    <title>Document</title>
+    <title>Elukohateade</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="css/bootstrap/bootstrap.css" rel="stylesheet">
     <link href="css/main.css" rel="stylesheet">  
     <script src="scripts/vue/vue.js"></script>
+    <script src="scripts/address.js"></script>
+    <script src="scripts/person.js"></script>
+    <script src="scripts/person.component.js"></script>
+    <script src="scripts/completed.js"></script>
 </head>
 <body>
     <div id="app" class="container">
-        <new-address :address.sync="formData.address"></new-address>
-        <people :people.sync="formData.people"></people>
+        <new-address :address.sync="formData.address" v-if="!isCompleted"></new-address>
+        <people :people.sync="formData.people" v-if="!isCompleted"></people>
+        <completed :form-data="formData" v-if="isCompleted"></completed>
     </div>
     <script src="scripts/main.js"></script>
 </body>
