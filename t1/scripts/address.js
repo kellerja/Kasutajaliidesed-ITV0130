@@ -82,6 +82,14 @@ Vue.component('new-address', {
             }            
         }
     },
+    methods: {
+        fileUpload(event) {
+            const fileName = event.target.files[0].name;
+            if (!fileName || fileName === '') {
+            }
+            console.log(event.target.files, event.target);
+        }
+    },
     template: '<div class="w-100"><div class="row col-12"> \
                  <h4>1. Uue elukoha aadress</h4> \
                </div> \
@@ -99,8 +107,11 @@ Vue.component('new-address', {
                         </select> \
                     </div> \
                     <div class="form-group col-md-5 col-xs-12" v-if="address.ownership.value == \'1\' || address.ownership.value == \'3\'"> \
-                        <label for="new_address_ownership_proof">Lisa {{address.ownership.value == \'1\' ? \'üürileping\' : \'ruumi omaniku nõusolek\'}}</label> \
-                        <input type="file" class="form-control-file" id="new_address_ownership_proof" multiple> \
+                        <label class="invisible">!</label> \
+                        <div class="custom-file"> \
+                            <label for="new_address_ownership_proof" class="custom-file-label">Lisa {{address.ownership.value == \'1\' ? \'üürileping\' : \'ruumi omaniku nõusolek\'}}</label> \
+                            <input type="file" @change="fileUpload($event)" class="custom-file-input" id="new_address_ownership_proof"> \
+                        </div> \
                     </div> \
                 </form> \
             </div></div>'

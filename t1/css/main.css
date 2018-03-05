@@ -6,6 +6,11 @@ button, input[type=submit] {
     background: #ced2d6;
 }
 
+button:hover:not(:disabled):not(.btn-primary):not(.btn-danger), 
+input[type=submit]:hover:not(:disabled):not(.btn-primary):not(.btn-danger) {
+    background: #aeb2b6;
+}
+
 .address {
     background: #efefff;
     padding: 0.5rem;
