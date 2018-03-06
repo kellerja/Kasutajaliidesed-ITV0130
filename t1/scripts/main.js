@@ -67,7 +67,7 @@ Vue.component('people', {
                             <person ref="person" class="w-100" :person.sync="person" :index="index"></person> \
                         </div> \
                         <button class="col-12 btn" @click.prevent="addPerson()">Lisa isik</button> \
-                        <input class="col-12 btn mt-3" type="submit" @click.prevent="validate()" value="Saada"> \
+                        <input class="col-12 btn btn-success mt-3" type="submit" @click.prevent="validate()" value="Saada"> \
                     </form> \
                 </div> \
                </div>'

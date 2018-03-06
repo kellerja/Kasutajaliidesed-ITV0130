@@ -2,12 +2,12 @@ body {
     background: #fafaff;
 }
 
-button, input[type=submit] {
+button, input[type=submit]:not(.btn-success) {
     background: #ced2d6;
 }
 
-button:hover:not(:disabled):not(.btn-primary):not(.btn-danger), 
-input[type=submit]:hover:not(:disabled):not(.btn-primary):not(.btn-danger) {
+button:hover:not(:disabled):not(.btn-primary):not(.btn-danger):not(.btn-success), 
+input[type=submit]:hover:not(:disabled):not(.btn-primary):not(.btn-danger):not(.btn-success) {
     background: #aeb2b6;
 }
 
@@ -23,6 +23,10 @@ input[type=submit]:hover:not(:disabled):not(.btn-primary):not(.btn-danger) {
     padding: 0.5rem;
     margin-bottom: 0.5rem;
     border-radius: 0.5rem;
+}
+
+.complete {
+    background: #efefff;
 }
 
 .question-checkbox-label {
