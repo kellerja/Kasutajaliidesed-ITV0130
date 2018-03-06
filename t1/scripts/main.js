@@ -12,7 +12,8 @@ Vue.component('input-group', {
         inputType: {
             type: String,
             default: 'text'
-        }
+        },
+        pattern: String
     },
     methods: {
         handleKeyUpEvent: function() {
@@ -29,7 +30,7 @@ Vue.component('input-group', {
                     :class="[\'form-control\', disabled ? \'\' : (object.isValid ? (object.firstBlur ? \'is-valid\' : \'\') : (object.firstBlur ? \'is-invalid\' : \'\'))]" \
                     :id="id" v-model="object.value" \
                     @keyup="handleKeyUpEvent()" @change="handleKeyUpEvent()" \
-                    @blur.once="object.firstBlur = true" :disabled="disabled"> \
+                    @blur.once="object.firstBlur = true" :pattern="pattern" :disabled="disabled"> \
                 <small class="invalid-feedback">{{object.errorMsg}}</small> \
               </div>'
 })

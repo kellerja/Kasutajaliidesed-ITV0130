@@ -19,12 +19,12 @@ Vue.component('completed', {
                         <p>{{formData.people[0].firstName.value}} {{formData.people[0].lastName.value}}</p> \
                         <h3>Esitaja sideaadress</h3> \
                         <div v-if="formData.people[0].contactAddress.isNotSameAsRegAddress"> \
-                            <p>{{formData.people[0].contactAddress.country.value}}, {{formData.people[0].contactAddress.county.value}}, {{formData.people[0].contactAddress.city.value}}</p> \
-                            <p>{{formData.people[0].contactAddress.street.value}} ({{formData.people[0].contactAddress.postalIndex.value}})</p> \
-                        </div> \
-                        <div v-else> \
                             <p>{{formData.address.country.value}}, {{formData.address.county.value}}, {{formData.address.city.value}}</p> \
                             <p>{{formData.address.street.value}} ({{formData.address.postalIndex.value}})</p> \
+                        </div> \
+                        <div v-else> \
+                            <p>{{formData.people[0].contactAddress.country.value}}, {{formData.people[0].contactAddress.county.value}}, {{formData.people[0].contactAddress.city.value}}</p> \
+                            <p>{{formData.people[0].contactAddress.street.value}} ({{formData.people[0].contactAddress.postalIndex.value}})</p> \
                         </div> \
                     </div> \
                 </div> \

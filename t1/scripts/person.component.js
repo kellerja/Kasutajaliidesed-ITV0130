@@ -70,6 +70,15 @@ Vue.component('person', {
                 )
             );
             return this.isContactAddressTabValid;
+        },
+        changeTabAndScrollToTop(tabNr) {
+            this.editTab = tabNr;
+            this.$el.scrollIntoView();
+        }
+    },
+    computed: {
+        isHelperNavigationRequired() {
+            return window.innerWidth && window.innerWidth <= 768;
         }
     },
     template: '<div class="w-100"> \
@@ -124,6 +133,10 @@ Vue.component('person', {
                             </div> \
                         </div> \
                     </div> \
+                    <button class="btn col-12" @click.prevent="changeTabAndScrollToTop(1)" v-if="isHelperNavigationRequired"> \
+                        <i class="material-icons md-18 align-middle">keyboard_arrow_left</i> \
+                        <span class="align-middle">Lisainfo</span> \
+                    </button> \
                 </div> \
                 <div v-else-if="editTab == 1"> \
                     <div class="custom-control custom-checkbox col-12"> \
@@ -154,11 +167,21 @@ Vue.component('person', {
                             <option v-for="key in employmentOptionsKeyOrder" :value="key">{{employmentOptions[key]}}</option> \
                         </select> \
                     </div> \
+                    <div class="w-100 d-flex"> \
+                        <button :class="[\'btn\', index == 0 ? \'col-6\' : \'col-12\']" @click.prevent="changeTabAndScrollToTop(0)" v-if="isHelperNavigationRequired"> \
+                            <i class="material-icons md-18 align-middle">keyboard_arrow_left</i> \
+                            <span class="align-middle">Andmed</span> \
+                        </button> \
+                        <button class="btn col-6" @click.prevent="changeTabAndScrollToTop(2)" v-if="isHelperNavigationRequired && index == 0" :disabled="person.isAddressRegistration"> \
+                            <span class="align-middle">Sideaadress</span> \
+                            <i class="material-icons md-18 align-middle">keyboard_arrow_right</i> \
+                        </button> \
+                    </div> \
                 </div> \
                 <div class="d-flex flex-wrap" v-else> \
                     <input-group class="col-md-6" title="Eesnimi" :object.sync="person.firstName" :id="\'person_\' + index + \'_firstname\'" @validate="validateDetailsTab()"></input-group> \
                     <input-group class="col-md-6" title="Perenimi" :object.sync="person.lastName" :id="\'person_\' + index + \'_lastname\'" @validate="validateDetailsTab()"></input-group> \
-                    <input-group class="col-md-4" title="Isikukood" :object.sync="person.idCode" :id="\'person_\' + index + \'_idcode\'" @validate="validateDetailsTab()"></input-group> \
+                    <input-group class="col-md-4" title="Isikukood" pattern="\\d*" :object.sync="person.idCode" :id="\'person_\' + index + \'_idcode\'" @validate="validateDetailsTab()"></input-group> \
                     <input-group class="col-md-4" title="Email" input-type="email" :object.sync="person.email" :id="\'person_\' + index + \'_email\'" @validate="validateDetailsTab()"></input-group> \
                     <input-group class="col-md-4" title="Telefon" input-type="tel" :object.sync="person.phone" :id="\'person_\' + index + \'_phone\'" @validate="validateDetailsTab()"></input-group> \
                     <div class="custom-control custom-checkbox col-12" v-if="index == 0"> \
@@ -181,6 +204,10 @@ Vue.component('person', {
                             </div> \
                         </input-group> \
                     </div> \
+                    <button class="btn col-12" @click.prevent="changeTabAndScrollToTop(1)" v-if="isHelperNavigationRequired"> \
+                        <span class="align-middle">Lisainfo</span> \
+                        <i class="material-icons md-18 align-middle">keyboard_arrow_right</i> \
+                    </button> \
                 </div> \
                </div>'
 })
