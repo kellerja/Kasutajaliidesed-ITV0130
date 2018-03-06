@@ -79,15 +79,27 @@ Vue.component('new-address', {
                 2: 'Ruumi omanik annab ise elukohateatele nõusoleku',
                 3: 'Lisan ruumi omaniku nõusoleku eraldi paberil',
                 4: 'Ruumi kasutamise muu alus'
-            }            
+            },
+            fileUploadMessage: '...'
         }
     },
     methods: {
         fileUpload(event) {
             const fileName = event.target.files[0].name;
             if (!fileName || fileName === '') {
+                this.handleAddressOwnershipChange();
+                return;
             }
-            console.log(event.target.files, event.target);
+            this.fileUploadMessage = fileName;
+        },
+        handleAddressOwnershipChange() {
+            switch (this.address.ownership.value) {
+                case 1:
+                    this.fileUploadMessage = 'Lisa üürileping';
+                    break;
+                default:
+                    this.fileUploadMessage = 'Lisa ruumi omaniku nõusolek';
+            }
         }
     },
     template: '<div class="w-100"><div class="row col-12"> \
@@ -100,16 +112,16 @@ Vue.component('new-address', {
                     <input-group class="col-md-4 col-xs-12" title="Vald/linn, alevik, küla" :object.sync="address.city" id="new_address_city"></input-group> \
                     <input-group class="col-md-8 col-xs-12" title="Tänav/talu, maja nr, korteri nr" :object.sync="address.street" id="new_address_street"></input-group> \
                     <input-group class="col-md-4 col-xs-12" title="Postiindeks" :object.sync="address.postalIndex" id="new_address_postal_index"></input-group> \
-                    <div class="form-group col-md-5 col-xs-12"> \
+                    <div class="form-group col-md-6 col-xs-12"> \
                         <label for="new_address_ownership">Ruumi kasutamisõigus</label> \
-                        <select class="form-control" id="new_address_ownership" v-model="address.ownership.value"> \
+                        <select class="form-control" id="new_address_ownership" v-model="address.ownership.value" @change="handleAddressOwnershipChange()"> \
                             <option v-for="key in newAddressOwnershipOptionsKeyOrder" :value="key">{{newAddressOwnershipOptions[key]}}</option> \
                         </select> \
                     </div> \
-                    <div class="form-group col-md-5 col-xs-12" v-if="address.ownership.value == \'1\' || address.ownership.value == \'3\'"> \
+                    <div class="form-group col-md-6 col-xs-12" v-if="address.ownership.value == \'1\' || address.ownership.value == \'3\'"> \
                         <label class="invisible">!</label> \
                         <div class="custom-file"> \
-                            <label for="new_address_ownership_proof" class="custom-file-label">Lisa {{address.ownership.value == \'1\' ? \'üürileping\' : \'ruumi omaniku nõusolek\'}}</label> \
+                            <label for="new_address_ownership_proof" class="custom-file-label">{{fileUploadMessage}}</label> \
                             <input type="file" @change="fileUpload($event)" class="custom-file-input" id="new_address_ownership_proof"> \
                         </div> \
                     </div> \

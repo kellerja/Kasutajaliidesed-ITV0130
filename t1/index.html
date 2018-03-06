@@ -16,7 +16,7 @@
 <body>
     <div id="app" class="container">
         <new-address :address.sync="formData.address" v-if="!isCompleted"></new-address>
-        <people :people.sync="formData.people" v-if="!isCompleted"></people>
+        <people ref="people" :people.sync="formData.people" v-if="!isCompleted"></people>
         <completed :form-data="formData" v-if="isCompleted"></completed>
     </div>
     <script src="scripts/main.js"></script>

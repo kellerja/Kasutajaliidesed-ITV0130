@@ -64,7 +64,7 @@ Vue.component('people', {
                                 <h5>{{index == 0 ? \'Esitaja\' : \'Registreeritav isik #\' + index}}</h5> \
                                 <button class="btn btn-danger ml-4" @click.prevent="removePerson(index)" tabindex="-1" v-if="index > 0">Eemalda isik</button> \
                             </div> \
-                            <person class="w-100" :person.sync="person" :index="index"></person> \
+                            <person ref="person" class="w-100" :person.sync="person" :index="index"></person> \
                         </div> \
                         <button class="col-12 btn" @click.prevent="addPerson()">Lisa isik</button> \
                         <input class="col-12 btn mt-3" type="submit" @click.prevent="validate()" value="Saada"> \
@@ -102,12 +102,19 @@ vm = new Vue({
                 this.forceValidate(person);
                 const isPersonValid = person.validate();
                 if (!isPersonValid && firstScroll) {
+                    const personController = this.$refs.people.$refs.person[index];
+                    if (!personController.validateDetailsTab()) {
+                        personController.editTab = 0;
+                    } else if (!personController.validateExtraDataTab()) {
+                        personController.editTab = 1;
+                    } else if (index == 0 && !personController.validateContactAddressTab()) {
+                        personController.editTab = 2;
+                    }
                     document.getElementsByClassName('person')[index].scrollIntoView();
                     firstScroll = false;
                 }
                 isValid = isValid && isPersonValid;
             });
-            isValid = true;
             if (!isValid) {
                 return;
             }
