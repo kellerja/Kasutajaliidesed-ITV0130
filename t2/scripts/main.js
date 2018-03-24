@@ -57,7 +57,7 @@ class Task {
         this.score = 1;
         this.id = Math.random();
         this.taskCompleteEvent = taskCompleteCallback;
-        this.animation = 'animation: 5s ease-in-out 0s 1 timer';
+        this.animation = 'animation: 5s linear 0s 1 timer';
     }
 
     start() {
@@ -84,7 +84,9 @@ class Task {
 }
 
 Vue.component('task-component', {
-    template: '<div class="paper" @dragstart="task.drag($event, task)" @dragend="task.dragStop" :style="animation ? task.animation + (gameOver ? \' paused;\' : \'\') : \'\'" @animationend="timeOut">{{ task.correctBin.id }}</div>',
+    template: '<div class="paper" @dragstart="task.drag($event, task)" @dragend="task.dragStop" \
+            :style="animation ? task.animation + (gameOver ? \' paused;\' : \'\') : \'\'" \
+            @animationend="timeOut">{{ task.correctBin.id }}</div>',
     props: ['task', 'gameOver'],
     data: function() {
         return {
@@ -109,10 +111,11 @@ class SortingTask extends Task {
     constructor(correctBin, taskCompleteCallback) {
         super(taskCompleteCallback);
         this.correctBin = correctBin;
+        this.isValid = true;
     }
 
     run(target) {
-        if (!(target instanceof Bin)) {
+        if (!this.isValid || !(target instanceof Bin)) {
             return;
         }
         if (this.correctBin === target) {
@@ -139,6 +142,7 @@ class Game {
     taskCompleteCallback(task, reward) {
         this.player.applyReward(reward);
         let taskIndex = this.tasks.indexOf(task);
+        this.tasks[taskIndex].isValid = false;
         this.tasks.splice(taskIndex, 1, this.generateNewSortingTask());
     }
 
