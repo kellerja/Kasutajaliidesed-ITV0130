@@ -1,0 +1,46 @@
+.basket {
+    height: 100px;
+    width: 50px;
+    margin-left: 12px;
+    text-align: center;
+    background: yellow;
+}
+
+.paper {
+    height: 100px;
+    width: 50px;
+    margin-left: 12px;
+    text-align: center;
+    background: orange;
+}
+
+.health-bar {
+    height: 20px;
+    width: 20px;
+    margin-left: 5px;
+    background: red;
+}
+
+.basket-container {
+    margin-top: 20px;
+    display: flex;
+}
+
+.paper-container {
+    margin-top: 20px;
+    display: flex;
+}
+
+.hp-container {
+    margin-top: 20px;
+    display: flex;
+}
+
+@keyframes timer {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}

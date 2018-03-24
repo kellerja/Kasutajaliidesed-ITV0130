@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/main.css" rel="stylesheet">
+    <script src="scripts/vue.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <div id="game">
+        <div class="hp-container">
+            <div class="health-bar" v-for="_ in Math.max(game.player.lives, 0)"></div>
+            <p style="margin-left: 20px">{{ game.player.score }}</p>
+        </div>
+        <div class="basket-container">
+            <div class="basket" v-for="(bin, index) in game.bins" @drop="bin.drop($event, bin)" @dragover.prevent="">{{ bin.id }}</div>
+        </div>
+        
+        <div class="paper-container">
+            <task-component :draggable="!game.isGameOver" v-for="(task, index) in game.tasks" 
+                :key="'task_' + task.id" :task="task" :game-over="game.isGameOver"></task-component>
+        </div>
+        <div :class="{'invisible': !game.isGameOver}">
+            <p>Game over</p>
+            <button @click="game.restart()">Restart</button>
+        </div>
+    </div>
+    <script src="scripts/main.js"></script>
+</body>
+</html>

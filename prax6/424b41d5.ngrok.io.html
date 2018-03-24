@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<!-- saved from url=(0026)https://424b41d5.ngrok.io/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="./424b41d5.ngrok.io_files/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <style>
+    body {
+      font-family: "Comic Sans MS", serif;
+      background: url('https://media.giphy.com/media/26FPqSW3io0nfgMUw/giphy.gif') center center fixed;
+      background-size: cover;
+
+    }
+
+    .dropbtn {
+      background-color: #142c40;
+      opacity: 0.8;
+      color: white;
+      padding: 16px;
+      font-size: 16px;
+    }
+
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      margin-left: 72px;
+      background-color: #f1f1f1;
+      min-width: 500px;
+      box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+      z-index: 1;
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    .dropdown:hover .dropbtn {
+      background-color: #3e8e41;
+    }
+
+    .gg {
+      color: #6b8022;
+    }
+
+    .green {
+      color: green;
+    }
+
+
+  </style>
+<style></style></head>
+<body>
+
+<div class="container" style="margin-top: 150px; margin-left: 400px">
+  <h1 style="margin-left: 150px">Login to our site</h1>
+  <div class="dropdown" id="dropd">
+    <button class="dropbtn btn">Login</button>
+    <div class="dropdown-content" style="background-color:rgba(0, 0, 0, 0.2);">
+      <div>
+        <form>
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="email" aria-label="Username" aria-describedby="basic-addon1" id="tabinput1">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="basic-addon1">@</span>
+            </div>
+            <input type="text" class="form-control unselectable" placeholder="domain" aria-label="Username" aria-describedby="basic-addon1" id="tabinput2" tabindex="-1">
+            <div class="input-group-append">
+              <span class="input-group-text" id="basic-addon2">.</span>
+            </div>
+            <input type="text" class="form-control" placeholder="extension" aria-label="Username" aria-describedby="basic-addon1" id="tabinput3">
+          </div>
+          <label>Password
+            <input type="text" id="passwd" class="text-right">
+          </label>
+          <label>Confirm
+            <input type="text" id="passwd2">
+          </label>
+          <button type="button" class="btn-success" onclick="clearPressed()">clear</button>
+          <button type="button" class="btn-danger" onclick="loginAttempt()">Log in</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ul style="margin-top: 1000px; background-color: white">
+  <li class="green">Misaligned dropdown content on hover</li>
+  <li>Error messages are green while success messages are red</li>
+  <li class="green">Obfuscated clear and submit button</li>
+  <li class="green">Alert notifications</li>
+  <li>Long pointless description for every input field</li>
+  <li class="gg">Disabled movement with tab</li>
+  <li class="green">Tab moves to unexpected location</li>
+  <li class="green">One field is split into many fields - email -&gt; before and after @</li>
+  <li>Unnecessary fields</li>
+  <li class="green">Blow up all data after leaving dropdown content hover mode</li>
+  <li>No feedback when filling a password field (letters not shown on key press like *unix pwd)</li>
+  <li class="gg">Text color is too similar to background color, not distinctive.</li>
+  <li class="green">Moving background image</li>
+  <li>Intrusive pop ups</li>
+  <li class="green">Awful font</li>
+  <li>Slow response time</li>
+  <li>No feeback during loading</li>
+  <li>Autoplay loud sound</li>
+</ul>
+<script src="./424b41d5.ngrok.io_files/jquery-3.2.1.slim.min.js.download" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="./424b41d5.ngrok.io_files/popper.min.js.download" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="./424b41d5.ngrok.io_files/bootstrap.min.js.download" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+<script>
+    $("#tabinput2").attr('tabindex', -1);
+
+    function loginAttempt() {
+        let user = ($("#tabinput1").val() + "@" + $("#tabinput2").val() + "." + $("#tabinput3").val());
+        console.log(user);
+        if (user === "asd@asd.ee" && $("#passwd").val() === "asd" && $("#passwd2").val() === $("#passwd").val()) {
+            setTimeout(function () {
+                alert("Log in was a success !");
+                location.href = '/?=logged-in';
+            }, 700);
+        } else {
+            setTimeout(function () {
+                alert("Log in failed!");
+                location.href = '/';
+            }, 500);
+        }
+    }
+
+
+    $("#dropd").mouseleave(clearPressed);
+
+    function clearPressed() {
+        $("#tabinput1").val("");
+        $("#tabinput2").val("");
+        $("#tabinput3").val("");
+        $("#passwd").val("");
+    }
+
+</script>
+
+
+
+
+</body></html>
