@@ -1,0 +1,160 @@
+.log {
+    height: 5rem;
+    width: 3rem;
+    background: brown;
+}
+
+.log.n1 {
+    margin-left: 4rem;
+}
+
+.log.n2 {
+    margin-left: 3.6rem;
+}
+
+.log.n3 {
+    margin-left: 3.2rem;
+}
+
+.log.n4 {
+    margin-left: 2.8rem;
+}
+
+.log.n5 {
+    margin-left: 2.2rem;
+}
+
+.log.n6 {
+    margin-left: 1.6rem;
+}
+
+.leaf {
+    height: 16rem;
+    width: 3.2rem;
+    background: green;
+    position: absolute;
+}
+
+.leaf.n1 {
+    animation: swing-leaf1 1.5s linear 0s infinite alternate;
+    transform: translate(3.5rem, -2rem) rotate(45deg);
+    transform-origin: 50% 0%;
+}
+
+.leaf.n2 {
+    animation: swing-leaf2 3s ease-in-out 0s infinite alternate;
+    transform: translate(4rem, -2rem) rotate(-12deg);
+    transform-origin: 50% 0%;
+}
+
+.leaf.n3 {
+    animation: swing-leaf3 3s ease-in-out 0s infinite alternate;
+    transform: translate(4.6rem, -2rem) rotate(-60deg);
+    transform-origin: 50% 0%;
+}
+
+.tree {
+    margin-top: 5rem;
+    transition: transform 2s linear 1s;
+    animation: swing 3s ease-in-out 0s infinite alternate;
+    transform-origin: 5% 100%;
+    position: absolute;
+}
+
+.bird {
+    position: absolute;
+    transform: translate(-500rem, 10rem);
+    animation: left-bird 1s ease-out 0s 1 forwards;
+}
+
+.bird-body {
+    background: aqua;
+    padding: 2rem 12rem;
+    border-radius: 50%;
+}
+
+.bird-eye {
+    width: 1rem;
+    height: 1rem;
+    background: black;
+    border-radius: 100%;
+    position: absolute;
+    right: 10%;
+    animation: bird-eye-swing 4s linear 0s infinite alternate;
+}
+
+.bird-beak {
+    position: absolute;
+    width: 0;
+    transform-origin: center 140%;
+    transform: translate(18.5rem, -17rem) rotate(90deg);
+    border-bottom: 120px solid yellow; 
+    border-left: 60px solid white; 
+    border-right: 60px solid white;
+    animation: bird-beak-swing 4s ease-in-out 0s infinite alternate;
+}
+
+@keyframes swing {
+    0% {
+        transform: rotate(12deg);
+    }
+    100% {
+        transform: rotate(-12deg);
+    }
+}
+
+@keyframes swing-leaf1 {
+    from {
+        transform: translate(3.5rem, -2rem) rotate(45deg);
+    }
+    to {
+        transform: translate(3.5rem, -2rem) rotate(50deg);
+    }
+}
+
+@keyframes swing-leaf2 {
+    from {
+        transform: translate(4rem, -2rem) rotate(-12deg);
+    }
+    to {
+        transform: translate(4rem, -2rem) rotate(12deg);
+    }
+}
+
+@keyframes swing-leaf3 {
+    from {
+        transform: translate(4.6rem, -2rem) rotate(-60deg);
+    }
+    to {
+        transform: translate(4.6rem, -2rem) rotate(-45deg);
+    }
+}
+
+@keyframes left-bird {
+    0% {
+        transform: translate(-500rem, 10rem);
+    }
+    100% {
+        transform: translate(20rem, 10rem);
+    }
+}
+
+@keyframes bird-beak-swing {
+    0% {
+        transform: translate(18.5rem, -17rem) rotate(90deg);
+    }
+    100% {
+        transform: translate(18.5rem, -17rem) rotate(120deg);
+    }
+}
+
+@keyframes bird-eye-swing {
+    0% {
+        transform: translate(0, 0) scale(1);
+        background: black;
+    }
+    100% {
+        transform: translate(1rem, 2rem) scale(1.8);
+        background: #444;
+    }
+}

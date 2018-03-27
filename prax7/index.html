@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Prax7: Animatsioonid</title>
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/main.css" rel="stylesheet">
+    <script src="scripts/vue.js"></script>
+</head>
+<body>
+    <div id="app" class="container">
+        <div class="tree">
+            <div class="leaf n1"></div>
+            <div class="leaf n2"></div>
+            <div class="leaf n3"></div>
+            <div class="log n1"></div>
+            <div class="log n2"></div>
+            <div class="log n3"></div>
+            <div class="log n4"></div>
+            <div class="log n5"></div>
+            <div class="log n6"></div>
+        </div>
+        <div class="bird">
+            <div class="bird-body">
+                <h2>Login</h2>
+                <div class="bird-eye"></div>                
+                <form>
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" class="form-control" id="username">
+                    </div>
+                    <div class="form-group">
+                        <label for="pass">Password</label>
+                        <input type="password" class="form-control" id="pass">
+                    </div>
+                </form>
+                <div class="bird-beak"></div>
+            </div>
+        </div>
+        <button @click="animate = !animate">Start animation</button>
+    </div>
+    <script src="scripts/main.js"></script>
+</body>
+</html>
