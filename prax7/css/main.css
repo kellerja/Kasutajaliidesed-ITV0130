@@ -235,9 +235,11 @@ html, body {
     width: 0;
     transform-origin: center 140%;
     transform: translate(18.5rem, -17rem) rotate(90deg);
+    color: rgb(255, 255, 235);
+    background: rgb(255, 255, 235);
     border-bottom: 120px solid yellow; 
-    border-left: 60px solid white; 
-    border-right: 60px solid white;
+    border-left: 60px solid rgb(255, 255, 235); 
+    border-right: 60px solid rgb(255, 255, 235);
     animation: bird-beak-swing 4s ease-in-out 0s infinite alternate;
 }
 
@@ -246,9 +248,11 @@ html, body {
     width: 0;
     transform-origin: center 140%;
     transform: translate(-6.2rem, -7.8rem) rotate(-90deg);
+    color: rgb(255, 255, 235);
+    background: rgb(255, 255, 235);
     border-bottom: 5rem solid yellow; 
-    border-left: 2rem solid white; 
-    border-right: 2rem solid white;
+    border-left: 2rem solid rgb(255, 255, 235); 
+    border-right: 2rem solid rgb(255, 255, 235);
     animation: bird2-beak-swing 4s ease-in-out 0s infinite alternate;
 }
 
