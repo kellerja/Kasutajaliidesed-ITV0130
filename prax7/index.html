@@ -74,8 +74,10 @@
             </div>
         </div>
         <div :class="['alert', {'active': isAlert}]" @click="isAlert = false">
-            <p>ALERT</p>
-            <p>Do not click this banner</p>
+            <div class="alert-content">
+                <p>ALERT</p>
+                <p>Do not click this banner</p>
+            </div>
         </div>
     </div>
     <script src="scripts/main.js"></script>
