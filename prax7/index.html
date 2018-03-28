@@ -22,7 +22,7 @@
             <div class="log n5"></div>
             <div class="log n6"></div>
         </div>
-        <div class="bird">
+        <div :class="['bird', {'leave' : isLoggedIn}]">
             <div class="bird-body">
                 <h2>Login</h2>
                 <div class="bird-eye"></div>                
@@ -39,7 +39,44 @@
                 <div class="bird-beak"></div>
             </div>
         </div>
-        <button @click="animate = !animate">Start animation</button>
+        <div :class="['bird', 'n2', {'leave': isLoggedIn}]">
+            <div class="bird-body n2">
+                <div class="bird-eye n2"></div>
+                <button class="btn" @click="isLoggedIn = true">Login</button>
+                <div class="bird-beak n2"></div>
+            </div>
+        </div>
+        <div :class="['content', {'active': isLoggedIn}]">
+            <h3>Menu</h3>
+            <div class="card btn">
+                <div class="title">Topics</div>
+                <div class="info">
+                    <p>Prices</p>
+                    <p>Opinions</p>
+                    <p>asfaggergregregr</p>
+                </div>
+            </div>
+            <div class="card btn">
+                <div class="title">Tropics</div>
+                <div class="info">
+                    <p>asdasdasdasdsasdasdasdasads</p>
+                    <p>a nice tree</p>
+                    <p>afadsaawertryjtykiuloööö546</p>
+                </div>
+            </div>
+            <div class="card btn" @mouseover="isAlert = true">
+                <div class="title">Rule of three</div>
+                <div class="info">
+                    <p>one</p>
+                    <p>two</p>
+                    <p>three</p>
+                </div>
+            </div>
+        </div>
+        <div :class="['alert', {'active': isAlert}]" @click="isAlert = false">
+            <p>ALERT</p>
+            <p>Do not click this banner</p>
+        </div>
     </div>
     <script src="scripts/main.js"></script>
 </body>

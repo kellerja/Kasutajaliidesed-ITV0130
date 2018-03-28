@@ -1,7 +1,8 @@
 let vm = new Vue({
     el: '#app',
     data: {
-        animate: false
+        isLoggedIn: false,
+        isAlert: false
     },
     methods: {}
 })
