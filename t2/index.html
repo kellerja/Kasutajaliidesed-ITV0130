@@ -20,8 +20,9 @@
         </div>
         
         <div class="paper-container">
-            <task-component :draggable="!game.isGameOver" v-for="(task, index) in game.tasks" 
-                :key="'task_' + task.id" :task="task" :game-over="game.isGameOver"></task-component>
+            <task-component v-for="(task, index) in game.tasks" 
+                :key="'task_' + task.id" :id="'task_' + task.id" :task="task" 
+                :game-over="game.isGameOver"></task-component>
         </div>
         <div :class="{'invisible': !game.isGameOver}">
             <p>Game over</p>

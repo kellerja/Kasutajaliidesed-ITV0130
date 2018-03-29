@@ -37,7 +37,7 @@ class Bin {
     }
 
     drop(event, bin, player) {
-        if (!(tempDragObject instanceof Task)) {
+        if (!(tempDragObject instanceof DraggableTask)) {
             return;
         }
         tempDragObject.run(bin, player);
@@ -57,7 +57,8 @@ class Task {
         this.score = 1;
         this.id = Math.random();
         this.taskCompleteEvent = taskCompleteCallback;
-        this.animation = 'animation: 5s linear 0s 1 timer';
+        this.animation = 'animation: 500s linear 0s 1 timer';
+        this.isValid = true;
     }
 
     start() {
@@ -69,6 +70,17 @@ class Task {
 
     finish() {}
 
+    timeout() {
+        this.state = TaskState.FAILED;
+        this.taskCompleteEvent(this, new Reward(-1, 0));
+    }
+}
+
+class DraggableTask extends Task {
+    constructor(taskCompleteCallback) {
+        super(taskCompleteCallback);
+    }
+
     drag(event, task) {
         tempDragObject = task;
     }
@@ -76,18 +88,42 @@ class Task {
     dragStop(event) {
         tempDragObject = null;
     }
-
-    timeout() {
-        this.state = TaskState.FAILED;
-        this.taskCompleteEvent(this, new Reward(-1, 0));
-    }
 }
 
-Vue.component('task-component', {
-    template: '<div class="paper" @dragstart="task.drag($event, task)" @dragend="task.dragStop" \
-            :style="animation ? task.animation + (gameOver ? \' paused;\' : \'\') : \'\'" \
-            @animationend="timeOut">{{ task.correctBin.id }}</div>',
+Vue.component('calculate-task-component', {
+    template: '<div class="paper"> \
+                    <p>Find x:<br> {{task.challenge.formula}}</p> \
+                    <input type="number" class="w-100" v-model="guess"> \
+                    <button @click="task.run(guess)" class="btn w-100">Send</button> \
+                </div>',
     props: ['task', 'gameOver'],
+    data: function() {
+        return {
+            guess: '',
+            animation: false
+        };
+    }
+});
+
+Vue.component('draggable-task-component', {
+    template: '<div class="paper" :draggable="!gameOver" @dragstart="task.drag($event, task)" \
+                @dragend="task.dragStop">{{ task.correctBin.id }}</div>',
+    props: ['task', 'gameOver']
+})
+
+Vue.component('task-component', {
+    template: '<draggable-task-component :task="task" :gameOver="gameOver" v-if="isDraggableTask" \
+                    :style="animation ? task.animation + (gameOver ? \' paused;\' : \'\') : \'\'" \
+                    @animationend="timeOut"></draggable-task-component> \
+                <calculate-task-component :task="task" :gameOver="gameOver" v-else \
+                    :style="animation ? task.animation + (gameOver ? \' paused;\' : \'\') : \'\'" \
+                    @animationend="timeOut"></calculate-task-component>',
+    props: ['task', 'gameOver'],
+    computed: {
+        isDraggableTask: function() {
+            return this.task instanceof DraggableTask;
+        }
+    },
     data: function() {
         return {
             animation: false
@@ -107,18 +143,39 @@ Vue.component('task-component', {
     }
 });
 
-class SortingTask extends Task {
+class SortingTask extends DraggableTask {
     constructor(correctBin, taskCompleteCallback) {
         super(taskCompleteCallback);
         this.correctBin = correctBin;
-        this.isValid = true;
     }
 
-    run(target) {
+    run(target, player) {
         if (!this.isValid || !(target instanceof Bin)) {
             return;
         }
         if (this.correctBin === target) {
+            this.state = TaskState.COMPLETED;
+            this.taskCompleteEvent(this, new Reward(0, this.score));
+        } else {
+            this.state = TaskState.FAILED;
+            this.taskCompleteEvent(this, new Reward(-1, 0));
+        }
+    }
+}
+
+class CalculationTask extends Task {
+    constructor(taskCompleteCallback) {
+        super(taskCompleteCallback);
+        this.challenge = {
+            formula: '6 + 5 = x',
+            correct: 11
+        }
+    }
+
+    run(target, player) {
+        let playerGuess = Number.parseFloat(target);
+        if (isNaN(playerGuess)) return;
+        if (Math.abs(playerGuess - this.challenge.correct) < 10e-3) {
             this.state = TaskState.COMPLETED;
             this.taskCompleteEvent(this, new Reward(0, this.score));
         } else {
@@ -151,10 +208,15 @@ class Game {
                                 (res, reward) => this.taskCompleteCallback(res, reward));
     }
 
+    generateCalculationTask() {
+        return new CalculationTask((res, reward) => this.taskCompleteCallback(res, reward));
+    }
+
     restart() {
         this.isGameOver = false;
         this.player = new Player((score) => this.gameOverCallback(score));
         this.tasks = Array.from({length: this.numOfSortingTasks}, () => this.generateNewSortingTask());
+        this.tasks.push(this.generateCalculationTask());
     }
 }
 
