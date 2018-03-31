@@ -65,7 +65,7 @@ class Task {
         this.score = 1;
         this.id = Math.random();
         this.taskCompleteEvent = taskCompleteCallback;
-        this.animation = 'animation: 500s linear 0s 1 timer';
+        this.animation = '50s linear 0s 1 timer';
         this.isValid = true;
     }
 
@@ -99,7 +99,9 @@ class DraggableTask extends Task {
 }
 
 Vue.component('calculate-task-component', {
-    template: '<div class="extra-task-calc"> \
+    template: '<div class="extra-task-calc" \
+                :style="{animation: (animation ? task.animation + (gameOver ? \' paused;\' : \'\') : \'\')}" \
+                @animationend="timeOut"> \
                     <p style="margin: 0; padding: 0; margin-bottom: 0.3rem;">Find x:<br> {{task.challenge.formula}}</p> \
                     <input type="number" class="w-100" v-model="guess"> \
                     <button @click="task.run(guess)" class="btn w-100">Hack</button> \
@@ -110,28 +112,28 @@ Vue.component('calculate-task-component', {
             guess: '',
             animation: false
         };
+    },
+    methods: {
+        timeOut: function(event) {
+            this.task.timeout();
+        }
+    },
+    mounted: function() {
+        this.animation = true;
+        this.task.start();
+    },
+    beforeDestroy: function() {
+        this.animation = false;
     }
 });
 
 Vue.component('draggable-task-component', {
-    template: '<img class="task" :style="gameOver ? \'cursor: default;\' : \'cursor: move;\'" :src="task.imageUrl" :draggable="!gameOver" @dragstart="task.drag($event, task)" \
-                @dragend="task.dragStop">',
-    props: ['task', 'gameOver']
-})
-
-Vue.component('task-component', {
-    template: '<draggable-task-component :task="task" :gameOver="gameOver" v-if="isDraggableTask" \
-                    :style="animation ? task.animation + (gameOver ? \' paused;\' : \'\') : \'\'" \
-                    @animationend="timeOut"></draggable-task-component> \
-                <calculate-task-component :task="task" :gameOver="gameOver" v-else \
-                    :style="animation ? task.animation + (gameOver ? \' paused;\' : \'\') : \'\'" \
-                    @animationend="timeOut"></calculate-task-component>',
+    template: '<img class="task" :src="task.imageUrl" :draggable="!gameOver" @dragstart="task.drag($event, task)" \
+                @dragend="task.dragStop" \
+                :style="{animation:  (animation ? task.animation + (gameOver ? \' paused\' : \'\') : \'\'), \
+                    cursor: + (gameOver ? \'default\' : \'move\')}" \
+                @animationend="timeOut">',
     props: ['task', 'gameOver'],
-    computed: {
-        isDraggableTask: function() {
-            return this.task instanceof DraggableTask;
-        }
-    },
     data: function() {
         return {
             animation: false
@@ -149,7 +151,7 @@ Vue.component('task-component', {
     beforeDestroy: function() {
         this.animation = false;
     }
-});
+})
 
 class SortingTask extends DraggableTask {
     constructor(correctBin, taskCompleteCallback) {
@@ -219,21 +221,25 @@ let bioTrashAssets = [
 
 class Game {
     constructor() {
-        this.bins = [new Bin(1, '/assets/recycle-bin-interface-symbol.svg', bioTrashAssets), 
+        this.bins = [/*new Bin(1, '/assets/recycle-bin-interface-symbol.svg', bioTrashAssets), */
                      new Bin(2, '/assets/delete.svg', trashAssets), 
                      new Bin(3, '/assets/money-bag-2.svg', valuableAssets)];
         this.numOfSortingTasks = 2;
         this.restart();
         this.extraTask = null;
-        setInterval(() => {
+        this.extraTaskIntervalFunction = () => {
             if (this.extraTask || Math.random() < 0.5) return;
-            this.extraTask = this.generateCalculationTask();
-        }, 10000);
+            Vue.set(this, 'extraTask', this.generateCalculationTask());
+        };
+        this.extraTaskIntervalRepeatTimeInMillis = 10000;
+        this.extraTaskInterval = setInterval(this.extraTaskIntervalFunction, this.extraTaskIntervalRepeatTimeInMillis);
     }
 
     gameOverCallback(score) {
         this.isGameOver = true;
         document.body.style.backgroundImage = 'url("/background/background_arrested.png")';
+        clearInterval(this.extraTaskInterval);
+        Vue.set(this, 'extraTask', null);
     }
 
     taskCompleteCallback(task, reward) {
@@ -246,7 +252,7 @@ class Game {
 
     extraTaskCopleteCallback(task, reward) {
         this.player.applyReward(reward);
-        this.extraTask = null;
+        Vue.set(this, 'extraTask', null);
     }
 
     generateNewSortingTask() {
@@ -264,7 +270,8 @@ class Game {
         let result = +eval(formula.join('')).toFixed(3);
         formula.push('=');
         formula.push(result);
-        let xPos = [0, 2, 4][Math.floor(Math.random() * 3)];
+        var xPos = [0, 2, 4][Math.floor(Math.random() * 3)];
+        if ((formula[0] === 0 || formula[2] == 0) && formula[1] === '*') xPos = 4;
         return new CalculationTask(formula, xPos, (res, reward) => this.extraTaskCopleteCallback(res, reward));
     }
 
@@ -273,6 +280,7 @@ class Game {
         this.player = new Player((score) => this.gameOverCallback(score));
         this.tasks = Array.from({length: this.numOfSortingTasks}, () => this.generateNewSortingTask());
         document.body.style.backgroundImage = 'url("/background/background.png")';
+        this.extraTaskInterval = setInterval(this.extraTaskIntervalFunction, this.extraTaskIntervalRepeatTimeInMillis);
     }
 }
 
@@ -280,6 +288,5 @@ let vm = new Vue({
     el: '#game',
     data: {
         game: new Game()
-    },
-    methods: {}
+    }
 });
