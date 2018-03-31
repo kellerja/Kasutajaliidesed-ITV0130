@@ -10,22 +10,34 @@
     <title>Document</title>
 </head>
 <body>
-    <div id="game">
-        <div class="hp-container">
-            <div class="health-bar" v-for="_ in Math.max(game.player.lives, 0)"></div>
-            <p style="margin-left: 20px">{{ game.player.score }}</p>
+    <div id="game" class="container">
+        <div v-if="!game.isGameOver">
+            <div class="hp-container">
+                <h1>Wanted level:</h1>
+                <div class="health-bar-filled" v-for="_ in Math.max(game.player.maxLives - game.player.lives, 0)"></div>
+                <div class="health-bar-outline" v-for="_ in Math.max(game.player.lives, 0)"></div>
+                <h1 style="margin-left: 20px">Haul value: {{ game.player.score }} €</h1>
+            </div>
+            <h1>Quick, grab all that is valuable! Discard the rest!</h1>
+            <div class="basket-container">
+                <img class="basket" draggable="false" v-for="(bin, index) in game.bins" :src="bin.imageUrl" @drop="bin.drop($event, bin)" @dragover.prevent="">
+            </div>
+            
+            <div class="paper-container">
+                <h1>Loot:</h1>
+                <task-component v-for="(task, index) in game.tasks" 
+                    :key="'task_' + task.id" :id="'task_' + task.id" :task="task" 
+                    :game-over="game.isGameOver"></task-component>
+            </div>
+            <div v-if="game.extraTask">
+                <h1>Disable the alarm!</h1>
+                <task-component :key="'task_' + game.extraTask.id" :id="'task_' + game.extraTask.id" 
+                    :task="game.extraTask" :game-over="game.isGameOver"></task-component>
+            </div>
         </div>
-        <div class="basket-container">
-            <img class="basket" draggable="false" v-for="(bin, index) in game.bins" :src="bin.imageUrl" @drop="bin.drop($event, bin)" @dragover.prevent="">
-        </div>
-        
-        <div class="paper-container">
-            <task-component v-for="(task, index) in game.tasks" 
-                :key="'task_' + task.id" :id="'task_' + task.id" :task="task" 
-                :game-over="game.isGameOver"></task-component>
-        </div>
-        <div :class="{'invisible': !game.isGameOver}">
-            <p>Game over</p>
+        <div v-else>
+            <h1>You have been busted!</h1>
+            <h3>Final haul value: {{ game.player.score }} €</h3>
             <button @click="game.restart()">Restart</button>
         </div>
     </div>

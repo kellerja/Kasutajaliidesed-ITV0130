@@ -1,21 +1,87 @@
+body {
+    background-image: url("/background/background.png");
+    background-repeat: no-repeat;
+    background-position-x: 100%;
+    background-position-y: 0%;
+    background-size: 80%;
+}
+
 .basket {
     height: 10rem;
     width: 10rem;
     margin-left: 2rem;
     border: 0.1rem black solid;
+    user-select: none;
 }
 
-.paper {
+.task {
     height: 5rem;
     width: 5rem;
     margin-left: 2rem;
+    user-select: none;
 }
 
-.health-bar {
-    height: 20px;
-    width: 20px;
+.extra-task {
+    height: 10rem;
+    width: 10rem;
+    user-select: none;
+    padding: 0.1rem 0.4rem;
+    border: 0.2rem solid black;
+}
+
+.health-bar-filled {
     margin-left: 5px;
-    background: red;
+}
+
+.health-bar-filled::before {
+    content: " ";
+    display: block;
+    height: 2rem;
+    width: 2rem;
+    border-top-left-radius: 50%;
+    border-top-right-radius: 50%;
+    background: blue;
+    margin-left: 0.2rem;
+    animation: police-light 1s ease-in-out 0s infinite alternate;
+}
+
+.health-bar-filled::after {
+    content: " ";
+    display: block;
+    height: 1rem;
+    width: 2.4rem;
+    border-top-left-radius: 0.3rem;
+    border-top-right-radius: 0.3rem;
+    background: black;
+}
+
+.health-bar-outline {
+    margin-left: 5px;
+}
+
+.health-bar-outline::before {
+    content: " ";
+    display: block;
+    height: 2rem;
+    width: 2rem;
+    border-top-left-radius: 50%;
+    border-top-right-radius: 50%;
+    border: 0.2rem solid black;
+    border-bottom-width: 0.1rem;
+    box-sizing: border-box;
+    margin-left: 0.2rem;
+}
+
+.health-bar-outline::after {
+    content: " ";
+    display: block;
+    height: 1rem;
+    width: 2.4rem;
+    border-top-left-radius: 0.3rem;
+    border-top-right-radius: 0.3rem;
+    box-sizing: border-box;
+    border: 0.2rem solid black;
+    border-top-width: 0.1rem;
 }
 
 .basket-container {
@@ -39,5 +105,14 @@
     }
     to {
         opacity: 0;
+    }
+}
+
+@keyframes police-light {
+    0% {
+        background-color: blue;
+    }
+    100% {
+        background-color: red;
     }
 }

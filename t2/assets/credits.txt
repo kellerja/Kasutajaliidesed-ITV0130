@@ -43,3 +43,9 @@ Tux_Paint_banana.svg
 wrench.svg
     https://www.onlinewebfonts.com/icon/536254
     <div>Icon made from <a href="http://www.onlinewebfonts.com/icon">Icon Fonts</a> is licensed by CC BY 3.0</div>
+
+thief/*
+    http://www.clipartpanda.com/categories/thief-clip-art-free
+
+police_officer_12.gif
+    http://easyway1234.blogspot.com.ee/2013/09/thief-and-cop-poem.html

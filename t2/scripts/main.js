@@ -9,14 +9,15 @@ var tempDragObject = null;
 
 class Player {
     constructor(gameOverCallback) {
-        this.lives = 3;
+        this.maxLives = 3;
+        this.lives = this.maxLives;
         this.score = 0;
         this.gameOverEvent = gameOverCallback;
     }
 
     deltaLives(delta) {
         this.lives += delta;
-        if (this.lives <= 0) {
+        if (this.isDead()) {
             this.gameOverEvent && this.gameOverEvent(this.score);
         }
     }
@@ -26,8 +27,13 @@ class Player {
     }
 
     applyReward(reward) {
+        if (this.isDead()) return;
         this.deltaScore(reward.deltaScore);
         this.deltaLives(reward.deltaLives);
+    }
+
+    isDead() {
+        return this.lives <= 0;
     }
 }
 
@@ -93,7 +99,7 @@ class DraggableTask extends Task {
 }
 
 Vue.component('calculate-task-component', {
-    template: '<div class="paper"> \
+    template: '<div class="extra-task"> \
                     <p>Find x:<br> {{task.challenge.formula}}</p> \
                     <input type="number" class="w-100" v-model="guess"> \
                     <button @click="task.run(guess)" class="btn w-100">Send</button> \
@@ -108,7 +114,7 @@ Vue.component('calculate-task-component', {
 });
 
 Vue.component('draggable-task-component', {
-    template: '<img class="paper" :style="gameOver ? \'cursor: default;\' : \'cursor: move;\'" :src="task.imageUrl" :draggable="!gameOver" @dragstart="task.drag($event, task)" \
+    template: '<img class="task" :style="gameOver ? \'cursor: default;\' : \'cursor: move;\'" :src="task.imageUrl" :draggable="!gameOver" @dragstart="task.drag($event, task)" \
                 @dragend="task.dragStop">',
     props: ['task', 'gameOver']
 })
@@ -149,7 +155,9 @@ class SortingTask extends DraggableTask {
     constructor(correctBin, taskCompleteCallback) {
         super(taskCompleteCallback);
         this.correctBin = correctBin;
-        this.imageUrl = correctBin.contentUrls[Math.floor(Math.random() * correctBin.contentUrls.length)];
+        let selectedContent = correctBin.contentUrls[Math.floor(Math.random() * correctBin.contentUrls.length)];
+        this.imageUrl = selectedContent[0];
+        this.score = selectedContent[1];
     }
 
     run(target, player) {
@@ -167,11 +175,13 @@ class SortingTask extends DraggableTask {
 }
 
 class CalculationTask extends Task {
-    constructor(taskCompleteCallback) {
+    constructor(formula, xPos, taskCompleteCallback) {
         super(taskCompleteCallback);
+        let hiddenFormula = Object.assign([], formula);
+        hiddenFormula.splice(xPos, 1, 'x');
         this.challenge = {
-            formula: '6 + 5 = x',
-            correct: 11
+            formula: hiddenFormula.join(' '),
+            correct: formula[xPos]
         }
     }
 
@@ -189,22 +199,22 @@ class CalculationTask extends Task {
 }
 
 let valuableAssets = [
-    '/assets/diamond.svg',
-    '/assets/engagement-ring.svg',
-    '/assets/Gold_Block_clip_art.svg',
-    '/assets/gold.svg',
-    '/assets/jewel.svg',
-    '/assets/coin-stack.svg',
-    '/assets/money-bag.svg',
-    '/assets/money-svgrepo-com.svg',
+    ['/assets/diamond.svg', 100],
+    ['/assets/engagement-ring.svg', 50],
+    ['/assets/Gold_Block_clip_art.svg', 70],
+    ['/assets/gold.svg', 66],
+    ['/assets/jewel.svg', 65],
+    ['/assets/coin-stack.svg', 88],
+    ['/assets/money-bag.svg', 87],
+    ['/assets/money-svgrepo-com.svg', 63],
 ];
 
 let trashAssets = [
-    '/assets/wrench.svg'
+    ['/assets/wrench.svg', 34]
 ];
 
 let bioTrashAssets = [
-    '/assets/Tux_Paint_banana.svg'
+    ['/assets/Tux_Paint_banana.svg', 55]
 ];
 
 class Game {
@@ -214,17 +224,29 @@ class Game {
                      new Bin(3, '/assets/money-bag-2.svg', valuableAssets)];
         this.numOfSortingTasks = 2;
         this.restart();
+        this.extraTask = null;
+        setInterval(() => {
+            if (this.extraTask) return;
+            this.extraTask = this.generateCalculationTask();
+        }, 1000);
     }
 
     gameOverCallback(score) {
         this.isGameOver = true;
+        document.body.style.backgroundImage = 'url("/background/background_arrested.png")';
     }
 
     taskCompleteCallback(task, reward) {
         this.player.applyReward(reward);
         let taskIndex = this.tasks.indexOf(task);
         this.tasks[taskIndex].isValid = false;
-        this.tasks.splice(taskIndex, 1, this.generateNewSortingTask());
+        this.tasks.splice(taskIndex, 1);
+        this.tasks.push(this.generateNewSortingTask());
+    }
+
+    extraTaskCopleteCallback(task, reward) {
+        this.player.applyReward(reward);
+        this.extraTask = null;
     }
 
     generateNewSortingTask() {
@@ -233,13 +255,24 @@ class Game {
     }
 
     generateCalculationTask() {
-        return new CalculationTask((res, reward) => this.taskCompleteCallback(res, reward));
+        let formula = [];
+        let ops = ['+', '-', '/', '*'];
+        formula.push(+Math.floor(Math.random() * 10).toFixed(3));
+        formula.push(ops[Math.floor(Math.random() * ops.length)]);
+        formula.push(+Math.floor(Math.random() * 10).toFixed(3));
+        if (formula[1] === '/' && formula[2] === 0) formula[2] = 1;
+        let result = +eval(formula.join('')).toFixed(3);
+        formula.push('=');
+        formula.push(result);
+        let xPos = [0, 2, 4][Math.floor(Math.random() * 3)];
+        return new CalculationTask(formula, xPos, (res, reward) => this.extraTaskCopleteCallback(res, reward));
     }
 
     restart() {
         this.isGameOver = false;
         this.player = new Player((score) => this.gameOverCallback(score));
         this.tasks = Array.from({length: this.numOfSortingTasks}, () => this.generateNewSortingTask());
+        document.body.style.backgroundImage = 'url("/background/background.png")';
     }
 }
 
