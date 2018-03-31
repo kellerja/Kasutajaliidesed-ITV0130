@@ -108,7 +108,7 @@ Vue.component('calculate-task-component', {
 });
 
 Vue.component('draggable-task-component', {
-    template: '<img class="paper" :src="task.imageUrl" :draggable="!gameOver" @dragstart="task.drag($event, task)" \
+    template: '<img class="paper" :style="gameOver ? \'cursor: default;\' : \'cursor: move;\'" :src="task.imageUrl" :draggable="!gameOver" @dragstart="task.drag($event, task)" \
                 @dragend="task.dragStop">',
     props: ['task', 'gameOver']
 })
