@@ -62,7 +62,7 @@ class Reward {
 class Task {
     constructor(taskCompleteCallback) {
         this.state = TaskState.NOT_STARTED;
-        this.score = 1;
+        this.score = 0;
         this.id = Math.random();
         this.taskCompleteEvent = taskCompleteCallback;
         this.animation = '50s linear 0s 1 timer';
@@ -101,7 +101,7 @@ class DraggableTask extends Task {
 Vue.component('calculate-task-component', {
     template: '<div class="extra-task-calc" \
                 :style="{animation: (animation ? task.animation + (gameOver ? \' paused;\' : \'\') : \'\')}" \
-                @animationend="timeOut"> \
+                @animationend="timeOut" @contextmenu.prevent=""> \
                     <p style="margin: 0; padding: 0; margin-bottom: 0.3rem;">Find x:<br> {{task.challenge.formula}}</p> \
                     <input type="number" class="w-100" v-model="guess"> \
                     <button @click="task.run(guess)" class="btn w-100">Hack</button> \
@@ -129,9 +129,9 @@ Vue.component('calculate-task-component', {
 
 Vue.component('draggable-task-component', {
     template: '<img class="task" :src="task.imageUrl" :draggable="!gameOver" @dragstart="task.drag($event, task)" \
-                @dragend="task.dragStop" \
-                :style="{animation:  (animation ? task.animation + (gameOver ? \' paused\' : \'\') : \'\'), \
-                    cursor: + (gameOver ? \'default\' : \'move\')}" \
+                @dragend="task.dragStop" @contextmenu.prevent="" \
+                :style="{animation:  (animation ? task.animation + (gameOver ? \' paused\' : \'none\') : \'\'), \
+                    cursor: (gameOver ? \'default\' : \'move\')}" \
                 @animationend="timeOut">',
     props: ['task', 'gameOver'],
     data: function() {
@@ -212,11 +212,11 @@ let valuableAssets = [
 ];
 
 let trashAssets = [
-    ['/assets/wrench.svg', 1]
+    ['/assets/wrench.svg', 0]
 ];
 
 let bioTrashAssets = [
-    ['/assets/Tux_Paint_banana.svg', 1]
+    ['/assets/Tux_Paint_banana.svg', 0]
 ];
 
 class Game {

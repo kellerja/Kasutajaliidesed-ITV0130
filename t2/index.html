@@ -20,7 +20,8 @@
             </div>
             <h1>Quick, grab all that is valuable! Discard the rest!</h1>
             <div class="basket-container">
-                <img class="basket" draggable="false" v-for="(bin, index) in game.bins" :src="bin.imageUrl" @drop="bin.drop($event, bin)" @dragover.prevent="">
+                <img class="basket" draggable="false" v-for="(bin, index) in game.bins" :src="bin.imageUrl" 
+                    @drop="bin.drop($event, bin)" @contextmenu.prevent="" @dragover.prevent="">
             </div>
             
             <div class="paper-container">
