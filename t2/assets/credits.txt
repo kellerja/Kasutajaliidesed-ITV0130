@@ -49,3 +49,6 @@ thief/*
 
 police_officer_12.gif
     http://easyway1234.blogspot.com.ee/2013/09/thief-and-cop-poem.html
+
+chip
+    https://www.shareicon.net/chip-processor-cpu-technology-electronic-electronics-811525

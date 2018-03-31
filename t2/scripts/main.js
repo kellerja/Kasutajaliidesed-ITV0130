@@ -99,10 +99,10 @@ class DraggableTask extends Task {
 }
 
 Vue.component('calculate-task-component', {
-    template: '<div class="extra-task"> \
-                    <p>Find x:<br> {{task.challenge.formula}}</p> \
+    template: '<div class="extra-task-calc"> \
+                    <p style="margin: 0; padding: 0; margin-bottom: 0.3rem;">Find x:<br> {{task.challenge.formula}}</p> \
                     <input type="number" class="w-100" v-model="guess"> \
-                    <button @click="task.run(guess)" class="btn w-100">Send</button> \
+                    <button @click="task.run(guess)" class="btn w-100">Hack</button> \
                 </div>',
     props: ['task', 'gameOver'],
     data: function() {
@@ -210,11 +210,11 @@ let valuableAssets = [
 ];
 
 let trashAssets = [
-    ['/assets/wrench.svg', 34]
+    ['/assets/wrench.svg', 1]
 ];
 
 let bioTrashAssets = [
-    ['/assets/Tux_Paint_banana.svg', 55]
+    ['/assets/Tux_Paint_banana.svg', 1]
 ];
 
 class Game {
@@ -226,9 +226,9 @@ class Game {
         this.restart();
         this.extraTask = null;
         setInterval(() => {
-            if (this.extraTask) return;
+            if (this.extraTask || Math.random() < 0.5) return;
             this.extraTask = this.generateCalculationTask();
-        }, 1000);
+        }, 10000);
     }
 
     gameOverCallback(score) {

@@ -21,12 +21,13 @@ body {
     user-select: none;
 }
 
-.extra-task {
-    height: 10rem;
-    width: 10rem;
+.extra-task-calc {
+    height: 15rem;
+    width: 15rem;
     user-select: none;
-    padding: 0.1rem 0.4rem;
+    padding: 3.4rem;
     border: 0.2rem solid black;
+    background-image: url("/assets/chip.svg");
 }
 
 .health-bar-filled {
