@@ -32,8 +32,10 @@ class Player {
 }
 
 class Bin {
-    constructor(identifier)  {
+    constructor(identifier, imageUrl, contentUrls)  {
         this.id = identifier;
+        this.imageUrl = imageUrl;
+        this.contentUrls = contentUrls;
     }
 
     drop(event, bin, player) {
@@ -106,8 +108,8 @@ Vue.component('calculate-task-component', {
 });
 
 Vue.component('draggable-task-component', {
-    template: '<div class="paper" :draggable="!gameOver" @dragstart="task.drag($event, task)" \
-                @dragend="task.dragStop">{{ task.correctBin.id }}</div>',
+    template: '<img class="paper" :src="task.imageUrl" :draggable="!gameOver" @dragstart="task.drag($event, task)" \
+                @dragend="task.dragStop">',
     props: ['task', 'gameOver']
 })
 
@@ -147,6 +149,7 @@ class SortingTask extends DraggableTask {
     constructor(correctBin, taskCompleteCallback) {
         super(taskCompleteCallback);
         this.correctBin = correctBin;
+        this.imageUrl = correctBin.contentUrls[Math.floor(Math.random() * correctBin.contentUrls.length)];
     }
 
     run(target, player) {
@@ -185,9 +188,30 @@ class CalculationTask extends Task {
     }
 }
 
+let valuableAssets = [
+    '/assets/diamond.svg',
+    '/assets/engagement-ring.svg',
+    '/assets/Gold_Block_clip_art.svg',
+    '/assets/gold.svg',
+    '/assets/jewel.svg',
+    '/assets/coin-stack.svg',
+    '/assets/money-bag.svg',
+    '/assets/money-svgrepo-com.svg',
+];
+
+let trashAssets = [
+    '/assets/wrench.svg'
+];
+
+let bioTrashAssets = [
+    '/assets/Tux_Paint_banana.svg'
+];
+
 class Game {
     constructor() {
-        this.bins = [new Bin(1), new Bin(2), new Bin(3), new Bin(4), new Bin(5)];
+        this.bins = [new Bin(1, '/assets/recycle-bin-interface-symbol.svg', bioTrashAssets), 
+                     new Bin(2, '/assets/delete.svg', trashAssets), 
+                     new Bin(3, '/assets/money-bag-2.svg', valuableAssets)];
         this.numOfSortingTasks = 2;
         this.restart();
     }
@@ -216,7 +240,6 @@ class Game {
         this.isGameOver = false;
         this.player = new Player((score) => this.gameOverCallback(score));
         this.tasks = Array.from({length: this.numOfSortingTasks}, () => this.generateNewSortingTask());
-        this.tasks.push(this.generateCalculationTask());
     }
 }
 

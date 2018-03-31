@@ -16,7 +16,7 @@
             <p style="margin-left: 20px">{{ game.player.score }}</p>
         </div>
         <div class="basket-container">
-            <div class="basket" v-for="(bin, index) in game.bins" @drop="bin.drop($event, bin)" @dragover.prevent="">{{ bin.id }}</div>
+            <img class="basket" draggable="false" v-for="(bin, index) in game.bins" :src="bin.imageUrl" @drop="bin.drop($event, bin)" @dragover.prevent="">
         </div>
         
         <div class="paper-container">

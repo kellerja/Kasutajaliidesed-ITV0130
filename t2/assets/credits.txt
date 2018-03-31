@@ -1,0 +1,45 @@
+recycle-bin-interface-symbol.svg
+    https://www.flaticon.com/free-icon/recycle-bin-interface-symbol_40292
+    <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+
+delete.svg
+    https://www.shareicon.net/delete-trash-bin-garbage-can-recycling-tools-and-utensils-multimedia-option-furniture-and-household-822390
+
+money-bag-2.svg
+    http://simpleicon.com/money-bag-2.html
+
+engagement-ring.svg
+    https://www.flaticon.com/free-icon/engagement-ring_157372
+    <div>Icons made by <a href="https://www.flaticon.com/authors/elias-bikbulatov" title="Elias Bikbulatov">Elias Bikbulatov</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+
+jewel.svg
+    https://www.onlinewebfonts.com/icon/205432
+    <div>Icon made from <a href="http://www.onlinewebfonts.com/icon">Icon Fonts</a> is licensed by CC BY 3.0</div>
+
+diamond.svg
+    https://www.shareicon.net/diamond-jewel-gem-jewelry-loan-asset-pawnshop-885561
+
+gold.svg
+    https://www.shareicon.net/bank-business-luxury-ingot-gold-ingots-gold-762852
+
+Gold_Block_clip_art.svg
+    https://4vector.com/free-vector/gold-block-clip-art-105724
+
+money-bag.svg
+    https://www.onlinewebfonts.com/icon/378823
+    <div>Icon made from <a href="http://www.onlinewebfonts.com/icon">Icon Fonts</a> is licensed by CC BY 3.0</div>
+
+money-svgrepo-com.svg
+    https://www.svgrepo.com/svg/6268/money
+
+coin-stack.svg
+    https://www.onlinewebfonts.com/icon/387475
+    <div>Icon made from <a href="http://www.onlinewebfonts.com/icon">Icon Fonts</a> is licensed by CC BY 3.0</div>
+
+Tux_Paint_banana.svg
+    https://commons.wikimedia.org/wiki/File:Tux_Paint_banana.svg
+    By Tux Paint (http://tuxpaint.org/) [<a href="http://www.gnu.org/licenses/gpl.html">GPL</a>], <a href="https://commons.wikimedia.org/wiki/File%3ATux_Paint_banana.svg">via Wikimedia Commons</a>
+
+wrench.svg
+    https://www.onlinewebfonts.com/icon/536254
+    <div>Icon made from <a href="http://www.onlinewebfonts.com/icon">Icon Fonts</a> is licensed by CC BY 3.0</div>
