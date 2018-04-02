@@ -212,7 +212,13 @@ let valuableAssets = [
 ];
 
 let trashAssets = [
-    ['/assets/wrench.svg', 0]
+    ['/assets/wrench.svg', 0],
+    ['/assets/Mail-mark-junk-2.svg', 0],
+    ['/assets/food.svg', 0],
+    ['/assets/fries.svg', 0],
+    ['/assets/burger.svg', 0],
+    ['/assets/Cinder_Block_clip_art.svg', 0],
+    ['/assets/Red_apple_with_leaf.svg', 0]
 ];
 
 let bioTrashAssets = [
@@ -222,7 +228,7 @@ let bioTrashAssets = [
 class Game {
     constructor() {
         this.bins = [/*new Bin(1, '/assets/recycle-bin-interface-symbol.svg', bioTrashAssets), */
-                     new Bin(2, '/assets/delete.svg', trashAssets), 
+                     new Bin(2, '/assets/delete.svg', trashAssets.concat(bioTrashAssets)), 
                      new Bin(3, '/assets/money-bag-2.svg', valuableAssets)];
         this.numOfSortingTasks = 2;
         this.restart();

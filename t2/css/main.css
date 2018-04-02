@@ -6,10 +6,27 @@ body {
     background-size: 80%;
 }
 
+h2 {
+    margin: 0;
+}
+
+.tab-n1 {
+    border: 0.2rem solid black;
+    padding: 0.3rem 1.2rem;
+    box-sizing: border-box;
+    margin-right: 0.3rem;
+}
+
+.tab-n2 {
+    border: 0.2rem solid black;
+    padding: 0.3rem 1.2rem;
+    box-sizing: border-box;
+}
+
 .basket {
     height: 10rem;
     width: 10rem;
-    margin-left: 2rem;
+    margin: 0 auto;
     border: 0.1rem black solid;
     user-select: none;
 }
@@ -25,13 +42,14 @@ body {
     height: 15rem;
     width: 15rem;
     user-select: none;
+    margin: 0 auto;
     padding: 3.4rem;
     border: 0.2rem solid black;
     background-image: url("/assets/chip.svg");
 }
 
 .health-bar-filled {
-    margin-left: 5px;
+    margin-left: 0.3rem;
 }
 
 .health-bar-filled::before {
@@ -57,7 +75,7 @@ body {
 }
 
 .health-bar-outline {
-    margin-left: 5px;
+    margin-left: 0.3rem;
 }
 
 .health-bar-outline::before {
@@ -87,6 +105,7 @@ body {
 
 .basket-container {
     margin-top: 20px;
+    padding: 0 2rem;
     display: flex;
 }
 
