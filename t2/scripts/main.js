@@ -246,8 +246,7 @@ class Game {
         this.player.applyReward(reward);
         let taskIndex = this.tasks.indexOf(task);
         this.tasks[taskIndex].isValid = false;
-        this.tasks.splice(taskIndex, 1);
-        this.tasks.push(this.generateNewSortingTask());
+        this.tasks.splice(taskIndex, 1, this.generateNewSortingTask());
     }
 
     extraTaskCopleteCallback(task, reward) {

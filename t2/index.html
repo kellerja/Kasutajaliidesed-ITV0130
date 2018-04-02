@@ -20,14 +20,14 @@
             </div>
             <h1>Quick, grab all that is valuable! Discard the rest!</h1>
             <div class="basket-container">
-                <img class="basket" draggable="false" v-for="(bin, index) in game.bins" :src="bin.imageUrl" 
+                <img class="basket" draggable="false" v-for="bin in game.bins" :src="bin.imageUrl" 
                     @drop="bin.drop($event, bin)" @contextmenu.prevent="" @dragover.prevent="">
             </div>
             
             <div class="paper-container">
                 <h1>Loot:</h1>
                 <draggable-task-component :key="'task_' + task.id" :id="'task_' + task.id" 
-                    v-for="(task, index) in game.tasks" :task="task" :game-over="game.gameOver"></draggable-task-component>
+                    v-for="task in game.tasks" :task="task" :game-over="game.gameOver"></draggable-task-component>
             </div>
             <div v-if="game.extraTask">
                 <h1>Disable the alarm!</h1>
