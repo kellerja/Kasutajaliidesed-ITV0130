@@ -29,6 +29,39 @@ h2 {
     margin: 0 auto;
     border: 0.1rem black solid;
     user-select: none;
+    transition: background-color 200ms ease-in-out 0s;
+}
+
+.basket.failed {
+    background-color: red;
+}
+
+.basket.correct {
+    background-color: green;
+}
+
+.basket * {
+    pointer-events: none;
+}
+
+.basket.open g.lid {
+    transform-origin: 0% 100%;
+    transform: translateY(2.5rem) translateX(2rem) rotateZ(-12deg);
+}
+
+.basket.open g.bag {
+    transform-origin: center;
+    transform: rotateX(30deg);
+}
+
+.basket.open g.top {
+    transform-origin: 50% 10%;
+    transform: scale(1.1);
+}
+
+.basket,open g.knot {
+    transform-origin: 50% 20%;
+    transform: scale(1.1);
 }
 
 .task {

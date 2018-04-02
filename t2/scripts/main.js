@@ -1,9 +1,44 @@
-let TaskState = {
+const TaskState = {
     NOT_STARTED: 0,
     RUNNING: 100,
     COMPLETED: 200,
     FAILED: 400
 }
+
+const trashCan = "<svg viewBox=\"0 0 512 512\"> \
+<g class=\"lid\"> \
+<path d=\"M432.232,94.608c-9.876-36.826-43.402-62.546-81.529-62.546H300.29c5.793-2.649,9.826-8.481,9.826-15.267 \
+   C310.116,7.52,302.597,0,293.321,0h-74.643c-9.275,0-16.795,7.52-16.795,16.795c0,6.786,4.033,12.618,9.826,15.267h-50.413 \
+   c-38.127,0-71.654,25.72-81.529,62.547c-2.857,10.66,5.188,21.145,16.224,21.145h320.02 \
+   C427.048,115.753,435.091,105.266,432.232,94.608z\" fill=\"#707070\"/> \
+</g> \
+<g class=\"bin\"> \
+<path d=\"M416.011,149.343H95.991c-9.83,0-17.567,8.419-16.734,18.218l27.991,329.068c0.739,8.693,8.01,15.372,16.734,15.372 \
+   H388.02c8.724,0,15.995-6.679,16.734-15.372l27.991-329.068C433.578,157.766,425.845,149.343,416.011,149.343z M176.914,457.118 \
+   c-9.173,0.85-17.405-5.908-18.254-15.196l-20.154-220.57c-0.843-9.237,5.96-17.409,15.197-18.254 \
+   c9.234-0.843,17.409,5.959,18.254,15.196l20.154,220.57C192.954,448.102,186.151,456.274,176.914,457.118z M272.795,440.393 \
+   c0,9.275-7.52,16.795-16.795,16.795s-16.795-7.52-16.795-16.795v-220.57c0-9.275,7.52-16.795,16.795-16.795 \
+   s16.795,7.52,16.795,16.795V440.393z M373.494,221.352l-20.154,220.57c-0.849,9.287-9.079,16.046-18.254,15.196 \
+   c-9.237-0.844-16.041-9.016-15.197-18.254l20.154-220.57c0.844-9.237,9.023-16.051,18.254-15.196 \
+   C367.534,203.942,374.337,212.114,373.494,221.352z\" fill=\"#707070\"/> \
+</g> \
+</svg>";
+
+const moneyBag = "<svg viewBox=\"0 0 512 512\"> \
+<g class=\"bag\"> \
+    <g class=\"top\"> \
+        <path d=\"M166.734,95.797H345.25c0,0,70.75-61.719,38.75-88.719s-103,30-128,28 \
+            c-25,2-96-55-128-28S166.734,95.797,166.734,95.797z\"/> \
+    </g> \
+    <g class=\"knot\"> \
+        <path d=\"M336,111.797c8.844,0,16,7.156,16,16s-7.156,16-16,16H176c-8.844,0-16-7.156-16-16s7.156-16,16-16H336z\"/> \
+    </g> \
+    <g class=\"bottom\"> \
+        <path d=\"M345.25,159.797H166.734C87.469,217.609,32,340.141,32,417.953c0,104.656,100.281,93.5,224,93.5s224,11.156,224-93.5 \
+            C480,340.141,424.531,217.609,345.25,159.797z\"/> \
+    </g> \
+</g> \
+</svg>";
 
 var tempDragObject = null;
 
@@ -52,6 +87,47 @@ class Bin {
     }
 }
 
+Vue.component('bin', {
+    template: '<div :class="[\'basket\', {\'open\' : isOpen}, {\'failed\': isFailed}, {\'correct\': isCorrect}]" \
+        @drop="handleDrop($event)" @contextmenu.prevent="" @dragover.prevent="" \
+        @dragenter="handleDragEnter()" @dragleave="handleDragLeave()" v-html="bin.imageUrl"></div>',
+    props: ['bin'],
+    data: function() {
+        return {
+            isOpen: false,
+            isFailed: false,
+            isCorrect: false
+        }
+    },
+    methods: {
+        handleDrop: function(event) {
+            this.isOpen = false;
+            this.bin.drop(event, this.bin);
+            if (!tempDragObject) return;
+            switch (tempDragObject.state) {
+                case TaskState.FAILED:
+                    this.isFailed = true;
+                    setTimeout(() => {
+                        this.isFailed = false;
+                    }, 200)
+                    break;
+                case TaskState.COMPLETED:
+                    this.isCorrect = true;
+                    setTimeout(() => {
+                        this.isCorrect = false;
+                    }, 200)
+                    break;
+            }
+        },
+        handleDragEnter: function() {
+            this.isOpen = true;
+        },
+        handleDragLeave: function() {
+            this.isOpen = false;
+        }
+    }
+})
+
 class Reward {
     constructor(deltaLives, deltaScore) {
         this.deltaLives = deltaLives;
@@ -65,7 +141,7 @@ class Task {
         this.score = 0;
         this.id = Math.random();
         this.taskCompleteEvent = taskCompleteCallback;
-        this.animation = '50s linear 0s 1 timer';
+        this.animation = '500s linear 0s 1 timer';
         this.isValid = true;
     }
 
@@ -157,7 +233,7 @@ class SortingTask extends DraggableTask {
     constructor(correctBin, taskCompleteCallback) {
         super(taskCompleteCallback);
         this.correctBin = correctBin;
-        let selectedContent = correctBin.contentUrls[Math.floor(Math.random() * correctBin.contentUrls.length)];
+        const selectedContent = correctBin.contentUrls[Math.floor(Math.random() * correctBin.contentUrls.length)];
         this.imageUrl = selectedContent[0];
         this.score = selectedContent[1];
     }
@@ -188,7 +264,7 @@ class CalculationTask extends Task {
     }
 
     run(target, player) {
-        let playerGuess = Number.parseFloat(target);
+        const playerGuess = Number.parseFloat(target);
         if (isNaN(playerGuess)) return;
         if (Math.abs(playerGuess - this.challenge.correct) < 10e-3) {
             this.state = TaskState.COMPLETED;
@@ -227,9 +303,8 @@ let bioTrashAssets = [
 
 class Game {
     constructor() {
-        this.bins = [/*new Bin(1, '/assets/recycle-bin-interface-symbol.svg', bioTrashAssets), */
-                     new Bin(2, '/assets/delete.svg', trashAssets.concat(bioTrashAssets)), 
-                     new Bin(3, '/assets/money-bag-2.svg', valuableAssets)];
+        this.bins = [new Bin(2, trashCan, trashAssets.concat(bioTrashAssets)), 
+                     new Bin(3, moneyBag, valuableAssets)];
         this.numOfSortingTasks = 2;
         this.restart();
         this.extraTask = null;
@@ -250,12 +325,12 @@ class Game {
 
     taskCompleteCallback(task, reward) {
         this.player.applyReward(reward);
-        let taskIndex = this.tasks.indexOf(task);
+        const taskIndex = this.tasks.indexOf(task);
         this.tasks[taskIndex].isValid = false;
         this.tasks.splice(taskIndex, 1, this.generateNewSortingTask());
     }
 
-    extraTaskCopleteCallback(task, reward) {
+    extraTaskCompleteCallback(task, reward) {
         this.player.applyReward(reward);
         Vue.set(this, 'extraTask', null);
     }
@@ -267,17 +342,23 @@ class Game {
 
     generateCalculationTask() {
         let formula = [];
-        let ops = ['+', '-', '/', '*'];
+        const ops = ['+', '-', '/', '*'];
         formula.push(+Math.floor(Math.random() * 10).toFixed(3));
         formula.push(ops[Math.floor(Math.random() * ops.length)]);
         formula.push(+Math.floor(Math.random() * 10).toFixed(3));
         if (formula[1] === '/' && formula[2] === 0) formula[2] = 1;
-        let result = +eval(formula.join('')).toFixed(3);
+        const result = +eval(formula.join('')).toFixed(3);
         formula.push('=');
         formula.push(result);
-        var xPos = [0, 2, 4][Math.floor(Math.random() * 3)];
-        if ((formula[0] === 0 || formula[2] == 0) && formula[1] === '*') xPos = 4;
-        return new CalculationTask(formula, xPos, (res, reward) => this.extraTaskCopleteCallback(res, reward));
+        let xPos;
+        if ((formula[0] === 0 || formula[2] == 0) && formula[1] === '*') {
+            xPos = 4;
+        } else if (formula[1] === '/' && formula[0] === 0) {
+            xPos = [0, 4][Math.floor(Math.random() * 3)];
+        } else {
+            xPos = [0, 2, 4][Math.floor(Math.random() * 3)];
+        }
+        return new CalculationTask(formula, xPos, (res, reward) => this.extraTaskCompleteCallback(res, reward));
     }
 
     restart() {
