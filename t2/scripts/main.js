@@ -130,7 +130,7 @@ Vue.component('calculate-task-component', {
 Vue.component('draggable-task-component', {
     template: '<img class="task" :src="task.imageUrl" :draggable="!gameOver" @dragstart="task.drag($event, task)" \
                 @dragend="task.dragStop" @contextmenu.prevent="" \
-                :style="{animation:  (animation ? task.animation + (gameOver ? \' paused\' : \'none\') : \'\'), \
+                :style="{animation:  (animation ? (task.animation + (gameOver ? \' paused\' : \'\')) : \'\'), \
                     cursor: (gameOver ? \'default\' : \'move\')}" \
                 @animationend="timeOut">',
     props: ['task', 'gameOver'],
