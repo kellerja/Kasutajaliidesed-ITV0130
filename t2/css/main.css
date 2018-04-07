@@ -23,6 +23,13 @@ h2 {
     box-sizing: border-box;
 }
 
+@media only screen and (max-width: 991px) {
+    .tab-n1 {
+        margin-right: 0;
+        margin-bottom: 0.3rem;
+    }
+}
+
 .basket {
     height: 10rem;
     width: 10rem;
@@ -78,7 +85,7 @@ h2 {
     margin: 0 auto;
     padding: 3.4rem;
     border: 0.2rem solid black;
-    background-image: url("/assets/chip.svg");
+    background-image: url("../assets/chip.svg");
 }
 
 .health-bar-filled {
@@ -147,6 +154,31 @@ h2 {
     display: flex;
 }
 
+.paper-container.disabled {
+    background: lightgray;
+    position: relative;
+}
+
+.paper-container.disabled .task {
+    opacity: 0.5;
+}
+
+.alert-line {
+    display: none;
+    z-index: 1;
+    height: 100%;
+    width: 100%;
+}
+
+.paper-container.disabled .alert-line {
+    display: inline;
+    position: absolute;
+}
+
+.paper-container.disabled .alert-line g {
+    animation: alert-line 1s linear 0s infinite forwards;
+}
+
 .hp-container {
     margin-top: 20px;
     display: flex;
@@ -167,5 +199,15 @@ h2 {
     }
     100% {
         background-color: red;
+    }
+}
+
+
+@keyframes alert-line {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(20%);
     }
 }

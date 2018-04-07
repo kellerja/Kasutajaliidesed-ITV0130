@@ -204,12 +204,12 @@ Vue.component('calculate-task-component', {
 });
 
 Vue.component('draggable-task-component', {
-    template: '<img class="task" :src="task.imageUrl" :draggable="!gameOver" @dragstart="task.drag($event, task)" \
+    template: '<img class="task" :src="task.imageUrl" :draggable="!gameOver && !disabled" @dragstart="task.drag($event, task)" \
                 @dragend="task.dragStop" @contextmenu.prevent="" \
-                :style="{animation:  (animation ? (task.animation + (gameOver ? \' paused\' : \'\')) : \'\'), \
-                    cursor: (gameOver ? \'default\' : \'move\')}" \
+                :style="{animation:  (animation ? (task.animation + (gameOver || disabled ? \' paused\' : \'\')) : \'\'), \
+                    cursor: (gameOver || disabled ? \'default\' : \'move\')}" \
                 @animationend="timeOut">',
-    props: ['task', 'gameOver'],
+    props: ['task', 'gameOver', 'disabled'],
     data: function() {
         return {
             animation: false
@@ -276,30 +276,34 @@ class CalculationTask extends Task {
     }
 }
 
+const assetBase = 'assets/';
+
 let valuableAssets = [
-    ['/assets/diamond.svg', 100],
-    ['/assets/engagement-ring.svg', 50],
-    ['/assets/Gold_Block_clip_art.svg', 70],
-    ['/assets/gold.svg', 66],
-    ['/assets/jewel.svg', 65],
-    ['/assets/coin-stack.svg', 88],
-    ['/assets/money-bag.svg', 87],
-    ['/assets/money-svgrepo-com.svg', 63],
+    [assetBase + 'diamond.svg', 100],
+    [assetBase + 'engagement-ring.svg', 50],
+    [assetBase + 'Gold_Block_clip_art.svg', 70],
+    [assetBase + 'gold.svg', 66],
+    [assetBase + 'jewel.svg', 65],
+    [assetBase + 'coin-stack.svg', 88],
+    [assetBase + 'money-bag.svg', 87],
+    [assetBase + 'money-svgrepo-com.svg', 63],
 ];
 
 let trashAssets = [
-    ['/assets/wrench.svg', 0],
-    ['/assets/Mail-mark-junk-2.svg', 0],
-    ['/assets/food.svg', 0],
-    ['/assets/fries.svg', 0],
-    ['/assets/burger.svg', 0],
-    ['/assets/Cinder_Block_clip_art.svg', 0],
-    ['/assets/Red_apple_with_leaf.svg', 0]
+    [assetBase + 'wrench.svg', 0],
+    [assetBase + 'Mail-mark-junk-2.svg', 0],
+    [assetBase + 'food.svg', 0],
+    [assetBase + 'fries.svg', 0],
+    [assetBase + 'burger.svg', 0],
+    [assetBase + 'Cinder_Block_clip_art.svg', 0],
+    [assetBase + 'Red_apple_with_leaf.svg', 0]
 ];
 
 let bioTrashAssets = [
-    ['/assets/Tux_Paint_banana.svg', 0]
+    [assetBase + 'Tux_Paint_banana.svg', 0]
 ];
+
+const backgroundBase = 'background/';
 
 class Game {
     constructor() {
@@ -312,13 +316,14 @@ class Game {
             if (this.extraTask || Math.random() < 0.5) return;
             Vue.set(this, 'extraTask', this.generateCalculationTask());
         };
-        this.extraTaskIntervalRepeatTimeInMillis = 10000;
+        this.extraTaskIntervalRepeatTimeInMillis = 1000;
         this.extraTaskInterval = setInterval(this.extraTaskIntervalFunction, this.extraTaskIntervalRepeatTimeInMillis);
     }
 
     gameOverCallback(score) {
         this.isGameOver = true;
-        document.body.style.backgroundImage = 'url("/background/background_arrested.png")';
+        document.body.style.backgroundImage = 'url("' + backgroundBase + 'background_arrested.png")';
+        console.log(document.body.style.backgroundImage);
         clearInterval(this.extraTaskInterval);
         Vue.set(this, 'extraTask', null);
     }
@@ -365,7 +370,7 @@ class Game {
         this.isGameOver = false;
         this.player = new Player((score) => this.gameOverCallback(score));
         this.tasks = Array.from({length: this.numOfSortingTasks}, () => this.generateNewSortingTask());
-        document.body.style.backgroundImage = 'url("/background/background.png")';
+        document.body.style.backgroundImage = 'url("' + backgroundBase + 'background.png")';
         this.extraTaskInterval = setInterval(this.extraTaskIntervalFunction, this.extraTaskIntervalRepeatTimeInMillis);
     }
 }
