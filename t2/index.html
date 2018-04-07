@@ -26,19 +26,11 @@
                     </div>
                     
                     <div :class="['paper-container', {'disabled': !!game.extraTask}]">
-                        <svg class="alert-line" viewBox="0 0 100 10">
-                            <g v-for="(_, i) in 6">
-                                <polygon :points="(i * 20) + ',0 ' + (i * 20) + ',1 ' + (i * 20 + 4) + ',5 ' + ((i * 20) + 5) + ',5'" style="fill:red;stroke-width:0"/>
-                                <polygon :points="(i * 20) + ',10 ' + (i * 20) + ',9 ' + (i * 20 + 4) + ',5 ' + ((i * 20) + 5) + ',5'" style="fill:blue;stroke-width:0"/>
+                        <svg class="alert-line" viewBox="0 0 100 20" height="100%" width="100%">
+                            <g v-for="(_, i) in 6" stroke-width="0">
+                                <polygon :points="(i * 20 - 8) + ',0 ' + (i * 20 - 11) + ',0 ' + (i * 20 - 6) + ',10 ' + (i * 20 - 3) + ',10'" style="fill:red"/>
+                                <polygon :points="(i * 20 - 8) + ',20 ' + (i * 20 - 11) + ',20 ' + (i * 20 - 6) + ',10 ' + (i * 20 - 3) + ',10'" style="fill:blue"/>
                             </g>
-<!--                            <line v-for="(_, i) in 6" :x1="(-5 + (100 / 5) * i) + '%'" y1="0" :x2="(0 + (100 / 5) * i) + '%'" y2="50%" style="stroke:rgb(255,0,0);stroke-width:0.5rem;"/>
-                            <line v-for="(_, i) in 6" :x1="(-5 + (100 / 5) * i) + '%'" y1="100%" :x2="(0 + (100 / 5) * i) + '%'" y2="50%" style="stroke:rgb(0,0,255);stroke-width:0.5rem;"/>
-                            <g>
-                                <svg v-for="(_, i) in 6" viewBox="0 0 2 2" height="40%" width="20%" :x="(-8 + (100 / 5) * i) + '%'" y="30%">
-                                    <polygon points="0,0 0,1 1,1" style="fill:red;stroke-width:0"/>
-                                    <polygon points="0,1 0,2 1,1" style="fill:blue;stroke-width:0"/>
-                                </svg>
-                            </g>-->
                         </svg>
                         <h1>Loot:</h1>
                         <draggable-task-component :key="'task_' + task.id" :id="'task_' + task.id" 
