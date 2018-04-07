@@ -141,7 +141,7 @@ class Task {
         this.score = 0;
         this.id = Math.random();
         this.taskCompleteEvent = taskCompleteCallback;
-        this.animation = '500s linear 0s 1 timer';
+        this.animationDuration = '50s';
         this.isValid = true;
     }
 
@@ -176,8 +176,9 @@ class DraggableTask extends Task {
 
 Vue.component('calculate-task-component', {
     template: '<div class="extra-task-calc" \
-                :style="{animation: (animation ? task.animation + (gameOver ? \' paused;\' : \'\') : \'\')}" \
-                @animationend="timeOut" @contextmenu.prevent=""> \
+                :style="{animation: (animation ? \'calc-task \' + task.animationDuration + \' linear 0s 1 forwards\' + (gameOver ? \' paused;\' : \'\') : \'\')}"> \
+                    <img class="extra-task-calc-fuse" :style="{animation: (animation ? \'calc-task-fuse \' + task.animationDuration + \' linear 0s 1 forwards\' + (gameOver ? \' paused;\' : \'\') : \'\')}" \
+                        @animationend="timeOut" @contextmenu.prevent="" src="../assets/electricity.svg"> \
                     <p style="margin: 0; padding: 0; margin-bottom: 0.3rem;">Find x:<br> {{task.challenge.formula}}</p> \
                     <input type="number" class="w-100" v-model="guess"> \
                     <button @click="task.run(guess)" class="btn w-100">Hack</button> \
@@ -206,7 +207,7 @@ Vue.component('calculate-task-component', {
 Vue.component('draggable-task-component', {
     template: '<img class="task" :src="task.imageUrl" :draggable="!gameOver && !disabled" @dragstart="task.drag($event, task)" \
                 @dragend="task.dragStop" @contextmenu.prevent="" \
-                :style="{animation:  (animation ? (task.animation + (gameOver || disabled ? \' paused\' : \'\')) : \'\'), \
+                :style="{animation:  (animation ? (\'timer \' + task.animationDuration + \' linear 0s 1\' + (gameOver || disabled ? \' paused\' : \'\')) : \'\'), \
                     cursor: (gameOver || disabled ? \'default\' : \'move\')}" \
                 @animationend="timeOut">',
     props: ['task', 'gameOver', 'disabled'],
@@ -261,6 +262,7 @@ class CalculationTask extends Task {
             formula: hiddenFormula.join(' '),
             correct: formula[xPos]
         }
+        this.animationDuration = '50s';
     }
 
     run(target, player) {
@@ -378,6 +380,10 @@ class Game {
 let vm = new Vue({
     el: '#game',
     data: {
-        game: new Game()
-    }
+        game: new Game(),
+        isSmallDevice: window.innerWidth <= 991
+    },
+    mounted() {
+        this.$nextTick(() => window.addEventListener('resize', (e) => this.isSmallDevice = window.innerWidth <= 991))
+    },
 });

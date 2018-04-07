@@ -70,3 +70,9 @@ Cinder_Block_clip_art.svg
 
 Red_apple_with_leaf.svg
     https://commons.wikimedia.org/wiki/File:Red_apple_with_leaf.svg
+
+spark-svgrepo-com.svg
+    https://www.svgrepo.com/svg/95574/spark
+
+elictricity.svg
+    https://openclipart.org/detail/258629/electricity-refixed

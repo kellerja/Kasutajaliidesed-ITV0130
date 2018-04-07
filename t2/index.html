@@ -26,10 +26,16 @@
                     </div>
                     
                     <div :class="['paper-container', {'disabled': !!game.extraTask}]">
-                        <svg class="alert-line" viewBox="0 0 100 20" height="100%" width="100%">
+                        <svg class="alert-line" viewBox="0 0 100 20" height="100%" width="100%" v-if="isSmallDevice">
                             <g v-for="(_, i) in 6" stroke-width="0">
-                                <polygon :points="(i * 20 - 8) + ',0 ' + (i * 20 - 11) + ',0 ' + (i * 20 - 6) + ',10 ' + (i * 20 - 3) + ',10'" style="fill:red"/>
-                                <polygon :points="(i * 20 - 8) + ',20 ' + (i * 20 - 11) + ',20 ' + (i * 20 - 6) + ',10 ' + (i * 20 - 3) + ',10'" style="fill:blue"/>
+                                <polygon class="red-light" :points="'-10,' + (-5 + i * 5) + ' ' + '-10,' + (-7 + i * 5) + ' ' + '50,' + (-2 + i * 5) + ' ' + '50,' + (i * 5)"/>
+                                <polygon class="blue-light" :points="'50,' + (i * 5) + ' ' + '50,' + (-2 + i * 5) + ' ' + '110,' + (-7 + i * 5) + ' ' + '110,' + (-5 + i * 5)"/>
+                            </g>
+                        </svg>
+                        <svg class="alert-line" viewBox="0 0 100 20" height="100%" width="100%" v-else>
+                            <g v-for="(_, i) in 6" stroke-width="0">
+                                <polygon class="red-light" :points="(i * 20 - 8) + ',0 ' + (i * 20 - 11) + ',0 ' + (i * 20 - 6) + ',10 ' + (i * 20 - 3) + ',10'"/>
+                                <polygon class="blue-light" :points="(i * 20 - 8) + ',20 ' + (i * 20 - 11) + ',20 ' + (i * 20 - 6) + ',10 ' + (i * 20 - 3) + ',10'"/>
                             </g>
                         </svg>
                         <h1>Loot:</h1>
@@ -38,8 +44,8 @@
                     </div>
                 </div>
                 <div v-if="game.extraTask" class="tab-n2">
-                    <h1>Disable the alarm!</h1>
-                    <calculate-task-component :key="'task_' + game.extraTask.id" :id="'task_' + game.extraTask.id" 
+                    <h1 style="background-color: white;">Disable the alarm!</h1>
+                    <calculate-task-component style="background-color: white;" :key="'task_' + game.extraTask.id" :id="'task_' + game.extraTask.id" 
                         :task="game.extraTask" :game-over="game.gameOver"></calculate-task-component>
                 </div>
             </div>

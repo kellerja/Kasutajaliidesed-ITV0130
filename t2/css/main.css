@@ -21,13 +21,7 @@ h2 {
     border: 0.2rem solid black;
     padding: 0.3rem 1.2rem;
     box-sizing: border-box;
-}
-
-@media only screen and (max-width: 991px) {
-    .tab-n1 {
-        margin-right: 0;
-        margin-bottom: 0.3rem;
-    }
+    position: relative;
 }
 
 .basket {
@@ -84,8 +78,18 @@ h2 {
     user-select: none;
     margin: 0 auto;
     padding: 3.4rem;
-    border: 0.2rem solid black;
+    border: 0.4rem solid black;
+    position: relative;
     background-image: url("../assets/chip.svg");
+}
+
+.extra-task-calc-fuse {
+    display: block;
+    position: absolute;
+    top: 12.5rem;
+    left: -1.8rem;
+    height: 3rem;
+    width: 3rem;
 }
 
 .health-bar-filled {
@@ -155,7 +159,6 @@ h2 {
 }
 
 .paper-container.disabled {
-    background: lightgray;
     position: relative;
 }
 
@@ -184,6 +187,16 @@ h2 {
     display: flex;
 }
 
+.blue-light {
+    fill: blue;
+    animation: shine-blue-light 700ms ease-in-out 0s infinite alternate;
+}
+
+.red-light {
+    fill: red;
+    animation: shine-red-light 700ms ease-in-out 0s infinite alternate;
+}
+
 @keyframes timer {
     from {
         opacity: 1;
@@ -202,6 +215,23 @@ h2 {
     }
 }
 
+@keyframes shine-blue-light {
+    0% {
+        fill: #0000d0;
+    }
+    100% {
+        fill: blue;
+    }
+}
+
+@keyframes shine-red-light {
+    0% {
+        fill: #d00000;
+    }
+    100% {
+        fill: red;
+    }
+}
 
 @keyframes alert-line {
     0% {
@@ -209,5 +239,70 @@ h2 {
     }
     100% {
         transform: translateX(20%);
+    }
+}
+
+@keyframes alert-line-down {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(25%);
+    }
+}
+
+@keyframes calc-task-fuse {
+    0% {
+        transform: translateY(0);
+    }
+    25% {
+        transform: translateY(-14rem);
+    }
+    50% {
+        transform: translateX(15rem) translateY(-14rem);
+    }
+    75% {
+        transform: translateY(0.5rem) translateX(15rem);
+    }
+    100% {
+        transform: translateX(0) translateY(0.5rem);
+    }
+}
+
+@keyframes calc-task {
+    0% {
+        border: 0.4rem solid black;
+    }
+    25% {
+        border: 0.4rem solid black;
+        border-left: 0.4rem solid gray;
+    }
+    50% {
+        border: 0.4rem solid black;
+        border-left: 0.4rem solid gray;
+        border-top: 0.4rem solid gray;
+    }
+    75% {
+        border: 0.4rem solid black;
+        border-left: 0.4rem solid gray;
+        border-top: 0.4rem solid gray;
+        border-right: 0.4rem solid gray;
+    }
+    100% {
+        border: 0.4rem solid black;
+        border-left: 0.4rem solid gray;
+        border-top: 0.4rem solid gray;
+        border-bottom: 0.4rem solid gray;
+    }
+}
+
+@media only screen and (max-width: 991px) {
+    .tab-n1 {
+        margin-right: 0;
+        margin-bottom: 0.3rem;
+    }
+
+    .paper-container.disabled .alert-line g {
+        animation: alert-line-down 1s linear 0s infinite forwards;
     }
 }
