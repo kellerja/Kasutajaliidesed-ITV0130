@@ -188,7 +188,7 @@ class Bin {
 
 Vue.component('bin', {
     template: '<div :class="[\'basket\', {\'open\' : isOpen}, {\'failed\': isFailed}, {\'correct\': isCorrect}]" \
-        @drop="handleDrop($event)" @contextmenu.prevent="" @dragover.prevent="" \
+        @drop.prevent="handleDrop($event)" @contextmenu.prevent="" @dragover.prevent="" \
         @dragenter="handleDragEnter()" @dragleave="handleDragLeave()" v-html="bin.imageUrl"></div>',
     props: ['bin'],
     data: function() {
@@ -570,7 +570,7 @@ class Game {
                 Vue.set(this, 'extraTask', this.generateCalculationTask());
             }
         };
-        this.extraTaskIntervalRepeatTimeInMillis = 2000;
+        this.extraTaskIntervalRepeatTimeInMillis = 20000;
         this.extraTaskInterval = setInterval(this.extraTaskIntervalFunction, this.extraTaskIntervalRepeatTimeInMillis);
     }
 
