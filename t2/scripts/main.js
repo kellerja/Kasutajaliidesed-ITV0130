@@ -240,9 +240,8 @@ Vue.component('draggable-task-component', {
                         (timeOutAnimation ? (\'timeout \' + timeOutAnimationTimeInMs + \'ms ease-in 0s 1 forwards\') : \
                         ( \
                             welcomeAnimation ? (\'taskEntrance \' + welcomeAnimationTimeInMs + \'ms ease-out 0s 1 forwards\') : \
-                            (\'timer \' + task.animationDuration + \' linear 0s 1\')) \
-                        ) + \
-                        (gameOver || disabled ? \' paused\' : \'\')) : \'\'), \
+                            (\'timer \' + task.animationDuration + \' linear 0s 1\') + (gameOver || disabled ? \' paused\' : \'\'))) \
+                        ) : \'\'), \
                     cursor: (gameOver || disabled ? \'default\' : \'move\')}" \
                 @animationend="timeOut" @touchstart.prevent="touchStartHandler" @touchmove="touchMoveHandler" @touchend="touchEndHandler">',
     props: ['task', 'gameOver', 'disabled'],
