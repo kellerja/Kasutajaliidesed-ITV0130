@@ -1,5 +1,4 @@
 body {
-    background-image: url("background/background.png");
     background-repeat: no-repeat;
     background-position-x: 100%;
     background-position-y: 0%;
@@ -197,17 +196,56 @@ h2 {
     animation: shine-red-light 700ms ease-in-out 0s infinite alternate;
 }
 
+.improve-alarm-visibility {
+    background-color: white;
+}
+
 @keyframes timer {
     0% {
         opacity: 1;
-        background: white;
     }
-    99.5% {
+    100% {
         opacity: 0.1;
-        background: white;
+    }
+}
+
+@keyframes taskEntrance {
+    0% {
+        transform: translateY(2.5rem);
+    }
+    100% {
+        transform: translateY(0rem);
+    }
+}
+
+@keyframes calc-task-success {
+    0% {
+    }
+    100% {
+        background: green;
+    }
+}
+
+@keyframes calc-task-fail {
+    0% {
     }
     100% {
         background: red;
+    }
+}
+
+@keyframes timeout {
+    0% {
+    }
+    75% {
+        opacity: 1;
+        background-color: red;
+        transform: translateX(0) translateY(0);
+    }
+    100% {
+        opacity: 0;
+        background-color: initial;
+        transform: translateX(-10rem) translateY(2.5rem);
     }
 }
 
@@ -321,7 +359,9 @@ h2 {
 @media only screen and (max-width: 767px) {
     body {
         background-size: 100%;
-        background-position-x: -5rem;
-        background-position-y: 10rem;
+    }
+
+    .improve-alarm-visibility {
+        background-color: transparent;
     }
 }

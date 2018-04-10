@@ -145,7 +145,7 @@ class Task {
         this.score = 0;
         this.id = Math.random();
         this.taskCompleteEvent = taskCompleteCallback;
-        this.animationDuration = '50s';
+        this.animationDuration = '10s';
         this.isValid = true;
     }
 
@@ -158,9 +158,13 @@ class Task {
 
     finish() {}
 
-    timeout() {
+    timeout(timeOut) {
         this.state = TaskState.FAILED;
-        this.taskCompleteEvent(this, new Reward(-1, 0));
+        if (timeOut) {
+            setTimeout(() => this.taskCompleteEvent(this, new Reward(-1, 0)), timeOut);
+        } else {
+            this.taskCompleteEvent(this, new Reward(-1, 0));
+        }
     }
 }
 
@@ -181,22 +185,38 @@ class DraggableTask extends Task {
 Vue.component('calculate-task-component', {
     template: '<div class="extra-task-calc" \
                 :style="{animation: (animation ? \'calc-task \' + task.animationDuration + \' linear 0s 1 forwards\' + (gameOver ? \' paused;\' : \'\') : \'\')}"> \
-                    <img class="extra-task-calc-fuse" :style="{animation: (animation ? \'calc-task-fuse \' + task.animationDuration + \' linear 0s 1 forwards\' + (gameOver ? \' paused;\' : \'\') : \'\')}" \
+                    <img class="extra-task-calc-fuse" \
+                        :style="{ animation: animation ? ( \
+                            ( \
+                                endAnimation ? \
+                                    ((success ? \'calc-task-success\' : \'calc-task-fail\') + endAnimationTimeInMs + \'ms ease-out 0s 1 forwards\') : \
+                                    (\'calc-task-fuse \' + task.animationDuration + \' linear 0s 1 forwards\') \
+                            ) + \
+                            (gameOver ? \' paused;\' : \'\') \
+                        ) : \'\' }" \
                         @animationend="timeOut" @contextmenu.prevent="" src="assets/electricity.svg"> \
-                    <p style="margin: 0; padding: 0; margin-bottom: 0.3rem;">Find x:<br> {{task.challenge.formula}}</p> \
-                    <input type="number" class="w-100" v-model="guess"> \
-                    <button @click="task.run(guess)" class="btn w-100">Hack</button> \
+                    <p style="margin: 0; padding: 0; margin-bottom: 0.3rem; background-color: white;">Find x:<br> {{task.challenge.formula}}</p> \
+                    <input style="background-color: white;" type="text" class="w-100" v-model="guess"> \
+                    <button @click="handleSubmit()" class="btn w-100">Hack</button> \
                 </div>',
     props: ['task', 'gameOver'],
     data: function() {
         return {
             guess: '',
-            animation: false
+            animation: false,
+            endAnimation: false,
+            endAnimationTimeInMs: 200,
+            success: false
         };
     },
     methods: {
         timeOut: function(event) {
             this.task.timeout();
+        },
+        handleSubmit() {
+            this.task.run(this.guess);
+            this.success = this.task.state == TaskState.COMPLETED;
+            endAnimation = true;
         }
     },
     mounted: function() {
@@ -211,13 +231,23 @@ Vue.component('calculate-task-component', {
 Vue.component('draggable-task-component', {
     template: '<img class="task" :src="task.imageUrl" :draggable="!gameOver && !disabled" @dragstart="task.drag($event, task)" \
                 @dragend="task.dragStop" @contextmenu.prevent="" \
-                :style="{animation:  (animation ? (\'timer \' + task.animationDuration + \' linear 0s 1\' + (gameOver || disabled ? \' paused\' : \'\')) : \'\'), \
+                :style="{animation:  (animation ? ( \
+                        (timeOutAnimation ? (\'timeout \' + timeOutAnimationTimeInMs + \'ms ease-in 0s 1 forwards\') : \
+                        ( \
+                            welcomeAnimation ? (\'taskEntrance \' + welcomeAnimationTimeInMs + \'ms ease-out 0s 1 forwards\') : \
+                            (\'timer \' + task.animationDuration + \' linear 0s 1\')) \
+                        ) + \
+                        (gameOver || disabled ? \' paused\' : \'\')) : \'\'), \
                     cursor: (gameOver || disabled ? \'default\' : \'move\')}" \
                 @animationend="timeOut" @touchstart.prevent="touchStartHandler" @touchmove="touchMoveHandler" @touchend="touchEndHandler">',
     props: ['task', 'gameOver', 'disabled'],
     data: function() {
         return {
             animation: false,
+            welcomeAnimation: false,
+            welcomeAnimationTimeInMs: 200,
+            timeOutAnimation: false,
+            timeOutAnimationTimeInMs: 200,
             cloneElement: null,
             cloneElementOffset: {
                 x: 0,
@@ -228,7 +258,14 @@ Vue.component('draggable-task-component', {
     },
     methods: {
         timeOut: function(event) {
-            this.task.timeout();
+            if (this.timeOutAnimation) return;
+            if (this.welcomeAnimation) {
+                this.welcomeAnimation = false;
+                this.task.start();
+                return;
+            }
+            this.timeOutAnimation = true;
+            this.task.timeout(this.timeOutAnimationTimeInMs);
         },
         touchStartHandler: function(event) {
             this.task.drag(event, this.task);
@@ -311,7 +348,7 @@ Vue.component('draggable-task-component', {
     },
     mounted: function() {
         this.animation = true;
-        this.task.start();
+        this.welcomeAnimation = true;
     },
     beforeDestroy: function() {
         this.animation = false;
@@ -350,7 +387,7 @@ class CalculationTask extends Task {
             formula: hiddenFormula.join(' '),
             correct: formula[xPos]
         }
-        this.animationDuration = '50s';
+        this.animationDuration = '10s';
     }
 
     run(target, player) {
@@ -402,9 +439,19 @@ class Game {
         this.numOfSortingTasks = 2;
         this.restart();
         this.extraTask = null;
+        this.extraTaskGracePeriod = false;
+        this.extraTaskGracePeriodTimeout = 5000;
         this.extraTaskIntervalFunction = () => {
             if (this.extraTask || Math.random() < 0.5) return;
-            Vue.set(this, 'extraTask', this.generateCalculationTask());
+            if (this.extraTaskGracePeriod) {
+                setTimeout(() => {
+                    if (!this.extraTask) {
+                        Vue.set(this, 'extraTask', this.generateCalculationTask());
+                    }
+                }, this.extraTaskGracePeriodTimeout);
+            } else {
+                Vue.set(this, 'extraTask', this.generateCalculationTask());
+            }
         };
         this.extraTaskIntervalRepeatTimeInMillis = 20000;
         this.extraTaskInterval = setInterval(this.extraTaskIntervalFunction, this.extraTaskIntervalRepeatTimeInMillis);
@@ -412,7 +459,7 @@ class Game {
 
     gameOverCallback(score) {
         this.isGameOver = true;
-        document.body.style.backgroundImage = 'url("' + backgroundBase + 'background_arrested.png")';
+        this.setArrestedBackground();
         clearInterval(this.extraTaskInterval);
         Vue.set(this, 'extraTask', null);
     }
@@ -422,6 +469,8 @@ class Game {
         const taskIndex = this.tasks.indexOf(task);
         this.tasks[taskIndex].isValid = false;
         this.tasks.splice(taskIndex, 1, this.generateNewSortingTask());
+        this.extraTaskGracePeriod = true;
+        setTimeout(() => this.extraTaskGracePeriod = false, this.extraTaskGracePeriodTimeout);
     }
 
     extraTaskCompleteCallback(task, reward) {
@@ -457,10 +506,21 @@ class Game {
 
     restart() {
         this.isGameOver = false;
+        this.extraTaskGracePeriod = false;
         this.player = new Player((score) => this.gameOverCallback(score));
         this.tasks = Array.from({length: this.numOfSortingTasks}, () => this.generateNewSortingTask());
-        document.body.style.backgroundImage = 'url("' + backgroundBase + 'background.png")';
+        this.setBackground();
         this.extraTaskInterval = setInterval(this.extraTaskIntervalFunction, this.extraTaskIntervalRepeatTimeInMillis);
+    }
+
+    setBackground() {
+        document.body.style.backgroundImage = 'url("' + backgroundBase + 'background' + 
+                        (window.innerWidth <= 767 ? '_small' : '') + '.png")';
+    }
+
+    setArrestedBackground() {
+        document.body.style.backgroundImage = 'url("' + backgroundBase + 'background_arrested' + 
+                        (window.innerWidth <= 767 ? '_small' : '') + '.png")';
     }
 }
 
@@ -471,6 +531,13 @@ let vm = new Vue({
         isSmallDevice: window.innerWidth <= 991
     },
     mounted() {
-        this.$nextTick(() => window.addEventListener('resize', (e) => this.isSmallDevice = window.innerWidth <= 991))
+        this.$nextTick(() => window.addEventListener('resize', (e) => {
+            this.isSmallDevice = window.innerWidth <= 991;
+            if (!this.game.isGameOver) {
+                this.game.setBackground();
+            } else {
+                this.game.setArrestedBackground();
+            }
+        }))
     },
 });

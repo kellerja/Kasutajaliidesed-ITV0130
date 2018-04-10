@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link href="css/bootstrap.css" rel="stylesheet">
     <link href="css/main.css" rel="stylesheet">
@@ -16,8 +16,8 @@
                 <h1>Wanted level:</h1>
                 <div class="health-bar-filled" v-for="_ in Math.max(game.player.maxLives - game.player.lives, 0)"></div>
                 <div class="health-bar-outline" v-for="_ in Math.max(game.player.lives, 0)"></div>
-                <h1 style="margin-left: 20px">Haul value: {{ game.player.score }} €</h1>
             </div>
+            <h1>Haul value: {{ game.player.score }} €</h1>
             <div class="d-flex flex-wrap">
                 <div class="tab-n1">
                     <h2>Quick, grab all that is valuable!</h2><h2>Discard the rest!</h2>
@@ -44,8 +44,8 @@
                     </div>
                 </div>
                 <div v-if="game.extraTask" class="tab-n2">
-                    <h1 style="background-color: white;">Disable the alarm!</h1>
-                    <calculate-task-component style="background-color: white;" :key="'task_' + game.extraTask.id" :id="'task_' + game.extraTask.id" 
+                    <h1>Disable the <span class="improve-alarm-visibility">alarm!</span></h1>
+                    <calculate-task-component :key="'task_' + game.extraTask.id" :id="'task_' + game.extraTask.id" 
                         :task="game.extraTask" :game-over="game.gameOver"></calculate-task-component>
                 </div>
             </div>
