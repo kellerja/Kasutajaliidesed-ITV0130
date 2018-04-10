@@ -222,7 +222,7 @@ h2 {
     0% {
     }
     100% {
-        background: green;
+        background-color: green;
     }
 }
 
@@ -230,7 +230,7 @@ h2 {
     0% {
     }
     100% {
-        background: red;
+        background-color: red;
     }
 }
 

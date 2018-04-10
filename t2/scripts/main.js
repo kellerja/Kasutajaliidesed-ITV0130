@@ -184,14 +184,17 @@ class DraggableTask extends Task {
 
 Vue.component('calculate-task-component', {
     template: '<div class="extra-task-calc" \
-                :style="{animation: (animation ? \'calc-task \' + task.animationDuration + \' linear 0s 1 forwards\' + (gameOver ? \' paused;\' : \'\') : \'\')}"> \
+                :style="{ animation: animation ? ( \
+                    ( \
+                        endAnimation ? \
+                            ((success ? \'calc-task-success \' : \'calc-task-fail \') + endAnimationTimeInMs + \'ms ease-out 0s 1 forwards\') : \
+                            (\'calc-task \' + task.animationDuration + \' linear 0s 1 forwards\') \
+                    ) + \
+                    (gameOver ? \' paused;\' : \'\') \
+                ) : \'\' }"> \
                     <img class="extra-task-calc-fuse" \
                         :style="{ animation: animation ? ( \
-                            ( \
-                                endAnimation ? \
-                                    ((success ? \'calc-task-success\' : \'calc-task-fail\') + endAnimationTimeInMs + \'ms ease-out 0s 1 forwards\') : \
-                                    (\'calc-task-fuse \' + task.animationDuration + \' linear 0s 1 forwards\') \
-                            ) + \
+                            (\'calc-task-fuse \' + task.animationDuration + \' linear 0s 1 forwards\') + \
                             (gameOver ? \' paused;\' : \'\') \
                         ) : \'\' }" \
                         @animationend="timeOut" @contextmenu.prevent="" src="assets/electricity.svg"> \
@@ -211,12 +214,14 @@ Vue.component('calculate-task-component', {
     },
     methods: {
         timeOut: function(event) {
-            this.task.timeout();
+            this.task.timeout(this.endAnimationTimeInMs);
+            this.success = false;
+            this.endAnimation = true;
         },
         handleSubmit() {
-            this.task.run(this.guess);
+            this.task.run(this.guess, this.endAnimationTimeInMs);
             this.success = this.task.state == TaskState.COMPLETED;
-            endAnimation = true;
+            this.endAnimation = true;
         }
     },
     mounted: function() {
@@ -390,16 +395,21 @@ class CalculationTask extends Task {
         this.animationDuration = '10s';
     }
 
-    run(target, player) {
+    run(target, timeout) {
+        if (this.state != TaskState.RUNNING) return;
         const playerGuess = Number.parseFloat(target);
         if (isNaN(playerGuess)) return;
+        let reward;
         if (Math.abs(playerGuess - this.challenge.correct) < 10e-3) {
             this.state = TaskState.COMPLETED;
-            this.taskCompleteEvent(this, new Reward(0, this.score));
+            reward = new Reward(0, this.score);
         } else {
             this.state = TaskState.FAILED;
-            this.taskCompleteEvent(this, new Reward(-1, 0));
+            reward = new Reward(-1, 0);
         }
+        setTimeout(() => {
+            this.taskCompleteEvent(this, reward);
+        }, timeout || 0);
     }
 }
 
@@ -441,8 +451,13 @@ class Game {
         this.extraTask = null;
         this.extraTaskGracePeriod = false;
         this.extraTaskGracePeriodTimeout = 5000;
+        this.extraTaskChance = 0.5;
         this.extraTaskIntervalFunction = () => {
-            if (this.extraTask || Math.random() < 0.5) return;
+            if (this.extraTask) return;
+            if (Math.random() < this.extraTaskChance) {
+                this.extraTaskChance = this.extraTaskChance - 0.2;
+                return;
+            }
             if (this.extraTaskGracePeriod) {
                 setTimeout(() => {
                     if (!this.extraTask) {
@@ -469,12 +484,13 @@ class Game {
         const taskIndex = this.tasks.indexOf(task);
         this.tasks[taskIndex].isValid = false;
         this.tasks.splice(taskIndex, 1, this.generateNewSortingTask());
-        this.extraTaskGracePeriod = true;
         setTimeout(() => this.extraTaskGracePeriod = false, this.extraTaskGracePeriodTimeout);
     }
 
     extraTaskCompleteCallback(task, reward) {
         this.player.applyReward(reward);
+        this.extraTaskGracePeriod = true;
+        this.extraTaskChance = 0.5;
         Vue.set(this, 'extraTask', null);
     }
 
