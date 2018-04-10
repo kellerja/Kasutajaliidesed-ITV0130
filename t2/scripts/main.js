@@ -182,7 +182,7 @@ Vue.component('calculate-task-component', {
     template: '<div class="extra-task-calc" \
                 :style="{animation: (animation ? \'calc-task \' + task.animationDuration + \' linear 0s 1 forwards\' + (gameOver ? \' paused;\' : \'\') : \'\')}"> \
                     <img class="extra-task-calc-fuse" :style="{animation: (animation ? \'calc-task-fuse \' + task.animationDuration + \' linear 0s 1 forwards\' + (gameOver ? \' paused;\' : \'\') : \'\')}" \
-                        @animationend="timeOut" @contextmenu.prevent="" src="../assets/electricity.svg"> \
+                        @animationend="timeOut" @contextmenu.prevent="" src="assets/electricity.svg"> \
                     <p style="margin: 0; padding: 0; margin-bottom: 0.3rem;">Find x:<br> {{task.challenge.formula}}</p> \
                     <input type="number" class="w-100" v-model="guess"> \
                     <button @click="task.run(guess)" class="btn w-100">Hack</button> \

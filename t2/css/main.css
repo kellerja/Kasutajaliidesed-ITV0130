@@ -1,5 +1,5 @@
 body {
-    background-image: url("/background/background.png");
+    background-image: url("background/background.png");
     background-repeat: no-repeat;
     background-position-x: 100%;
     background-position-y: 0%;
@@ -309,5 +309,19 @@ h2 {
 
     .paper-container.disabled .alert-line g {
         animation: alert-line-down 1s linear 0s infinite forwards;
+    }
+}
+
+@media only screen and (max-width: 899px) {
+    body {
+        background-size: 90%;
+    }
+}
+
+@media only screen and (max-width: 767px) {
+    body {
+        background-size: 100%;
+        background-position-x: -5rem;
+        background-position-y: 10rem;
     }
 }
