@@ -316,7 +316,8 @@ Vue.component('calculate-task-component', {
         },
         handleSubmit() {
             this.task.run(this.guess, this.endAnimationTimeInMs);
-            this.success = this.task.state == TaskState.COMPLETED;
+            if (this.task.state === TaskState.RUNNING) return;
+            this.success = this.task.state === TaskState.COMPLETED;
             soundManager.stopUntilTimeout('sounds/fuse.mp3');
             if (!this.success) {
                 soundManager.forcePlay('sounds/alarm_short.mp3');
