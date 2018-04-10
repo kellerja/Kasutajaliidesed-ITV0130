@@ -44,7 +44,99 @@ function convertRemToPixels(rem) {
     return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
 }
 
+function css_time_to_milliseconds(time_string) {
+    var num = parseFloat(time_string, 10),
+    unit = time_string.match(/m?s/),
+    milliseconds;
+
+    if (unit) {
+        unit = unit[0];
+    }
+
+    switch (unit) {
+        case "s": // seconds
+            milliseconds = num * 1000;
+            break;
+        case "ms": // milliseconds
+            milliseconds = num;
+            break;
+        default:
+            milliseconds = 0;
+            break;
+    }
+
+    return milliseconds;
+}
+
 var tempDragObject = null;
+
+class SoundManager {
+
+    constructor() {
+        this.currentlyPlaying = null;
+        this.currentlyPlayingPromise = null;
+        this.playUntiltimeoutContainer = {};
+    }
+
+    stop(callback) {
+        if (!this.currentlyPlaying) {
+            callback && callback();
+            return;
+        };
+        this.currentlyPlayingPromise.then(() => {
+            this.currentlyPlaying.pause();
+            this.currentlyPlaying = null;
+            callback && callback();
+        }).catch(e => {
+            this.currentlyPlaying = null;
+            callback && callback();
+        });
+    }
+
+    play(sound) {
+        if (this.currentlyPlaying || !sound) {
+            return;
+        }
+        this.currentlyPlaying = new Audio(sound);
+        this.currentlyPlayingPromise = this.currentlyPlaying.play();
+        this.currentlyPlaying.addEventListener("ended", () => {
+            this.currentlyPlaying = null;
+        });
+    }
+
+    forcePlay(sound) {
+        if (!sound) return;
+        this.stop(() => {
+            this.play(sound);
+        });
+    }
+
+    stopUntilTimeout(sound) {
+        if (!this.playUntiltimeoutContainer[sound]) return;
+        this.playUntiltimeoutContainer[sound].audio.pause();
+        clearTimeout(this.playUntiltimeoutContainer[sound].timeout);
+        this.playUntiltimeoutContainer[sound] = null;
+    }
+
+    playUntilTimeout(sound, timeout) {
+        this.playUntiltimeoutContainer[sound] = {audio: new Audio(sound)};
+        this.playUntiltimeoutContainer[sound].audio.loop = true;
+        this.playUntiltimeoutContainer[sound].audio.play().then(
+            this.playUntiltimeoutContainer[sound].timeout = setTimeout(() => {
+                this.playUntiltimeoutContainer[sound].audio.pause();
+            }, timeout)
+        );
+    }
+
+    stopAllSounds() {
+        this.stop();
+        for (const sound of Object.keys(this.playUntiltimeoutContainer)) {
+            this.stopUntilTimeout(sound);
+        }
+    }
+}
+
+const soundManager = new SoundManager();
 
 class Player {
     constructor(gameOverCallback) {
@@ -77,10 +169,12 @@ class Player {
 }
 
 class Bin {
-    constructor(identifier, imageUrl, contentUrls)  {
+    constructor(identifier, imageUrl, contentUrls, dropCorrectSound, dropIncorrectSound)  {
         this.id = identifier;
         this.imageUrl = imageUrl;
         this.contentUrls = contentUrls;
+        this.dropCorrectSound = dropCorrectSound;
+        this.dropIncorrectSound = dropIncorrectSound;
     }
 
     drop(event, bin, player) {
@@ -88,6 +182,7 @@ class Bin {
             return;
         }
         tempDragObject.run(bin, player);
+        if (!vm.game.isGameOver) soundManager.forcePlay(tempDragObject.state == TaskState.COMPLETED ? this.dropCorrectSound : this.dropIncorrectSound);
     }
 }
 
@@ -214,6 +309,7 @@ Vue.component('calculate-task-component', {
     },
     methods: {
         timeOut: function(event) {
+            soundManager.forcePlay('sounds/alarm_short.mp3');            
             this.task.timeout(this.endAnimationTimeInMs);
             this.success = false;
             this.endAnimation = true;
@@ -221,11 +317,18 @@ Vue.component('calculate-task-component', {
         handleSubmit() {
             this.task.run(this.guess, this.endAnimationTimeInMs);
             this.success = this.task.state == TaskState.COMPLETED;
+            soundManager.stopUntilTimeout('sounds/fuse.mp3');
+            if (!this.success) {
+                soundManager.forcePlay('sounds/alarm_short.mp3');
+            } else {
+                soundManager.forcePlay('sounds/262858__jamesabdulrahman__blip-1.flac');
+            }
             this.endAnimation = true;
         }
     },
     mounted: function() {
         this.animation = true;
+        soundManager.playUntilTimeout('sounds/fuse.mp3', css_time_to_milliseconds(this.task.animationDuration));
         this.task.start();
     },
     beforeDestroy: function() {
@@ -443,8 +546,8 @@ const backgroundBase = 'background/';
 
 class Game {
     constructor() {
-        this.bins = [new Bin(2, trashCan, trashAssets.concat(bioTrashAssets)), 
-                     new Bin(3, moneyBag, valuableAssets)];
+        this.bins = [new Bin(2, trashCan, trashAssets.concat(bioTrashAssets), 'sounds/thump.mp3', 'sounds/wrong.mp3'), 
+                     new Bin(3, moneyBag, valuableAssets, 'sounds/350870__cabled-mess__coin-c-03.wav', 'sounds/wrong.mp3')];
         this.numOfSortingTasks = 2;
         this.restart();
         this.extraTask = null;
@@ -467,7 +570,7 @@ class Game {
                 Vue.set(this, 'extraTask', this.generateCalculationTask());
             }
         };
-        this.extraTaskIntervalRepeatTimeInMillis = 20000;
+        this.extraTaskIntervalRepeatTimeInMillis = 2000;
         this.extraTaskInterval = setInterval(this.extraTaskIntervalFunction, this.extraTaskIntervalRepeatTimeInMillis);
     }
 
@@ -476,6 +579,8 @@ class Game {
         this.setArrestedBackground();
         clearInterval(this.extraTaskInterval);
         Vue.set(this, 'extraTask', null);
+        soundManager.stopAllSounds();
+        soundManager.forcePlay('sounds/police_siren.mp3');
     }
 
     taskCompleteCallback(task, reward) {
@@ -522,6 +627,7 @@ class Game {
     restart() {
         this.isGameOver = false;
         this.extraTaskGracePeriod = false;
+        soundManager.stop();
         this.player = new Player((score) => this.gameOverCallback(score));
         this.tasks = Array.from({length: this.numOfSortingTasks}, () => this.generateNewSortingTask());
         this.setBackground();
