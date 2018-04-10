@@ -40,6 +40,10 @@ const moneyBag = "<svg viewBox=\"0 0 512 512\"> \
 </g> \
 </svg>";
 
+function convertRemToPixels(rem) {    
+    return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
+}
+
 var tempDragObject = null;
 
 class Player {
@@ -233,7 +237,7 @@ Vue.component('draggable-task-component', {
                 this.destroyImgClone();
             }
             this.createImgClone(event.srcElement);
-            this.cloneElementOffset.x = event.touches[0].clientX - event.srcElement.getBoundingClientRect().left;
+            this.cloneElementOffset.x = event.touches[0].clientX - event.srcElement.getBoundingClientRect().left + convertRemToPixels(2);
             this.cloneElementOffset.y = event.touches[0].clientY - event.srcElement.getBoundingClientRect().top;
             document.body.appendChild(this.cloneElement);
             requestAnimationFrame(() => {

@@ -198,11 +198,16 @@ h2 {
 }
 
 @keyframes timer {
-    from {
+    0% {
         opacity: 1;
+        background: white;
     }
-    to {
-        opacity: 0;
+    99.5% {
+        opacity: 0.1;
+        background: white;
+    }
+    100% {
+        background: red;
     }
 }
 
