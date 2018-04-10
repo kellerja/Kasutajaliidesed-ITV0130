@@ -209,16 +209,100 @@ Vue.component('draggable-task-component', {
                 @dragend="task.dragStop" @contextmenu.prevent="" \
                 :style="{animation:  (animation ? (\'timer \' + task.animationDuration + \' linear 0s 1\' + (gameOver || disabled ? \' paused\' : \'\')) : \'\'), \
                     cursor: (gameOver || disabled ? \'default\' : \'move\')}" \
-                @animationend="timeOut">',
+                @animationend="timeOut" @touchstart.prevent="touchStartHandler" @touchmove="touchMoveHandler" @touchend="touchEndHandler">',
     props: ['task', 'gameOver', 'disabled'],
     data: function() {
         return {
-            animation: false
+            animation: false,
+            cloneElement: null,
+            cloneElementOffset: {
+                x: 0,
+                y: 0
+            },
+            lastTarget: null
         };
     },
     methods: {
         timeOut: function(event) {
             this.task.timeout();
+        },
+        touchStartHandler: function(event) {
+            this.task.drag(event, this.task);
+
+            if (this.cloneElement) {
+                this.destroyImgClone();
+            }
+            this.createImgClone(event.srcElement);
+            this.cloneElementOffset.x = event.touches[0].clientX - event.srcElement.getBoundingClientRect().left;
+            this.cloneElementOffset.y = event.touches[0].clientY - event.srcElement.getBoundingClientRect().top;
+            document.body.appendChild(this.cloneElement);
+            requestAnimationFrame(() => {
+                if (!this.cloneElement) return;
+                let cloneStyle = this.cloneElement.style;
+                cloneStyle.position = 'absolute';
+                cloneStyle.pointerEvents = 'none';
+                cloneStyle.zIndex = '999999';
+                cloneStyle.left = Math.round(event.touches[0].pageX - this.cloneElementOffset.x) + 'px';
+                cloneStyle.top = Math.round(event.touches[0].pageY - this.cloneElementOffset.y) + 'px';
+            });
+        },
+        touchMoveHandler: function(event) {
+            let element = event.srcElement;
+            let target = this.getTarget(event);
+            if (target && target != this.lastTarget) {
+                this.emitDefaultEvent(event, 'dragleave', this.lastTarget);
+                this.emitDefaultEvent(event, 'dragenter', target);
+            }
+            this.lastTarget = target;
+            requestAnimationFrame(() => {
+                if (!this.cloneElement) return;
+                let cloneStyle = this.cloneElement.style;
+                cloneStyle.position = 'absolute';
+                cloneStyle.pointerEvents = 'none';
+                cloneStyle.zIndex = '999999';
+                cloneStyle.left = Math.round(event.touches[0].pageX - this.cloneElementOffset.x) + 'px';
+                cloneStyle.top = Math.round(event.touches[0].pageY - this.cloneElementOffset.y) + 'px';
+            });
+        },
+        touchEndHandler: function(event) {
+            if (this.lastTarget) {
+                this.emitDefaultEvent(event, 'drop', this.lastTarget);
+                this.emitDefaultEvent(event, 'dragleave', this.lastTarget);
+            }
+
+            this.task.dragStop(event);
+            this.destroyImgClone();
+            
+        },
+        destroyImgClone() {
+            if (!!this.cloneElement && !!this.cloneElement.parentElement) {
+                this.cloneElement.parentElement.removeChild(this.cloneElement);
+            }
+            this.cloneElement = null;
+        },
+        createImgClone(imgElement) {
+            this.cloneElement = imgElement.cloneNode(true);
+            this.cloneElement.style.animation = 'none';
+            this.cloneElement.style.opacity = '0.5';
+        },
+        getTarget(event) {
+            el = document.elementFromPoint(event.touches[0].clientX, event.touches[0].clientY)
+            while (el && getComputedStyle(el).pointerEvents == 'none') {
+                el = el.parentElement;
+            }
+            return el;
+        },
+        emitDefaultEvent(e, type, target) {
+            if (e && target) {
+                var evt = document.createEvent('Event'), t = e.touches ? e.touches[0] : e;
+                evt.initEvent(type, true, true);
+                evt.button = 0;
+                evt.which = evt.buttons = 1;
+                evt.dataTransfer = {};
+                target.dispatchEvent(evt);
+                return evt.defaultPrevented;
+            }
+            return false;
         }
     },
     mounted: function() {
@@ -239,7 +323,7 @@ class SortingTask extends DraggableTask {
         this.score = selectedContent[1];
     }
 
-    run(target, player) {
+    run(target, _) {
         if (!this.isValid || !(target instanceof Bin)) {
             return;
         }
@@ -318,14 +402,13 @@ class Game {
             if (this.extraTask || Math.random() < 0.5) return;
             Vue.set(this, 'extraTask', this.generateCalculationTask());
         };
-        this.extraTaskIntervalRepeatTimeInMillis = 1000;
+        this.extraTaskIntervalRepeatTimeInMillis = 20000;
         this.extraTaskInterval = setInterval(this.extraTaskIntervalFunction, this.extraTaskIntervalRepeatTimeInMillis);
     }
 
     gameOverCallback(score) {
         this.isGameOver = true;
         document.body.style.backgroundImage = 'url("' + backgroundBase + 'background_arrested.png")';
-        console.log(document.body.style.backgroundImage);
         clearInterval(this.extraTaskInterval);
         Vue.set(this, 'extraTask', null);
     }
