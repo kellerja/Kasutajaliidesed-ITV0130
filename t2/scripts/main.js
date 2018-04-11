@@ -240,7 +240,7 @@ class Task {
         this.score = 0;
         this.id = Math.random();
         this.taskCompleteEvent = taskCompleteCallback;
-        this.animationDuration = '10s';
+        this.animationDuration = '5s';
         this.isValid = true;
     }
 
@@ -571,7 +571,7 @@ class Game {
                 Vue.set(this, 'extraTask', this.generateCalculationTask());
             }
         };
-        this.extraTaskIntervalRepeatTimeInMillis = 20000;
+        this.extraTaskIntervalRepeatTimeInMillis = 9500;
         this.extraTaskInterval = setInterval(this.extraTaskIntervalFunction, this.extraTaskIntervalRepeatTimeInMillis);
     }
 
