@@ -320,7 +320,7 @@ Vue.component('calculate-task-component', {
             this.task.run(this.guess, this.endAnimationTimeInMs);
             if (this.task.state === TaskState.RUNNING) return;
             this.success = this.task.state === TaskState.COMPLETED;
-            soundManager.stopUntilTimeout('sounds/fuse.mp3');
+            soundManager.stopUntilTimeout('sounds/calc_timer.mp3');
             if (!this.success) {
                 soundManager.forcePlay('sounds/alarm_short.mp3');
             } else {
@@ -331,7 +331,7 @@ Vue.component('calculate-task-component', {
     },
     mounted: function() {
         this.animation = true;
-        soundManager.playUntilTimeout('sounds/fuse.mp3', css_time_to_milliseconds(this.task.animationDuration));
+        soundManager.playUntilTimeout('sounds/calc_timer.mp3', css_time_to_milliseconds(this.task.animationDuration));
         this.task.start();
     },
     beforeDestroy: function() {
@@ -395,6 +395,7 @@ Vue.component('draggable-task-component', {
                 return;
             }
             this.timeOutAnimation = true;
+            soundManager.forcePlay('sounds/249616__vincentm400__function-fail.mp3');
             this.task.timeout(this.timeOutAnimationTimeInMs);
         },
         touchStartHandler: function(event) {
