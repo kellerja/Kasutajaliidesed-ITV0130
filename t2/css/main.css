@@ -9,6 +9,63 @@ h2 {
     margin: 0;
 }
 
+.wrapper {
+    width: 5rem;
+    height: 5rem;
+    margin-left: 2rem;
+    position: relative;
+}
+
+.circle {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    display: flex;
+    z-index: 1;
+}
+
+.half-circle-one {
+    width: 50%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.half-circle-one::before {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    border-radius: 5rem 0 0 5rem;
+    transform-origin: 100% 50%;
+    content: " ";
+}
+
+.circle.animate .half-circle-one::before {
+    background: green;
+    animation: var(--animation, '');
+}
+
+.half-circle-two {
+    width: 50%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.half-circle-two::before {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    border-radius: 0 5rem 5rem 0;
+    transform-origin: 0% 50%;
+    content: " ";
+}
+
+.circle.animate .half-circle-two::before {
+    background: green;
+    animation: var(--animation, '');
+}
+
 .tab-n1 {
     border: 0.2rem solid black;
     padding: 0.3rem 1.2rem;
@@ -65,10 +122,11 @@ h2 {
 }
 
 .task {
-    height: 5rem;
-    width: 5rem;
-    margin-left: 2rem;
+    width: 100%;
+    height: 100%;
     user-select: none;
+    position: absolute;
+    z-index: 2;
 }
 
 .extra-task-calc {
@@ -202,10 +260,10 @@ h2 {
 
 @keyframes timer {
     0% {
-        opacity: 1;
+        transform: rotate(0deg);
     }
     100% {
-        opacity: 0.1;
+        transform: rotate(180deg);
     }
 }
 
@@ -236,16 +294,19 @@ h2 {
 
 @keyframes timeout {
     0% {
+        background-color: initial;
+    }
+    25% {
+        background-color: red;
+    }
+    50% {
+        background-color: initial;
     }
     75% {
-        opacity: 1;
-        background-color: red;
-        transform: translateX(0) translateY(0);
+        transform: translateY(0rem);
     }
     100% {
-        opacity: 0;
-        background-color: initial;
-        transform: translateX(-10rem) translateY(2.5rem);
+        transform: translateY(2.5rem);
     }
 }
 
@@ -337,6 +398,9 @@ h2 {
         border-top: 0.4rem solid gray;
         border-bottom: 0.4rem solid gray;
     }
+}
+
+@keyframes empty {
 }
 
 @media only screen and (max-width: 991px) {

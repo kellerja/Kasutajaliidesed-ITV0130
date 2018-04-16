@@ -41,7 +41,7 @@
                         </svg>
                         <h1>Loot:</h1>
                         <draggable-task-component :key="'task_' + task.id" :id="'task_' + task.id" 
-                            v-for="task in game.tasks" :task="task" :disabled="!!game.extraTask" :game-over="game.gameOver"></draggable-task-component>
+                            v-for="task in game.tasks" :wait-state="game.waitState" :task="task" :disabled="!!game.extraTask" :game-over="game.gameOver"></draggable-task-component>
                     </div>
                 </div>
                 <div v-if="game.extraTask" class="tab-n2">

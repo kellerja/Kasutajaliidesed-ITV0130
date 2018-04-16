@@ -338,24 +338,25 @@ Vue.component('calculate-task-component', {
 });
 
 Vue.component('draggable-task-component', {
-    template: '<img class="task" :src="task.imageUrl" :draggable="!gameOver && !disabled" @dragstart="task.drag($event, task)" \
-                @dragend="task.dragStop" @contextmenu.prevent="" \
-                :style="{animation:  (animation ? ( \
-                        (timeOutAnimation ? (\'timeout \' + timeOutAnimationTimeInMs + \'ms ease-in 0s 1 forwards\') : \
-                        ( \
-                            welcomeAnimation ? (\'taskEntrance \' + welcomeAnimationTimeInMs + \'ms ease-out 0s 1 forwards\') : \
-                            (\'timer \' + task.animationDuration + \' linear 0s 1\') + (gameOver || disabled ? \' paused\' : \'\'))) \
-                        ) : \'\'), \
-                    cursor: (gameOver || disabled ? \'default\' : \'move\')}" \
-                @animationend="timeOut" @touchstart.prevent="touchStartHandler" @touchmove="touchMoveHandler" @touchend="touchEndHandler">',
-    props: ['task', 'gameOver', 'disabled'],
+    template: '<div><div class="wrapper"> \
+                <img class="task" :src="task.imageUrl" :draggable="!gameOver && !disabled" @dragstart="task.drag($event, task)" \
+                    @dragend="task.dragStop" @contextmenu.prevent="" \
+                    :style="{animation:  getAnimation, \
+                        cursor: (gameOver || disabled ? \'default\' : \'move\')}" \
+                    @animationend="timeOut" @touchstart.prevent="touchStartHandler" @touchmove="touchMoveHandler" @touchend="touchEndHandler"> \
+                <div :class="[\'circle\', {\'animate\': animation && !welcomeAnimation && !timeOutAnimation}]"> \
+                    <div ref="halfCircleOne" class="half-circle-one"></div> \
+                    <div ref="halfCircleTwo" class="half-circle-two"></div> \
+                </div>\
+               </div></div>',
+    props: ['task', 'gameOver', 'disabled', 'waitState'],
     data: function() {
         return {
             animation: false,
             welcomeAnimation: false,
             welcomeAnimationTimeInMs: 200,
             timeOutAnimation: false,
-            timeOutAnimationTimeInMs: 200,
+            timeOutAnimationTimeInMs: 600,
             cloneElement: null,
             cloneElementOffset: {
                 x: 0,
@@ -363,6 +364,25 @@ Vue.component('draggable-task-component', {
             },
             lastTarget: null
         };
+    },
+    computed: {
+        getAnimation() {
+            if (!this.animation) {
+                return '';
+            }
+            if (this.timeOutAnimation) {
+                return 'timeout ' + this.timeOutAnimationTimeInMs + 'ms ease-in 0s 1 forwards';
+            }
+            if (this.welcomeAnimation) {
+                return 'taskEntrance ' + this.welcomeAnimationTimeInMs + 'ms ease-out 0s 1 forwards';
+            }
+            const animationTime = parseInt(this.task.animationDuration.substring(0, this.task.animationDuration.length - 1));
+            const animationUnit = this.task.animationDuration.substring(this.task.animationDuration.length - 1);
+            const paused = (this.waitState || this.gameOver || this.disabled ? ' paused' : '');
+            this.$refs.halfCircleOne.style.setProperty('--animation', 'timer ' + animationTime / 2 + animationUnit + ' linear ' + animationTime / 2 + animationUnit + ' 1 forwards' + paused);
+            this.$refs.halfCircleTwo.style.setProperty('--animation', 'timer ' + animationTime / 2 + animationUnit + ' linear 0s 1 forwards' + paused);
+            return 'empty ' + this.task.animationDuration + ' linear 0s 1 ' + paused;
+        }
     },
     methods: {
         timeOut: function(event) {
@@ -555,8 +575,9 @@ class Game {
         this.extraTaskGracePeriod = false;
         this.extraTaskGracePeriodTimeout = 5000;
         this.extraTaskChance = 0.5;
+        this.waitState = true;
         this.extraTaskIntervalFunction = () => {
-            if (this.extraTask) return;
+            if (this.extraTask || this.waitState) return;
             if (Math.random() < this.extraTaskChance) {
                 this.extraTaskChance = this.extraTaskChance - 0.2;
                 return;
@@ -586,6 +607,7 @@ class Game {
 
     taskCompleteCallback(task, reward) {
         this.player.applyReward(reward);
+        this.waitState = false;
         const taskIndex = this.tasks.indexOf(task);
         this.tasks[taskIndex].isValid = false;
         this.tasks.splice(taskIndex, 1, this.generateNewSortingTask());
@@ -611,7 +633,14 @@ class Game {
         formula.push(ops[Math.floor(Math.random() * ops.length)]);
         formula.push(+Math.floor(Math.random() * 10).toFixed(3));
         if (formula[1] === '/' && formula[2] === 0) formula[2] = 1;
-        const result = +eval(formula.join('')).toFixed(3);
+        let result;
+        if (formula[1] === '/') {
+            const temp = formula[0];
+            formula[0] = formula[0] * formula[2];
+            result = temp;
+        } else {
+            result = +eval(formula.join('')).toFixed(3);
+        }
         formula.push('=');
         formula.push(result);
         let xPos;
@@ -630,7 +659,9 @@ class Game {
         this.extraTaskGracePeriod = false;
         soundManager.stop();
         this.player = new Player((score) => this.gameOverCallback(score));
-        this.tasks = Array.from({length: this.numOfSortingTasks}, () => this.generateNewSortingTask());
+        this.tasks = [new SortingTask(this.bins[1], (res, reward) => this.taskCompleteCallback(res, reward)),
+                      new SortingTask(this.bins[0], (res, reward) => this.taskCompleteCallback(res, reward))];
+        this.waitState = true;
         this.setBackground();
         this.extraTaskInterval = setInterval(this.extraTaskIntervalFunction, this.extraTaskIntervalRepeatTimeInMillis);
     }
