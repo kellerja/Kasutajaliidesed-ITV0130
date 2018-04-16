@@ -294,8 +294,10 @@ Vue.component('calculate-task-component', {
                         ) : \'\' }" \
                         @animationend="timeOut" @contextmenu.prevent="" src="assets/electricity.svg"> \
                     <p style="margin: 0; padding: 0; margin-bottom: 0.3rem; background-color: white;">Find x:<br> {{task.challenge.formula}}</p> \
-                    <input style="background-color: white;" type="text" class="w-100" v-model="guess"> \
-                    <button @click="handleSubmit()" class="btn w-100">Hack</button> \
+                    <form action.prevent=""> \
+                        <input style="background-color: white;" type="text" class="w-100" v-model="guess"> \
+                        <input type="submit" value="hack" @click.prevent="handleSubmit()" class="btn w-100"> \
+                    </form> \
                 </div>',
     props: ['task', 'gameOver'],
     data: function() {
