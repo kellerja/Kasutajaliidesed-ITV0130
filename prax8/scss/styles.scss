@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css?family=Indie+Flower');
+
+$backgroundColor: #f6f6f6;
+$menuItem: #adadf5;
+$menuTextColor: #ffffff;
+$menuItemPadding: 1rem;
+$headersFont: "Times New Roman", Times, serif;
+$bodyFont: sans-serif;
+$handwritingFont: 'Indie Flower', cursive;
+$reviewBgColor: #e06060;
+$imgHeight: 400px;
+$textHeight: 200px;
+
+%review {
+    background: $reviewBgColor;
+    color: whitesmoke;
+}
+
+body {
+    background: $backgroundColor;
+    font-family: $bodyFont;
+    padding-top: 0.5rem;
+}
+
+@mixin menu-item($width) {
+    background-color: $menuItem;
+    color: $menuTextColor;
+    padding: $menuItemPadding $width;
+    text-decoration: none;
+    &:hover {
+        color: darken($color: $menuTextColor, $amount: 10);
+        background-color: darken($color: $menuItem, $amount: 10);
+    }
+}
+
+@mixin small-screen($maxWidth) {
+    @media screen and (max-width: $maxWidth) {
+        @content;
+    }
+}
+
+h1, h2, h3, h4, h5 {
+    font-family: $headersFont;
+}
+
+.container {
+    background-color: lighter($backgroundColor, 10);
+    .navbar {
+        ul {
+            background: complement($color: $menuItem);
+            display: flex;
+            padding: 0;
+            margin: 0;
+        }
+        li {
+            list-style-type: none;
+            padding: ($menuItemPadding + 0.5) 0;
+            margin: 0 auto;
+        }
+        a {
+            @include menu-item(6rem);
+        }
+    }
+
+    .list-group {
+        background: complement($color: $menuItem);
+        padding: ($menuItemPadding + 0.5) 0;
+        display: inline-block;
+        a {
+            @include menu-item(4rem);
+            $menuItemSidesMargin: 3rem;
+            &:nth-of-type(1) {
+                margin-left: $menuItemSidesMargin;
+            }
+            &:nth-of-type(3) {
+                margin-right: $menuItemSidesMargin;
+            }
+        }
+    }
+
+    .card {
+        display: flex;
+        margin-top: 1rem;
+    }
+
+    .card-body {
+        p {
+            font-family: $handwritingFont;
+        }
+        small {
+            font-family: $handwritingFont;
+        }
+
+        #product-stars {
+            margin-top: ($imgHeight - $textHeight);
+        }
+
+        .reviews {
+            @extend %review;
+            $borderColor: #64fff2;
+            border: 0.3rem solid darken($borderColor, 4);
+            @include small-screen(764px) {
+                background: invert($reviewBgColor);
+                border-color: invert($borderColor);
+            }
+            small {
+                background: lighten($reviewBgColor, 7);
+                border-bottom: 0.2rem solid $borderColor;
+                @include small-screen(764px) {
+                    background: invert(lighten($reviewBgColor, 7));
+                }
+            }
+        }
+
+        .review-btn {
+            margin-top: 1.5rem;
+            a {
+                @include menu-item(1rem);
+            }
+        }
+    }
+}
+
+footer {
+    margin-top: 2rem;
+}

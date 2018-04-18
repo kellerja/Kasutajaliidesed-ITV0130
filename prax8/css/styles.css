@@ -1,0 +1,109 @@
+@import url("https://fonts.googleapis.com/css?family=Indie+Flower");
+.container .card-body .reviews {
+  background: #e06060;
+  color: whitesmoke;
+}
+
+body {
+  background: #f6f6f6;
+  font-family: sans-serif;
+  padding-top: 0.5rem;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: "Times New Roman", Times, serif;
+}
+
+.container {
+  background-color: lighter(#f6f6f6, 10);
+}
+.container .navbar ul {
+  background: #f5f5ad;
+  display: flex;
+  padding: 0;
+  margin: 0;
+}
+.container .navbar li {
+  list-style-type: none;
+  padding: 1.5rem 0;
+  margin: 0 auto;
+}
+.container .navbar a {
+  background-color: #adadf5;
+  color: #ffffff;
+  padding: 1rem 6rem;
+  text-decoration: none;
+}
+.container .navbar a:hover {
+  color: #e6e6e6;
+  background-color: #8080ef;
+}
+.container .list-group {
+  background: #f5f5ad;
+  padding: 1.5rem 0;
+  display: inline-block;
+}
+.container .list-group a {
+  background-color: #adadf5;
+  color: #ffffff;
+  padding: 1rem 4rem;
+  text-decoration: none;
+}
+.container .list-group a:hover {
+  color: #e6e6e6;
+  background-color: #8080ef;
+}
+.container .list-group a:nth-of-type(1) {
+  margin-left: 3rem;
+}
+.container .list-group a:nth-of-type(3) {
+  margin-right: 3rem;
+}
+.container .card {
+  display: flex;
+  margin-top: 1rem;
+}
+.container .card-body p {
+  font-family: "Indie Flower", cursive;
+}
+.container .card-body small {
+  font-family: "Indie Flower", cursive;
+}
+.container .card-body #product-stars {
+  margin-top: 200px;
+}
+.container .card-body .reviews {
+  border: 0.3rem solid #50fff0;
+}
+@media screen and (max-width: 764px) {
+  .container .card-body .reviews {
+    background: #1f9f9f;
+    border-color: #9b000d;
+  }
+}
+.container .card-body .reviews small {
+  background: #e67e7e;
+  border-bottom: 0.2rem solid #64fff2;
+}
+@media screen and (max-width: 764px) {
+  .container .card-body .reviews small {
+    background: #198181;
+  }
+}
+.container .card-body .review-btn {
+  margin-top: 1.5rem;
+}
+.container .card-body .review-btn a {
+  background-color: #adadf5;
+  color: #ffffff;
+  padding: 1rem 1rem;
+  text-decoration: none;
+}
+.container .card-body .review-btn a:hover {
+  color: #e6e6e6;
+  background-color: #8080ef;
+}
+
+footer {
+  margin-top: 2rem;
+}
