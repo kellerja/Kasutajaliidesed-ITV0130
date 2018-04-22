@@ -1,4 +1,4 @@
-var deadline = Date.parse('23 April 2018');
+var deadline = Date.parse('26 April 2018');
 var minimumPassingScore = 10;
 var weekInMs = 6.048e+8;
 
@@ -8,7 +8,7 @@ function ScoreElement(shortName, description) {
     this.score = 0;
     this.reason = '';
     this.getScore = function() {
-        return this.score;
+        return parseInt(this.score);
     }
 }
 
@@ -19,6 +19,12 @@ function BonusScore() {
         return this.elements.reduce(function(accumulator, element) {
             return accumulator + element.getScore();
         }, 0);
+    }
+    this.addBonus = function() {
+        this.elements.push(new ScoreElement('', ''));
+    }
+    this.removeBonus = function(index) {
+        this.elements.splice(index, 1);
     }
 }
 
@@ -35,6 +41,7 @@ function ExtraScore() {
         new ScoreElement('Sorditavaid objekte saab lohistada', ''),
         new ScoreElement('Töötab ka mobiilil', '')
     ];
+    this.maximumScore = 10;
     this.getScore = function() {
         return this.elements.reduce(function(accumulator, element) {
             return accumulator + element.getScore();
@@ -51,6 +58,7 @@ function BaseScore() {
         new ScoreElement('Mängu läbikukkumine ja kordamine', ''),
         new ScoreElement('Tähelepanu juhtimine animatsioonidega', ''),
     ];
+    this.maximumScore = 10;
     this.getScore = function() {
         return this.elements.reduce(function(accumulator, element) {
             return accumulator + element.getScore();
@@ -59,10 +67,18 @@ function BaseScore() {
 }
 
 function NegativeScore() {
+    this.elements = [
+    ];
     this.getScore = function() {
         return this.elements.reduce(function(accumulator, element) {
             return accumulator + element.getScore();
         }, 0);
+    }
+    this.addNegative = function() {
+        this.elements.push(new ScoreElement('', ''));
+    }
+    this.removeNegative = function(index) {
+        this.elements.splice(index, 1);
     }
 }
 
@@ -80,8 +96,14 @@ function Project() {
     this.negative = new NegativeScore();
     this.plagiarism = new Plagiarism();
     this.getScore = function() {
-        return plagiarismModifierScore * (Project.getDelayScore(Date.now() - (this.deadlineExtensionCount * weekInMs) - deadline) + 
+        return this.plagiarism.plagiarismModifierScore * (Project.getDelayScore(-this.getTimeRemaining()) + 
                 this.base.getScore() + this.extra.getScore() + this.bonus.getScore() + this.negative.getScore());
+    }
+    this.getTimeRemaining = function() {
+        return this.getExtendedDeadline() - Date.now();
+    }
+    this.getExtendedDeadline = function() {
+        return deadline + this.deadlineExtensionCount * weekInMs;
     }
 }
 
@@ -97,19 +119,52 @@ Project.getDelayScore = function(delayInMs) {
 }
 
 function Student() {
+    this.username = ''
 }
 
 function Group() {
     this.students = [new Student()];
     this.project = new Project();
+    this.addStudent = function() {
+        this.students.push(new Student());
+    }
+    this.removeStudent = function(index) {
+        this.students.splice(index, 1);
+    }
 }
 
 var vm = new Vue({
     el: '#app',
     data: {
+        Project: Project,
+        deadline: deadline,
         groups: [new Group()]
     },
     methods: {
+        getTimeString: function(timeInMs) {
+            var seconds = timeInMs / 1000;
+            var minutes = seconds / 60;
+            var hours = minutes / 60;
+            var days = hours / 24;
+            var weeks = days / 7;
+            var timeString = '';
+            if (weeks > 1) {
+                timeString += Math.floor(weeks) + ' weeks ';
+            }
+            if (days > 1) {
+                timeString += Math.floor(days % 7) + ' days ';
+            }
+            if (hours > 0) {
+                timeString += Math.floor(hours % 24) + ' hours ';
+            }
+            if (minutes > 0) {
+                timeString += Math.floor(minutes % 60) + ' minutes ';
+            }
+            if (seconds > 0) {
+                timeString += Math.floor(seconds % 60) + ' seconds';
+            }
+            return timeString;
+        }
     },
     computed: {
     }

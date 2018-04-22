@@ -11,6 +11,64 @@
 <body>
     <div id="app" class="container">
         <form>
+            <p>Groups</p>
+            <div v-for="group in groups">
+                <p>Students</p>
+                <div v-for="(student, index) in group.students">
+                    <label>Username</label>
+                    <input type="text" v-model="student.username">
+                    <button type="button" @click="group.removeStudent(index)">Remove student</button>
+                </div>
+                <button type="button" @click="group.addStudent()">Add student</button>
+                <p>Project</p>
+                <div>
+                    <label>Url</label>
+                    <input type="url" v-model="group.project.url">
+                    <p>Date: {{(new Date()).toLocaleString()}}</p>
+                    <p>Deadline: {{(new Date(deadline)).toLocaleString()}}</p>
+                    <p>Extended deadline: {{(new Date(group.project.getExtendedDeadline())).toLocaleString()}} (extended {{group.project.deadlineExtensionCount}} weeks)</p>
+                    <p v-if="group.project.getTimeRemaining() >= 0">Time remaining: {{getTimeString(group.project.getTimeRemaining())}}</p>
+                    <p v-else>Time over deadline: {{getTimeString(-group.project.getTimeRemaining())}}</p>
+                    <label for="Extend deadline"></label>
+                    <input type="number" v-model="group.project.deadlineExtensionCount">
+                    <p>Score: {{group.project.getScore()}}</p>
+                    <p>Deadline missed penalty: {{Project.getDelayScore(-group.project.getTimeRemaining())}}</p>
+                    <p>Base score: {{group.project.base.getScore() + '/' + group.project.base.maximumScore}}</p>
+                    <div v-for="base in group.project.base.elements">
+                        <p>{{base.shortName}}</p>
+                        <label>Score</label>
+                        <input type="number" v-model="base.score">
+                        <label>Comment</label>
+                        <input type="text" v-model="base.reason">
+                    </div>
+                    <p>Extra score: {{group.project.extra.getScore() + '/' + group.project.extra.maximumScore}}</p>
+                    <div v-for="extra in group.project.extra.elements">
+                        <p>{{extra.shortName}}</p>
+                        <label>Score</label>
+                        <input type="number" v-model="extra.score">
+                        <label>Comment</label>
+                        <input type="text" v-model="extra.reason">
+                    </div>
+                    <p>Bonus score: {{group.project.bonus.getScore()}}</p>
+                    <div v-for="(bonus, bonusIndex) in group.project.bonus.elements">
+                        <label>Score</label>
+                        <input type="number" v-model="bonus.score">
+                        <label>Comment</label>
+                        <input type="text" v-model="bonus.reason">
+                        <button type="button" @click="group.project.bonus.removeBonus(bonusIndex)">Remove bonus</button>
+                    </div>
+                    <button type="button" @click="group.project.bonus.addBonus()">Add a bonus</button>
+                    <p>Negative score: {{group.project.negative.getScore()}}</p>
+                    <div v-for="(negative, negativeIndex) in group.project.negative.elements">
+                        <label>Score</label>
+                        <input type="number" v-model="negative.score">
+                        <label>Comment</label>
+                        <input type="text" v-model="negative.reason">
+                        <button type="button" @click="group.project.negative.removeNegative(negativeIndex)">Remove negative</button>
+                    </div>
+                    <button type="button" @click="group.project.negative.addNegative()">Add a negative</button>
+                </div>
+            </div>
             <!--<div v-for="(student, index) in students">
                 <div class="form-group row">
                     <label for="user_name" class="col-sm-12 col-md-2 col-form-label">Kasutajanimi</label>
