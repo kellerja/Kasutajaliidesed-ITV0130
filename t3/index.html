@@ -31,7 +31,9 @@
                     <p v-else>Time over deadline: {{getTimeString(-group.project.getTimeRemaining())}}</p>
                     <label for="Extend deadline"></label>
                     <input type="number" v-model="group.project.deadlineExtensionCount">
-                    <p>Score: {{group.project.getScore()}}</p>
+                    <p>plagiarism: {{group.project.plagiarism.isPlagiarized}} <button type="button" @click="group.project.plagiarism.togglePlagiarism()">Switch plagiarism</button></p>
+                    <p>Score: {{group.project.getScore() + '/' + (group.project.base.maximumScore + group.project.extra.maximumScore)}}</p>
+                    <p>Passed: {{group.project.getScore() >= minimumPassingScore}}</p>
                     <p>Deadline missed penalty: {{Project.getDelayScore(-group.project.getTimeRemaining())}}</p>
                     <p>Base score: {{group.project.base.getScore() + '/' + group.project.base.maximumScore}}</p>
                     <div v-for="base in group.project.base.elements">

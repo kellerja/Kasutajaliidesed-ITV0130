@@ -85,6 +85,10 @@ function NegativeScore() {
 function Plagiarism() {
     this.isPlagiarized = false;
     this.plagiarismModifierScore = 1;
+    this.togglePlagiarism = function() {
+        this.isPlagiarized = !this.isPlagiarized;
+        this.plagiarismModifierScore = this.isPlagiarized ? 0 : 1;
+    }
 }
 
 function Project() {
@@ -138,6 +142,7 @@ var vm = new Vue({
     data: {
         Project: Project,
         deadline: deadline,
+        minimumPassingScore: minimumPassingScore,
         groups: [new Group()]
     },
     methods: {
