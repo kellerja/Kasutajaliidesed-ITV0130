@@ -4,9 +4,6 @@ Vue.use(Vuex);
 
 ListView = Vue.component('list-view', (
 {
-  data: function() {
-    return {}
-  },
   computed: {
     getAlchemists() {
       let listToDisplay = [];
@@ -78,13 +75,10 @@ const Add = Vue.component('add-view', ({
   },
   methods: {
     addNew: function() {
-      console.log("~!");
       if (!this.newEntry.name.validate() || !this.newEntry.element.validate()) {
         return;
       }
-      console.log("~?");
-      const entry = {name: this.newEntry.name.value, email: this.newEntry.element.value};
-      store.commit('pushAlchemistEntry', entry);
+      store.commit('pushAlchemistEntry', {name: this.newEntry.name.value, element: this.newEntry.element.value});
       this.newEntry = new NewEntry();
       this.$router.push({path: 'list'});
     }
@@ -103,10 +97,10 @@ const Add = Vue.component('add-view', ({
   <h2>Lisamine</h2>
   <form>
   <label for="name">Nimi</label>
-  <input type="text" id="name" @change="newEntry.name.validate()" @keyup.once="nameFirstBlur = true" @blur.once="nameFirstBlur = true" v-model="newEntry.name.value"/>
+  <input type="text" id="name" @change="newEntry.name.validate()" @keydown.once="nameFirstBlur = true" @blur.once="nameFirstBlur = true" v-model="newEntry.name.value"/>
   <small class="error" :hidden="isNameValid || !nameFirstBlur">{{ newEntry.name.errMsg }}</small>
   <label for="element">Lemmik element</label>
-  <input type="text" id="element" @change="newEntry.element.validate()" @keyup.once="elementFirstBlur = true" @blur.once="elementFirstBlur = true" v-model="newEntry.element.value">
+  <input type="text" id="element" @change="newEntry.element.validate()" @keydown.once="elementFirstBlur = true" @blur.once="elementFirstBlur = true" v-model="newEntry.element.value">
   <small class="error" :hidden="isElementValid || !elementFirstBlur">{{ newEntry.element.errMsg }}</small>
   <br>
   <input type="submit" @click.prevent="addNew"/>
@@ -117,9 +111,6 @@ const Add = Vue.component('add-view', ({
 ))
 
 const itemDetail = Vue.component('item-detail', ({
-  data: function() {
-    return {} // BAD IDEA: see appdata below...
-  },
   template: `<div><h1>Inimese #{{$route.params.id}} detailid</h1>
               <div v-if="getEntryById($route.params.id)">
               <div>nimi: {{getEntryById($route.params.id).name}}</div>
@@ -143,9 +134,12 @@ const store = new Vuex.Store({
     ]
   },
   mutations: {
-    pushAlchemistEntry(state, newEntry) {
-      newEntry.id = state.alchemistlist.length;
-      state.alchemistlist.push(newEntry);
+    pushAlchemistEntry(state, payload) {
+      if (!payload.name || !payload.element) {
+        return;
+      }
+      const id = state.alchemistlist.length;
+      state.alchemistlist.push({id, name: payload.name, element: payload.element});
     }
   },
   getters: {
@@ -179,6 +173,5 @@ var vm = new Vue(
 { 
   router,
   store,
-  data: {}
 }
 ).$mount('#dogapp');
