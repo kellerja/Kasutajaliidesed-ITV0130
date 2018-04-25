@@ -1,0 +1,11 @@
+body {
+    padding: 5px;
+}
+
+small.error {
+    color: red;
+}
+
+input.error {
+    background-color: #ffaaaa;
+}
