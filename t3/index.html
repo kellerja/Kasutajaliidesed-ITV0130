@@ -4,99 +4,155 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
     <title>Kodutöö hindamine</title>
-    <link href="css/bootstrap/bootstrap.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic|Material+Icons">
+    <link rel="stylesheet" href="css/vue-material.min.css">
+    <link rel="stylesheet" href="css/theme/default.css">
     <link href="css/main.css" rel="stylesheet">  
     <script src="scripts/vue/vue.js"></script>
+    <script src="scripts/vue-material.min.js"></script>
 </head>
 <body>
-    <div id="app" class="container">
-        <form>
-            <p>Groups</p>
-            <div v-for="group in groups">
-                <p>Students</p>
-                <div v-for="(student, index) in group.students">
-                    <label>Username</label>
-                    <input type="text" v-model="student.username">
-                    <button type="button" @click="group.removeStudent(index)">Remove student</button>
-                </div>
-                <button type="button" @click="group.addStudent()">Add student</button>
-                <p>Project</p>
-                <div>
-                    <label>Url</label>
-                    <input type="url" v-model="group.project.url">
-                    <p>Date: {{(new Date()).toLocaleString()}}</p>
-                    <p>Deadline: {{(new Date(deadline)).toLocaleString()}}</p>
-                    <p>Extended deadline: {{(new Date(group.project.getExtendedDeadline())).toLocaleString()}} (extended {{group.project.deadlineExtensionCount}} weeks)</p>
-                    <p v-if="group.project.getTimeRemaining() >= 0">Time remaining: {{getTimeString(group.project.getTimeRemaining())}}</p>
-                    <p v-else>Time over deadline: {{getTimeString(-group.project.getTimeRemaining())}}</p>
-                    <label for="Extend deadline"></label>
-                    <input type="number" v-model="group.project.deadlineExtensionCount">
-                    <p>plagiarism: {{group.project.plagiarism.isPlagiarized}} <button type="button" @click="group.project.plagiarism.togglePlagiarism()">Switch plagiarism</button></p>
-                    <p>Score: {{group.project.getScore() + '/' + (group.project.base.maximumScore + group.project.extra.maximumScore)}}</p>
-                    <p>Passed: {{group.project.getScore() >= minimumPassingScore}}</p>
-                    <p>Deadline missed penalty: {{Project.getDelayScore(-group.project.getTimeRemaining())}}</p>
-                    <p>Base score: {{group.project.base.getScore() + '/' + group.project.base.maximumScore}}</p>
-                    <div v-for="base in group.project.base.elements">
-                        <p>{{base.shortName}}</p>
-                        <label>Score</label>
-                        <input type="number" v-model="base.score">
-                        <label>Comment</label>
-                        <input type="text" v-model="base.reason">
-                    </div>
-                    <p>Extra score: {{group.project.extra.getScore() + '/' + group.project.extra.maximumScore}}</p>
-                    <div v-for="extra in group.project.extra.elements">
-                        <p>{{extra.shortName}}</p>
-                        <label>Score</label>
-                        <input type="number" v-model="extra.score">
-                        <label>Comment</label>
-                        <input type="text" v-model="extra.reason">
-                    </div>
-                    <p>Bonus score: {{group.project.bonus.getScore()}}</p>
-                    <div v-for="(bonus, bonusIndex) in group.project.bonus.elements">
-                        <label>Score</label>
-                        <input type="number" v-model="bonus.score">
-                        <label>Comment</label>
-                        <input type="text" v-model="bonus.reason">
-                        <button type="button" @click="group.project.bonus.removeBonus(bonusIndex)">Remove bonus</button>
-                    </div>
-                    <button type="button" @click="group.project.bonus.addBonus()">Add a bonus</button>
-                    <p>Negative score: {{group.project.negative.getScore()}}</p>
-                    <div v-for="(negative, negativeIndex) in group.project.negative.elements">
-                        <label>Score</label>
-                        <input type="number" v-model="negative.score">
-                        <label>Comment</label>
-                        <input type="text" v-model="negative.reason">
-                        <button type="button" @click="group.project.negative.removeNegative(negativeIndex)">Remove negative</button>
-                    </div>
-                    <button type="button" @click="group.project.negative.addNegative()">Add a negative</button>
-                </div>
-            </div>
-            <!--<div v-for="(student, index) in students">
-                <div class="form-group row">
-                    <label for="user_name" class="col-sm-12 col-md-2 col-form-label">Kasutajanimi</label>
-                    <div class="input-group col-sm-12 col-md-10">
-                        <input type="text" id="user_name" v-model="student.username" class="form-control">
-                        <div class="invalid-feedback">Error here</div>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="project_url" class="col-sm-12 col-md-2 col-form-label">URL</label>
-                    <div class="input-group col-sm-12 col-md-10">
-                        <input type="text" id="project_url" class="form-control" v-model="student.url.value" :placeholder="getDefaultUrl(student)" :readonly="student.url.isPlaceholder">
-                        <div class="input-group-append">
-                            <button class="btn btn-outline-secondary" type="button" @click="openUrl(student)">Ava</button>
+    <div id="app">
+        <div class="page-container">
+            <form class="md-layout md-alignment-top-center" @submit.prevent="">
+                <md-card class="md-layout-item md-size-50 md-small-size-100" style="overflow-x:hidden">
+                    <md-card-header>
+                        <div class="md-title">Kodutöö 2 hindamine</div>
+                    </md-card-header>
+                    <md-divider></md-divider>                    
+                    <md-card-header>
+                            <div class="md-subhead">Meeskond</div>
+                    </md-card-header>
+                    <md-card-content>
+                        <md-chips id="team" class="md-primary" v-model="group.studentStrings"
+                                  @md-insert="group.addStudent" @md-delete="group.removeStudent" @md-click="group.setLeader"
+                                  md-placeholder="Lisa tudengid..." md-check-duplicated>
+                            <template slot="md-chip" slot-scope="{ chip }">
+                                <span>{{group.students[chip].username}}</span>
+                            </template>
+                            <div class="md-helper-text"></div>
+                        </md-chips>
+                        <md-field md-clearable>
+                            <label for="project_url">Projekti URL</label>
+                            <md-input id="project_url" type="url" @change="group.project.url.update" v-model="group.project.url.url"></md-input>
+                            <md-button @click="group.project.url.open" class="md-icon-button md-dense" tabindex="-1" v-if="group.project.url.firstTouch && group.project.url.url">
+                                    <md-icon>open_in_new</md-icon>
+                                </md-button>
+                            <md-button @click="group.project.url.toggleUrl" class="md-icon-button md-dense" style="margin-right: 2.2rem;" tabindex="-1" v-if="group.project.url.firstTouch">
+                                <md-icon v-if="group.project.url.url === group.project.url.dijkstraUrl">undo</md-icon>
+                                <md-icon v-else>redo</md-icon>
+                            </md-button>
+                        </md-field>
+                    </md-card-content>
+
+                    <md-divider></md-divider>
+                    <md-card-header>
+                        <div class="md-subhead">Baasosa hindamine ({{group.project.base.getScore()}}/{{group.project.base.maximumScore}})</div>
+                    </md-card-header>
+                    <md-card-content>
+                        <div class="md-layout md-gutter" v-for="baseScore in group.project.base.elements" :key="baseScore.shortName">
+                            <div class="md-layout-item md-size-20 md-xsmall-size-100">
+                                <p>{{baseScore.shortName}}</p>
+                            </div>
+                            <div class="md-layout-item md-xsmall-size-100">
+                                <md-field>
+                                    <label>Hinne</label>
+                                    <md-input onclick="this.select()" v-model="baseScore.score" type="number"></md-input>
+                                </md-field>
+                            </div>
+                            <div class="md-layout-item md-xsmall-size-100">
+                                <md-field>
+                                    <label>Kommentaar</label>
+                                    <md-input v-model="baseScore.reason" type="text"></md-input>
+                                </md-field>
+                            </div>
                         </div>
-                        <div class="input-group-append">
-                            <button class="btn btn-outline-secondary" type="button" @click="changeUrlValueToDefault(student)">Algsätesta</button>
+                    </md-card-content>
+
+                    <md-divider></md-divider>
+                    <md-card-header>
+                        <div class="md-subhead">Lisaosa hindamine ({{group.project.extra.getScore()}}/{{group.project.extra.maximumScore}})</div>
+                    </md-card-header>
+                    <md-card-content>
+                        <div class="md-layout md-gutter" v-for="extraScore in group.project.extra.elements" :key="extraScore.shortName">
+                            <div class="md-layout-item md-size-20 md-xsmall-size-100">
+                                <p>{{extraScore.shortName}}</p>
+                            </div>
+                            <div class="md-layout-item md-xsmall-size-100">
+                                <md-field>
+                                    <label>Hinne</label>
+                                    <md-input onclick="this.select()" v-model="extraScore.score" type="number"></md-input>
+                                </md-field>
+                            </div>
+                            <div class="md-layout-item md-xsmall-size-100">
+                                <md-field>
+                                    <label>Kommentaar</label>
+                                    <md-input v-model="extraScore.reason" type="text"></md-input>
+                                </md-field>
+                            </div>
                         </div>
-                        <div class="input-group-append">
-                            <button class="btn btn-outline-secondary" type="button" @click="changeUrlIsPlaceholder(student)">Muuda</button>
+                    </md-card-content>
+
+                    <md-divider></md-divider>
+                    <md-card-header>
+                        <div class="md-subhead">Boonuspunktid ({{group.project.bonus.getScore()}})</div>
+                    </md-card-header>
+                    <md-card-content>
+                        <div class="md-layout md-gutter md-alignment-center-center" v-for="(bonusScore, bonusIdx) in group.project.bonus.elements" :key="'bonusScore_' + bonusIdx">
+                            <div class="md-layout-item md-size-5">
+                                <md-button @click="group.project.bonus.removeBonus(bonusIdx)" class="md-icon-button md-dense md-raised md-accent">
+                                    <md-icon>remove</md-icon>
+                                </md-button>
+                            </div>
+                            <div class="md-layout-item md-xsmall-size-100">
+                                <md-field>
+                                    <label>Boonus</label>
+                                    <md-input onclick="this.select()" v-model="bonusScore.score" type="number"></md-input>
+                                </md-field>
+                            </div>
+                            <div class="md-layout-item md-xsmall-size-100">
+                                <md-field>
+                                    <label>Põhjendus</label>
+                                    <md-input v-model="bonusScore.reason" type="text"></md-input>
+                                </md-field>
+                            </div>
                         </div>
-                        <div class="invalid-feedback">Error here</div>
-                    </div>
-                </div>
-            </div>-->
-        </form>
+                        <md-button @click="group.project.bonus.addBonus()" class="md-icon-button md-raised md-accent">
+                            <md-icon>add</md-icon>
+                        </md-button>
+                    </md-card-content>
+
+                    <md-divider></md-divider>
+                    <md-card-header>
+                        <div class="md-subhead">Miinuspunktid ({{group.project.negative.getScore()}})</div>
+                    </md-card-header>
+                    <md-card-content>
+                        <div class="md-layout md-gutter md-alignment-center-center" v-for="(minusScore, minusIdx) in group.project.negative.elements" :key="'minusScore' + minusIdx">
+                            <div class="md-layout-item md-size-5">
+                                <md-button @click="group.project.negative.removeNegative(minusIdx)" class="md-icon-button md-dense md-raised md-accent">
+                                    <md-icon>remove</md-icon>
+                                </md-button>
+                            </div>
+                            <div class="md-layout-item md-xsmall-size-100">
+                                <md-field>
+                                    <label>Miinus</label>
+                                    <md-input onclick="this.select()" v-model="minusScore.score" type="number"></md-input>
+                                </md-field>
+                            </div>
+                            <div class="md-layout-item md-xsmall-size-100">
+                                <md-field>
+                                    <label>Põhjendus</label>
+                                    <md-input v-model="minusScore.reason" type="text"></md-input>
+                                </md-field>
+                            </div>
+                        </div>
+                        <md-button @click="group.project.negative.addNegative()" class="md-icon-button md-raised md-accent">
+                            <md-icon>add</md-icon>
+                        </md-button>
+                    </md-card-content>
+                </md-card>
+            </form>
+        </div>
     </div>
     <script src="scripts/main.js"></script>
 </body>

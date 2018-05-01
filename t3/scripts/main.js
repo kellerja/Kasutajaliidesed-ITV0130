@@ -1,6 +1,33 @@
+Vue.use(VueMaterial.default)
+
 var deadline = Date.parse('26 April 2018');
 var minimumPassingScore = 10;
 var weekInMs = 6.048e+8;
+
+var getTimeString = function(timeInMs) {
+    var seconds = timeInMs / 1000;
+    var minutes = seconds / 60;
+    var hours = minutes / 60;
+    var days = hours / 24;
+    var weeks = days / 7;
+    var timeString = '';
+    if (weeks > 1) {
+        timeString += Math.floor(weeks) + ' weeks ';
+    }
+    if (days > 1) {
+        timeString += Math.floor(days % 7) + ' days ';
+    }
+    if (hours > 0) {
+        timeString += Math.floor(hours % 24) + ' hours ';
+    }
+    if (minutes > 0) {
+        timeString += Math.floor(minutes % 60) + ' minutes ';
+    }
+    if (seconds > 0) {
+        timeString += Math.floor(seconds % 60) + ' seconds';
+    }
+    return timeString;
+}
 
 function ScoreElement(shortName, description) {
     this.shortName = shortName;
@@ -15,15 +42,15 @@ function ScoreElement(shortName, description) {
 function BonusScore() {
     this.elements = [
     ];
-    this.getScore = function() {
+    this.getScore = () => {
         return this.elements.reduce(function(accumulator, element) {
             return accumulator + element.getScore();
         }, 0);
     }
-    this.addBonus = function() {
+    this.addBonus = () => {
         this.elements.push(new ScoreElement('', ''));
     }
-    this.removeBonus = function(index) {
+    this.removeBonus = (index) => {
         this.elements.splice(index, 1);
     }
 }
@@ -85,14 +112,50 @@ function NegativeScore() {
 function Plagiarism() {
     this.isPlagiarized = false;
     this.plagiarismModifierScore = 1;
+    this.reason = '';
     this.togglePlagiarism = function() {
         Vue.set(this, 'isPlagiarized', !this.isPlagiarized);
         Vue.set(this, 'plagiarismModifierScore', this.isPlagiarized ? 0 : 1);
     }
 }
 
-function Project() {
+function ProjectUrl() {
     this.url = '';
+    this.dijkstraUrl = '';
+    this.otherUrl = '';
+    this.firstTouch = false;
+    this.setDijkstraUrl = (username) => {
+        this.firstTouch = true;
+        if (!username) {
+            if (this.url === this.dijkstraUrl) {
+                this.toggleUrl();
+            }
+            return;
+        }
+        Vue.set(this, 'dijkstraUrl', 'http://dijkstra.cs.ttu.ee/~' + username + '/ui/t2');
+        Vue.set(this, 'url', this.dijkstraUrl);
+    }
+    this.toggleUrl = () => {
+        this.firstTouch = true;
+        if (this.url === this.dijkstraUrl) {
+            Vue.set(this, 'url', this.otherUrl);
+        } else {
+            Vue.set(this, 'url', this.dijkstraUrl);
+        }
+    }
+    this.update = () => {
+        this.firstTouch = true;
+        if (this.url === this.dijkstraUrl) return;
+        Vue.set(this, 'otherUrl', this.url);
+    }
+    this.open = () => {
+        this.firstTouch = true;
+        open(this.url);
+    }
+}
+
+function Project() {
+    this.url = new ProjectUrl();
     this.deadlineExtensionCount = 0;
     this.base = new BaseScore();
     this.extra = new ExtraScore();
@@ -100,8 +163,8 @@ function Project() {
     this.negative = new NegativeScore();
     this.plagiarism = new Plagiarism();
     this.getScore = function() {
-        return this.plagiarism.plagiarismModifierScore * (Project.getDelayScore(-this.getTimeRemaining()) + 
-                this.base.getScore() + this.extra.getScore() + this.bonus.getScore() + this.negative.getScore());
+        return Math.max(this.plagiarism.plagiarismModifierScore * (Project.getDelayScore(-this.getTimeRemaining()) + 
+                this.base.getScore() + this.extra.getScore() + this.bonus.getScore() + this.negative.getScore()), 0);
     }
     this.getTimeRemaining = function() {
         return this.getExtendedDeadline() - Date.now();
@@ -122,18 +185,25 @@ Project.getDelayScore = function(delayInMs) {
     return score;
 }
 
-function Student() {
-    this.username = ''
+function Student(username = 'test') {
+    this.username = username;
 }
 
 function Group() {
-    this.students = [new Student()];
+    this.students = {};
+    this.studentStrings = [];
+    this.leader = null;
     this.project = new Project();
-    this.addStudent = function() {
-        this.students.push(new Student());
+    this.addStudent = (username) => {
+        Vue.set(this.students, username, new Student(username));
     }
-    this.removeStudent = function(index) {
-        this.students.splice(index, 1);
+    this.removeStudent = (username, index) => {
+        Vue.set(this.students, username, null);
+        this.setLeader(this.studentStrings[0], 0);
+    }
+    this.setLeader = (username, index) => {
+        Vue.set(this, 'leader', this.students[username] == this.leader ? null : this.students[username]);
+        this.project.url.setDijkstraUrl(username);
     }
 }
 
@@ -143,33 +213,10 @@ var vm = new Vue({
         Project: Project,
         deadline: deadline,
         minimumPassingScore: minimumPassingScore,
-        groups: [new Group()]
+        group: new Group()
     },
     methods: {
-        getTimeString: function(timeInMs) {
-            var seconds = timeInMs / 1000;
-            var minutes = seconds / 60;
-            var hours = minutes / 60;
-            var days = hours / 24;
-            var weeks = days / 7;
-            var timeString = '';
-            if (weeks > 1) {
-                timeString += Math.floor(weeks) + ' weeks ';
-            }
-            if (days > 1) {
-                timeString += Math.floor(days % 7) + ' days ';
-            }
-            if (hours > 0) {
-                timeString += Math.floor(hours % 24) + ' hours ';
-            }
-            if (minutes > 0) {
-                timeString += Math.floor(minutes % 60) + ' minutes ';
-            }
-            if (seconds > 0) {
-                timeString += Math.floor(seconds % 60) + ' seconds';
-            }
-            return timeString;
-        }
+        getTimeString: getTimeString
     },
     computed: {
     }
