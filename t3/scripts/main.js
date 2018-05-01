@@ -12,19 +12,19 @@ var getTimeString = function(timeInMs) {
     var weeks = days / 7;
     var timeString = '';
     if (weeks > 1) {
-        timeString += Math.floor(weeks) + ' weeks ';
+        timeString += Math.floor(weeks) + (Math.floor(weeks) === 1 ? ' nädal ' : ' nädalat ');
     }
     if (days > 1) {
-        timeString += Math.floor(days % 7) + ' days ';
+        timeString += Math.floor(days % 7) + (Math.floor(days % 7) === 1 ? ' päev ' : ' päeva ');
     }
     if (hours > 0) {
-        timeString += Math.floor(hours % 24) + ' hours ';
+        timeString += Math.floor(hours % 24) + (Math.floor(hours % 24) === 1 ? ' tund ' : ' tundi ');
     }
     if (minutes > 0) {
-        timeString += Math.floor(minutes % 60) + ' minutes ';
+        timeString += Math.floor(minutes % 60) + (Math.floor(minutes % 60) === 1 ? ' minut ' : ' minutit ');
     }
     if (seconds > 0) {
-        timeString += Math.floor(seconds % 60) + ' seconds';
+        timeString += Math.floor(seconds % 60) + (Math.floor(seconds % 60) === 1 ? ' sekund ' : ' sekundit');
     }
     return timeString;
 }
@@ -213,11 +213,19 @@ var vm = new Vue({
         Project: Project,
         deadline: deadline,
         minimumPassingScore: minimumPassingScore,
-        group: new Group()
+        group: new Group(),
+        showMenu: false,
+        isSmallScreen: window.innerWidth < 600,
+        isProjectSelected: true
     },
     methods: {
         getTimeString: getTimeString
     },
     computed: {
+    },
+    mounted() {
+        this.$nextTick(() => window.addEventListener('resize', (e) => {
+            this.isSmallScreen = window.innerWidth < 600;
+        }))
     }
 });

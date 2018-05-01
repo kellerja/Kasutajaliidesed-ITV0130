@@ -11,22 +11,55 @@
     <script src="scripts/vue/vue.js"></script>
     <script src="scripts/vue-material.min.js"></script>
 </head>
-<body>
-    <div id="app">
-        <div class="page-container">
-            <form class="md-layout md-alignment-top-center" @submit.prevent="">
-                <md-card class="md-layout-item md-size-50 md-small-size-100" style="overflow-x:hidden">
+<body style="overflow-x:hidden">
+    <div id="app" class="md-layout md-gutter">
+
+        <md-toolbar style="z-index: 4; min-height: 4rem">
+            <h3 class="md-title" style="margin-left: 25%">Kodutöö 2 hindamine</h3>
+        </md-toolbar>
+            
+        <div class="md-layout-item">
+            <md-drawer style="position: fixed;" md-permanent="full" :md-active.sync="showMenu" md-fixed>
+                <div style="margin-top: 5rem; margin-left: 1rem">
+                    <div class="md-layout">
+                        <span class="md-layout-item">Ülesande baas tähtaeg:</span>
+                        <span class="md-layout-item">{{new Date(deadline).toLocaleString()}}</span>
+                    </div>
+                    <div class="md-layout" v-if="isProjectSelected">
+                        <span class="md-layout-item">Projektile antud pikendust:</span>
+                        <span class="md-layout-item">{{group.project.deadlineExtensionCount}} nädalat</span>
+                    </div>
+                    <div class="md-layout" v-if="isProjectSelected && group.project.deadlineExtensionCount > 0">
+                        <span class="md-layout-item">Projekti tähtaeg pikendusega:</span>
+                        <span class="md-layout-item">{{new Date(group.project.getExtendedDeadline()).toLocaleString()}}</span>
+                    </div>
+                    <div class="md-layout" v-if="isProjectSelected && group.project.getTimeRemaining() >= 0">
+                        <span class="md-layout-item">Aega jäänud:</span>
+                        <span class="md-layout-item">{{getTimeString(group.project.getTimeRemaining())}}</span>
+                    </div>
+                    <div class="md-layout" v-else-if="isProjectSelected">
+                        <span class="md-layout-item">Hilinenud:</span>
+                        <span class="md-layout-item">{{getTimeString(-group.project.getTimeRemaining())}}</span>
+                    </div>
+                </div>
+            </md-drawer>
+        </div>
+
+        <div class="md-layout-item md-size-80">
+            <md-button @click="showMenu = !showMenu" 
+                    class="md-fab md-fixed md-fab-top-left"
+                    style="z-index: 99; position: fixed; top: 0; left: 1rem;" tabindex="-1" v-if="isSmallScreen">
+                <md-icon>menu</md-icon>
+            </md-button>
+            <form class="md-layout md-alignment-top-left" @submit.prevent="">
+                <md-card class="md-layout-item md-size-60 md-small-size-100">
                     <md-card-header>
-                        <div class="md-title">Kodutöö 2 hindamine</div>
-                    </md-card-header>
-                    <md-divider></md-divider>                    
-                    <md-card-header>
-                            <div class="md-subhead">Meeskond</div>
+                            <div class="md-title">Meeskond</div>
                     </md-card-header>
                     <md-card-content>
                         <md-chips id="team" class="md-primary" v-model="group.studentStrings"
-                                  @md-insert="group.addStudent" @md-delete="group.removeStudent" @md-click="group.setLeader"
-                                  md-placeholder="Lisa tudengid..." md-check-duplicated>
+                                @md-insert="group.addStudent" @md-delete="group.removeStudent" @md-click="group.setLeader"
+                                md-placeholder="Lisa tudengid..." md-check-duplicated>
                             <template slot="md-chip" slot-scope="{ chip }">
                                 <span>{{group.students[chip].username}}</span>
                             </template>
@@ -47,7 +80,7 @@
 
                     <md-divider></md-divider>
                     <md-card-header>
-                        <div class="md-subhead">Baasosa hindamine ({{group.project.base.getScore()}}/{{group.project.base.maximumScore}})</div>
+                        <div class="md-title">Baasosa hindamine ({{group.project.base.getScore()}}/{{group.project.base.maximumScore}})</div>
                     </md-card-header>
                     <md-card-content>
                         <div class="md-layout md-gutter" v-for="baseScore in group.project.base.elements" :key="baseScore.shortName">
@@ -71,7 +104,7 @@
 
                     <md-divider></md-divider>
                     <md-card-header>
-                        <div class="md-subhead">Lisaosa hindamine ({{group.project.extra.getScore()}}/{{group.project.extra.maximumScore}})</div>
+                        <div class="md-title">Lisaosa hindamine ({{group.project.extra.getScore()}}/{{group.project.extra.maximumScore}})</div>
                     </md-card-header>
                     <md-card-content>
                         <div class="md-layout md-gutter" v-for="extraScore in group.project.extra.elements" :key="extraScore.shortName">
@@ -95,16 +128,16 @@
 
                     <md-divider></md-divider>
                     <md-card-header>
-                        <div class="md-subhead">Boonuspunktid ({{group.project.bonus.getScore()}})</div>
+                        <div class="md-title">Boonuspunktid ({{group.project.bonus.getScore()}})</div>
                     </md-card-header>
                     <md-card-content>
                         <div class="md-layout md-gutter md-alignment-center-center" v-for="(bonusScore, bonusIdx) in group.project.bonus.elements" :key="'bonusScore_' + bonusIdx">
-                            <div class="md-layout-item md-size-5">
-                                <md-button @click="group.project.bonus.removeBonus(bonusIdx)" class="md-icon-button md-dense md-raised md-accent">
+                            <div class="md-layout-item md-medium-size-10 md-xsmall-size-15 md-size-5">
+                                <md-button @click="group.project.bonus.removeBonus(bonusIdx)" class="md-icon-button md-dense md-raised md-accent" tabindex="-1">
                                     <md-icon>remove</md-icon>
                                 </md-button>
                             </div>
-                            <div class="md-layout-item md-xsmall-size-100">
+                            <div class="md-layout-item md-xsmall-size-85">
                                 <md-field>
                                     <label>Boonus</label>
                                     <md-input onclick="this.select()" v-model="bonusScore.score" type="number"></md-input>
@@ -117,23 +150,23 @@
                                 </md-field>
                             </div>
                         </div>
-                        <md-button @click="group.project.bonus.addBonus()" class="md-icon-button md-raised md-accent">
+                        <md-button @click="group.project.bonus.addBonus()" class="md-icon-button md-raised md-accent" tabindex="-1">
                             <md-icon>add</md-icon>
                         </md-button>
                     </md-card-content>
 
                     <md-divider></md-divider>
                     <md-card-header>
-                        <div class="md-subhead">Miinuspunktid ({{group.project.negative.getScore()}})</div>
+                        <div class="md-title">Miinuspunktid ({{group.project.negative.getScore()}})</div>
                     </md-card-header>
                     <md-card-content>
                         <div class="md-layout md-gutter md-alignment-center-center" v-for="(minusScore, minusIdx) in group.project.negative.elements" :key="'minusScore' + minusIdx">
-                            <div class="md-layout-item md-size-5">
-                                <md-button @click="group.project.negative.removeNegative(minusIdx)" class="md-icon-button md-dense md-raised md-accent">
+                            <div class="md-layout-item md-medium-size-10 md-xsmall-size-15 md-size-5">
+                                <md-button @click="group.project.negative.removeNegative(minusIdx)" class="md-icon-button md-dense md-raised md-accent" tabindex="-1">
                                     <md-icon>remove</md-icon>
                                 </md-button>
                             </div>
-                            <div class="md-layout-item md-xsmall-size-100">
+                            <div class="md-layout-item md-xsmall-size-85">
                                 <md-field>
                                     <label>Miinus</label>
                                     <md-input onclick="this.select()" v-model="minusScore.score" type="number"></md-input>
@@ -146,9 +179,17 @@
                                 </md-field>
                             </div>
                         </div>
-                        <md-button @click="group.project.negative.addNegative()" class="md-icon-button md-raised md-accent">
+                        <md-button @click="group.project.negative.addNegative()" class="md-icon-button md-raised md-accent" tabindex="-1">
                             <md-icon>add</md-icon>
                         </md-button>
+                    </md-card-content>
+
+                    <md-divider></md-divider>
+                    <md-card-header>
+                        <div class="md-title">Tulemus</div>
+                    </md-card-header>
+                    <md-card-content>
+                        <p></p>
                     </md-card-content>
                 </md-card>
             </form>
