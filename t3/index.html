@@ -120,13 +120,13 @@
                     </md-card-header>
                     <md-card-content>
                         <div class="md-layout md-gutter md-alignment-center-center" v-for="baseScore in group.project.base.elements" :key="baseScore.shortName">
-                            <div class="md-layout-item md-size-5">
+                            <div class="md-layout-item md-size-5 md-xsmall-size-10">
                                 <md-icon>
                                     info
                                     <md-tooltip md-direction="bottom">{{baseScore.description}}</md-tooltip>
                                 </md-icon>
                             </div>
-                            <div class="md-layout-item md-size-20 md-xsmall-size-100">
+                            <div class="md-layout-item md-size-20 md-xsmall-size-90">
                                 <p>{{baseScore.shortName}}</p>
                             </div>
                             <div class="md-layout-item md-xsmall-size-100">
@@ -150,13 +150,13 @@
                     </md-card-header>
                     <md-card-content>
                         <div class="md-layout md-gutter md-alignment-center-center" v-for="extraScore in group.project.extra.elements" :key="extraScore.shortName">
-                            <div class="md-layout-item md-size-5">
+                            <div class="md-layout-item md-size-5 md-xsmall-size-10">
                                 <md-icon>
                                     info
                                     <md-tooltip md-direction="bottom">{{extraScore.description}}</md-tooltip>
                                 </md-icon>
                             </div>
-                            <div class="md-layout-item md-size-20 md-xsmall-size-100">
+                            <div class="md-layout-item md-size-20 md-xsmall-size-90">
                                 <p>{{extraScore.shortName}}</p>
                             </div>
                             <div class="md-layout-item md-xsmall-size-100">
@@ -236,9 +236,89 @@
                     <md-card-header>
                         <div class="md-title">Tulemus</div>
                     </md-card-header>
-                    <md-card-content>
-                        <p></p>
+                    <md-card-header>
+                        <div class="md-subheader">Skoor</div>
+                    </md-card-header>
+                    <md-card-content class="md-layout">
+                        <div class="md-layout-item">Baasosa</div>
+                        <div class="md-layout-item">{{group.project.base.getScore() + '/' + group.project.base.maximumScore}}</div>                        
                     </md-card-content>
+                    <md-card-content class="md-layout">
+                        <div class="md-layout-item">Lisaosa</div>
+                        <div class="md-layout-item">{{group.project.extra.getScore() + '/' + group.project.extra.maximumScore}}</div>                        
+                    </md-card-content>
+                    <md-card-content class="md-layout">
+                        <div class="md-layout-item">Boonuseid</div>
+                        <div class="md-layout-item">{{group.project.bonus.getScore()}}</div>                        
+                    </md-card-content>
+                    <md-card-content class="md-layout">
+                        <div class="md-layout-item">Miinuseid</div>
+                        <div class="md-layout-item">{{group.project.negative.getScore()}}</div>                        
+                    </md-card-content>
+                    <md-card-content class="md-layout">
+                        <div class="md-layout-item">Hilinemise eest miinuseid</div>
+                        <div class="md-layout-item">{{Project.getDelayScore(-group.project.getTimeRemaining())}}</div>                        
+                    </md-card-content>
+                    <md-card-content class="md-layout">
+                        <div class="md-layout-item">Kokku</div>
+                        <div class="md-layout-item">{{group.project.getScore() + '/' + (group.project.base.maximumScore + group.project.extra.maximumScore)}}</div>                        
+                    </md-card-content>
+
+                    <md-card-header>
+                        <div class="md-subheader">Tähtaeg</div>
+                    </md-card-header>
+                    <md-card-content class="md-layout">
+                        <div class="md-layout-item">Ülesande tähtaeg</div>
+                        <div class="md-layout-item">{{new Date(deadline).toLocaleString()}}</div>                        
+                    </md-card-content>
+                    <md-card-content class="md-layout md-alignment-center-center">
+                        <div class="md-layout-item">Pikendust antud</div>
+                        <div class="md-layout-item" style="align-content: center">
+                            <md-button @click="group.project.decrementDeadline()" class="md-icon-button md-dense md-raised">
+                                <md-icon>remove</md-icon>
+                            </md-button>
+                            <span style="display: inline-block; margin-top: 0.35rem">{{group.project.deadlineExtensionCount}} {{group.project.deadlineExtensionCount === 1 ? 'nädal' : 'nädalat'}}</span>
+                            <md-button @click="group.project.incrementDeadline()" class="md-icon-button md-dense md-raised">
+                                <md-icon>add</md-icon>
+                            </md-button>
+                        </div>
+                    </md-card-content>
+                    <md-card-content class="md-layout">
+                        <div class="md-layout-item">Ülesande tähtaeg pikendusega</div>
+                        <div class="md-layout-item">{{new Date(group.project.getExtendedDeadline()).toLocaleString()}}</div>                        
+                    </md-card-content>
+                    <md-card-content class="md-layout" v-if="group.project.getTimeRemaining() >= 0">
+                        <div class="md-layout-item">Aega jäänud</div>
+                        <div class="md-layout-item">{{getTimeString(group.project.getTimeRemaining())}}</div>                        
+                    </md-card-content>
+                    <md-card-content class="md-layout" v-else>
+                        <div class="md-layout-item">Hilinenud</div>
+                        <div class="md-layout-item">{{getTimeString(-group.project.getTimeRemaining())}}</div>                        
+                    </md-card-content>
+
+                    <md-card-header>
+                        <div class="md-subheader">Plagiaat</div>
+                    </md-card-header>
+                    <md-card-content class="md-layout">
+                        <div class="md-layout-item">Plagiaat</div>
+                        <div class="md-layout-item">
+                            <div class="md-layout">
+                                <div class="md-layout-item">{{group.project.plagiarism.isPlagiarized ? 'jah' : 'ei'}}</div>
+                                <div class="md-layout-item">
+                                    <md-button class="md-raised md-accent" @click="group.project.plagiarism.togglePlagiarism()">{{group.project.plagiarism.isPlagiarized ? 'Märgi originaalina' : 'Märgi plagiaat'}}</md-button>
+                                </div>
+                            </div>
+                        </div>
+                    </md-card-content>
+                    <md-card-content class="md-layout" v-if="group.project.plagiarism.isPlagiarized">
+                        <div class="md-layout-item"></div>
+                        <div class="md-layout-item">
+                            <md-field>
+                                <label>Põhjendus</label>
+                                <md-textarea md-autogrow v-model="group.project.plagiarism.reason"></md-textarea>
+                            </md-field>
+                        </div>
+                    </md-card-content>    
                 </md-card>
             </form>
         </div>

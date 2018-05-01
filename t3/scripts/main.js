@@ -172,6 +172,13 @@ function Project() {
     this.getExtendedDeadline = function() {
         return deadline + this.deadlineExtensionCount * weekInMs;
     }
+    this.incrementDeadline = () => {
+        Vue.set(this, 'deadlineExtensionCount', this.deadlineExtensionCount + 1);
+    }
+    this.decrementDeadline = () => {
+        if (this.deadlineExtensionCount <= 0) return;
+        Vue.set(this, 'deadlineExtensionCount', this.deadlineExtensionCount - 1);
+    }
 }
 
 Project.getDelayScore = function(delayInMs) {
