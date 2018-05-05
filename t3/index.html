@@ -25,7 +25,7 @@
                     <div v-if="isProjectSelected">
                         <md-button style="width: 100%; padding-left: 0; padding-right: 0; margin-left: 0; margin-right: 0" 
                             @click="scrollToHeading(0)"
-                            class="md-raised" :md-ripple="false">Meeskond</md-button>
+                            class="md-raised drawer-button" :md-ripple="false">Meeskond</md-button>
                         <div class="drawer-content">
                             <div class="md-layout" v-for="(student, idx) in group.studentStrings">
                                 <div class="md-layout-item">Liige {{idx + 1}}</div>
@@ -36,7 +36,7 @@
                     </div>
                     <div v-if="isProjectSelected">
                         <md-button style="width: 100%; padding-left: 0; padding-right: 0; margin-left: 0; margin-right: 0" 
-                            class="md-raised" :md-ripple="false" @click="scrollToHeading(1)">Hindamine</md-button>
+                            class="md-raised drawer-button" :md-ripple="false" @click="scrollToHeading(1)">Hindamine</md-button>
                         <div class="drawer-content">
                             <div class="md-layout">
                                 <div class="md-layout-item">Skoor kokku</div>
@@ -76,7 +76,7 @@
                     </div>
                     <div v-if="isProjectSelected">
                         <md-button style="width: 100%; padding-left: 0; padding-right: 0; margin-left: 0; margin-right: 0" 
-                            class="md-raised" :md-ripple="false" @click="scrollToHeading(5)">Tähtaeg</md-button>
+                            class="md-raised drawer-button" :md-ripple="false" @click="scrollToHeading(5)">Tähtaeg</md-button>
                         <div class="drawer-content">
                             <div class="md-layout">
                                 <div class="md-layout-item">Ülesande tähtaeg:</div>
@@ -105,7 +105,7 @@
                     </div>
                     <div v-if="isProjectSelected">
                         <md-button style="width: 100%; padding-left: 0; padding-right: 0; margin-left: 0; margin-right: 0" 
-                            class="md-raised" :md-ripple="false" @click="scrollToHeading(6)">Plagiaat</md-button>
+                            class="md-raised drawer-button" :md-ripple="false" @click="scrollToHeading(6)">Plagiaat</md-button>
                         <div class="drawer-content">
                             <div class="md-layout" v-if="isProjectSelected">
                                 <span class="md-layout-item">Plagiaat?</span>
@@ -228,7 +228,7 @@
                         <div class="md-title header-marker">Boonuspunktid ({{group.project.bonus.getScore()}})</div>
                     </md-card-header>
                     <md-card-content>
-                        <div class="md-layout md-gutter md-alignment-center-center" v-for="(bonusScore, bonusIdx) in group.project.bonus.elements" :key="'bonusScore_' + bonusIdx">
+                        <div class="md-layout md-gutter md-alignment-center-center" v-for="(bonusScore, bonusIdx) in group.project.bonus.elements" :id="'bonusScore_' + bonusIdx" :key="'bonusScore_' + bonusIdx">
                             <div class="md-layout-item md-size-20 md-xsmall-size-80">
                                 <md-field :class="{ 'md-invalid': !bonusScore.isScoreValid }">
                                     <label>Boonus</label>
@@ -270,7 +270,7 @@
                         <div class="md-title header-marker">Miinuspunktid ({{group.project.negative.getScore()}})</div>
                     </md-card-header>
                     <md-card-content>
-                        <div class="md-layout md-gutter md-alignment-center-center" v-for="(minusScore, minusIdx) in group.project.negative.elements" :key="'minusScore' + minusIdx">
+                        <div class="md-layout md-gutter md-alignment-center-center" v-for="(minusScore, minusIdx) in group.project.negative.elements" :id="'minusScore' + minusIdx" :key="'minusScore' + minusIdx">
                             <div class="md-layout-item md-size-20 md-xsmall-size-80">
                                 <md-field :class="{ 'md-invalid': !minusScore.isScoreValid }">
                                     <label>Miinus</label>
@@ -368,7 +368,7 @@
                         </div>
                     </md-card-content> 
                     <md-card-actions style="margin-top: 2rem">
-                        <md-button class="md-raised md-accent" style="margin: 0 auto" type="submit">Lõpeta hindamine</md-button>
+                        <md-button class="md-raised md-accent" @click="complete($event)" style="margin: 0 auto" type="button">Lõpeta hindamine</md-button>
                     </md-card-actions>   
                 </md-card>
             </form>

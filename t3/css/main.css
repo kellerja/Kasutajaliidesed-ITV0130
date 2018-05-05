@@ -13,6 +13,10 @@ div .md-drawer {
     transform: translateZ(0);
 }
 
+.drawer-button {
+    background-color: #EEE !important;
+}
+
 .drawer-content {
     padding-left: 1rem;
     padding-right: 1rem;

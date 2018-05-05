@@ -391,6 +391,42 @@ var vm = new Vue({
                 this.showMenu = false;
             }
             scrollIt(elements[headingNr], 200, 'easeOutQuad');
+        },
+        validateAndScroll() {
+            this.group.validateStudents();
+            if (!this.group.isStudentsValid) {
+                this.scrollToHeading(0);
+                return false;
+            }
+            this.group.project.base.validate();
+            if (!this.group.project.base.isValid) {
+                this.scrollToHeading(0);
+                return false;
+            }
+            this.group.project.bonus.elements.forEach((e, i) => {
+                e.validate();
+                if (!e.isScoreValid || !e.isReasonValid) {
+                    scrollIt(document.getElementById('bonusScore_' + i), 200, 'easeOutQuad');
+                    return false;
+                }
+            });
+            this.group.project.negative.elements.forEach((e, i) => {
+                e.validate();
+                if (!e.isScoreValid || !e.isReasonValid) {
+                    scrollIt(document.getElementById('minusScore_' + i), 200, 'easeOutQuad');
+                    return false;
+                }
+            });
+            this.group.project.plagiarism.validate();
+            if (!this.group.project.plagiarism.isValid) {
+                this.scrollToHeading(6);
+            }
+            return true;
+        },
+        complete() {
+            if (this.validateAndScroll()) {
+                console.log('COMPLETED');
+            }
         }
     },
     computed: {
