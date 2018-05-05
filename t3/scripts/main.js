@@ -36,7 +36,7 @@ function ScoreElement(shortName, description) {
     this.score = 0;
     this.reason = '';
     this.getScore = function() {
-        return parseInt(this.score);
+        return parseInt(this.score) || 0;
     }
 }
 
@@ -62,7 +62,7 @@ function ExtraScore() {
         new ScoreElement('Kujundus toetab teemat', ''),
         new ScoreElement('Head ilmumised', ''),
         new ScoreElement('Hea sorteerimise tagasiside', ''),
-        new ScoreElement('Hea liasülesande \'episood\'', ''),
+        new ScoreElement('Hea lisaülesande \'episood\'', ''),
         new ScoreElement('Hea läbikukkumise tagasiside', ''),
         new ScoreElement('Heliline tagasiside', ''),
         new ScoreElement('Mängu õpitavus on hea', ''),
@@ -70,6 +70,7 @@ function ExtraScore() {
         new ScoreElement('Töötab ka mobiilil', '')
     ];
     this.maximumScore = 10;
+    this.comment = '';
     this.getScore = function() {
         return this.elements.reduce(function(accumulator, element) {
             return accumulator + element.getScore();
@@ -90,7 +91,21 @@ function BaseScore() {
     this.score = 0;
     this.comment = '';
     this.getScore = function() {
-        return this.score;
+        return Math.min(Math.max(this.score, 0), this.maximumScore);
+    },
+    this.errorMsg = '',
+    this.isValid = true,
+    this.validate = () => {
+        if (this.score < 0) {
+            this.isValid = false;
+            this.errorMsg = 'Peab olema positiivne';
+        } else if (this.score > 10) {
+            this.isValid = false;
+            this.errorMsg = 'Maksimum on 10';
+        } else {
+            this.isValid = true;
+            this.errorMsg = '';
+        }
     }
 }
 
@@ -165,7 +180,7 @@ function Project() {
     this.plagiarism = new Plagiarism();
     this.getScore = function() {
         return Math.max(this.plagiarism.plagiarismModifierScore * (Project.getDelayScore(-this.getTimeRemaining()) + 
-                this.base.getScore() + this.extra.getScore() + this.bonus.getScore() + this.negative.getScore()), 0);
+                this.base.getScore() + this.extra.getScore() + this.bonus.getScore() - this.negative.getScore()), 0);
     }
     this.getTimeRemaining = function() {
         return this.getExtendedDeadline() - Date.now();
@@ -204,10 +219,23 @@ function Group() {
     this.project = new Project();
     this.addStudent = (username) => {
         Vue.set(this.students, username, new Student(username));
+        this.validateStudents();
     }
     this.removeStudent = (username, index) => {
         Vue.set(this.students, username, null);
         this.setLeader(this.studentStrings[0], 0);
+        this.validateStudents();
+    }
+    this.isStudentsValid = true;
+    this.studentsErrorMsg = '';
+    this.validateStudents = function() {
+        if (this.studentStrings.length <= 0) {
+            this.isStudentsValid = false;
+            this.studentsErrorMsg = 'Registreeritud peab olema vähemalt üks tudeng';
+        } else {
+            this.isStudentsValid = true;
+            this.studentsErrorMsg = '';
+        }
     }
     this.setLeader = (username, index) => {
         Vue.set(this, 'leader', this.students[username] == this.leader ? null : this.students[username]);
@@ -230,14 +258,17 @@ var vm = new Vue({
     },
     methods: {
         getTimeString: getTimeString,
-        setIsBaseScoreOtherAndUpdate: function(value, idx) {
-            Vue.set(this, 'isBaseScoreOther', !!value);
-            if (this.isBaseScoreOther) {
-                Vue.set(this, 'baseScoreValues', [null, null, null])
-            } else {
-                Vue.set(this, 'baseScoreValues', [0, 5, 10]);
-                Vue.set(this.group.project.base, 'score', this.baseScoreValues[idx]);
-            }
+        setIsBaseScoreOtherFalseAndUpdate: function(idx) {
+            Vue.set(this, 'isBaseScoreOther', false);
+            Vue.set(this, 'baseScoreValues', [0, 5, 10]);
+            Vue.set(this.group.project.base, 'score', this.baseScoreValues[idx]);
+            this.group.project.base.validate();
+        },
+        setIsBaseScoreOtherTrueAndUpdate: function(event) {
+            Vue.set(this, 'isBaseScoreOther', true);
+            Vue.set(this, 'baseScoreValues', [null, null, null]);
+            event && event.srcElement.select();
+            this.group.project.base.validate();
         }
     },
     computed: {
