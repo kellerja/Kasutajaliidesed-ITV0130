@@ -74,6 +74,40 @@ function BonusScoreElement() {
     }
 }
 
+function NegativeScoreElement() {
+    this.score = 0;
+    this.reason = '';
+    this.getScore = function() {
+        return parseInt(this.score) || 0;
+    }
+    this.isScoreValid = true;
+    this.scoreErrorMsg = '';
+    this.reasonErrorMsg = '';
+    this.isReasonValid = true;
+    this.validateScore = function() {
+        if (this.score < 0) {
+            Vue.set(this, 'isScoreValid', false);
+            Vue.set(this, 'scoreErrorMsg', 'Kaks korda miinuseid moodustab positiivse ja positiivse skoori jaoks kasuta boonuspunkte.');
+        } else {
+            Vue.set(this, 'isScoreValid', true);
+            Vue.set(this, 'scoreErrorMsg', '');
+        }
+    }
+    this.validateReason = function() {
+        if (!this.reason) {
+            Vue.set(this, 'isReasonValid', false);
+            Vue.set(this, 'reasonErrorMsg', 'Miinuspunktid vajavad põhjendust');
+        } else {
+            Vue.set(this, 'isReasonValid', true);
+            Vue.set(this, 'reasonErrorMsg', '');
+        }
+    }
+    this.validate = function() {
+        this.validateScore();
+        this.validateReason();
+    }
+}
+
 function BonusScore() {
     this.elements = [
     ];
@@ -155,7 +189,10 @@ function NegativeScore() {
         }, 0);
     }
     this.addNegative = function() {
-        this.elements.push(new ScoreElement('', ''));
+        this.elements.forEach(function(element) {
+            element.validate();
+        });
+        this.elements.push(new NegativeScoreElement());
     }
     this.removeNegative = function(index) {
         this.elements.splice(index, 1);

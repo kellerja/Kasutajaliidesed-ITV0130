@@ -246,9 +246,10 @@
                     <md-card-content>
                         <div class="md-layout md-gutter md-alignment-center-center" v-for="(minusScore, minusIdx) in group.project.negative.elements" :key="'minusScore' + minusIdx">
                             <div class="md-layout-item md-size-20 md-xsmall-size-80">
-                                <md-field>
+                                <md-field :class="{ 'md-invalid': !minusScore.isScoreValid }">
                                     <label>Miinus</label>
-                                    <md-input onclick="this.select()" v-model="minusScore.score" type="number"></md-input>
+                                    <md-input onclick="this.select()" @change="minusScore.validateScore()"
+                                            v-model="minusScore.score" type="number"></md-input>
                                 </md-field>
                             </div>
                             <div class="md-layout-item md-xsmall-size-20" v-if="isSmallScreen">
@@ -257,15 +258,21 @@
                                 </md-button>
                             </div>
                             <div class="md-layout-item md-size-70 md-xsmall-size-100">
-                                <md-field>
+                                <md-field :class="{ 'md-invalid': !minusScore.isReasonValid }">
                                     <label>Põhjendus</label>
-                                    <md-input v-model="minusScore.reason" type="text"></md-input>
+                                    <md-input @change="minusScore.validateReason()" @blur.once="minusScore.validateReason()"
+                                            v-model="minusScore.reason" type="text"></md-input>
                                 </md-field>
                             </div>
                             <div class="md-layout-item md-size-10" v-if="!isSmallScreen">
                                 <md-button @click="group.project.negative.removeNegative(minusIdx)" class="md-icon-button md-dense md-raised md-accent" tabindex="-1">
                                     <md-icon>remove</md-icon>
                                 </md-button>
+                            </div>
+                            <div class="md-layout-item md-size-100">
+                                <small class="error" style="position: relative; top: -1.3rem;">
+                                    {{ minusScore.scoreErrorMsg || minusScore.reasonErrorMsg }}
+                                </small>
                             </div>
                         </div>
                         <md-button @click="group.project.negative.addNegative()" class="md-icon-button md-raised md-accent" tabindex="-1">
