@@ -14,8 +14,9 @@ String.prototype.visualLength = function(fontSize) {
 var evaluateAutogrow = function(event) {
     var element = event.srcElement;
     element.style.height = 'auto';
+    element.style.overflowY = 'hidden';
     var style = window.getComputedStyle(element);
-    var lineHeight = style.lineHeight;
+    var lineHeight = style.lineHeight.replace('px', '');
     var text = element.value;
     var lines = text.split('\n');
     var linesCount = lines.length;
@@ -26,6 +27,7 @@ var evaluateAutogrow = function(event) {
     }
     var maxHeight = style.maxHeight.substring(0, style.maxHeight.length - 2);
     if (lineHeight * linesCount > maxHeight) {
+        element.style.overflowY = 'scroll';
         return;
     }
     element.rows = linesCount;

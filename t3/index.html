@@ -223,6 +223,7 @@
                                 <md-field :class="{ 'md-invalid': !bonusScore.isReasonValid }">
                                     <label>Põhjendus</label>
                                     <md-textarea @change="bonusScore.validateReason()" @blur.once="bonusScore.validateReason()"
+                                        @keyup="evaluateAutogrow($event)"
                                             v-model="bonusScore.reason" md-autogrow></md-textarea>
                                 </md-field>
                             </div>
