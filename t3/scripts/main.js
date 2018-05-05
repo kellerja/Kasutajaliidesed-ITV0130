@@ -158,16 +158,16 @@ function BonusScore() {
 
 function ExtraScore() {
     this.elements = [
-        new ScoreElement('Ilus kujundus', ''),
-        new ScoreElement('Kujundus toetab teemat', ''),
-        new ScoreElement('Head ilmumised', ''),
-        new ScoreElement('Hea sorteerimise tagasiside', ''),
-        new ScoreElement('Hea lisaülesande \'episood\'', ''),
-        new ScoreElement('Hea läbikukkumise tagasiside', ''),
-        new ScoreElement('Heliline tagasiside', ''),
-        new ScoreElement('Mängu õpitavus on hea', ''),
-        new ScoreElement('Sorditavaid objekte saab lohistada', ''),
-        new ScoreElement('Töötab ka mobiilil', '')
+        new ScoreElement('Ilus kujundus', 'Visuaalselt näeb kaunis välja'),
+        new ScoreElement('Kujundus toetab teemat', 'Mängus on läbiv teema'),
+        new ScoreElement('Head ilmumised', 'Sorteeritavad objektid ja lisaülesanded ilmuvad hästi (head animatsioonid)'),
+        new ScoreElement('Hea sorteerimise tagasiside', 'Peale sorteerimist saab vaevata aru kas valik oli õige või vale'),
+        new ScoreElement('Hea lisaülesande \'episood\'', 'Lisaülesanne ei tule liiga tihedalt ega liiga aeglaselt'),
+        new ScoreElement('Hea läbikukkumise tagasiside', 'Läbikukkumisel on hea animatsioon'),
+        new ScoreElement('Heliline tagasiside', 'Tegevustel on heliline tagasiside'),
+        new ScoreElement('Mängu õpitavus on hea', 'Lihtne on aru saada kuidas mängu mängida'),
+        new ScoreElement('Sorditavaid objekte saab lohistada', 'Pole ainult klikitav lahendus'),
+        new ScoreElement('Töötab ka mobiilil', 'Väikesel ekraanil ilma hiire ja klaviatuurita on võimalik mängida')
     ];
     this.maximumScore = 10;
     this.comment = '';
@@ -180,12 +180,12 @@ function ExtraScore() {
 
 function BaseScore() {
     this.elements = [
-        new ScoreElement('Ootejärjekord', ''),
-        new ScoreElement('Sorteerimine', ''),
-        new ScoreElement('Perioodiline lisaülesanne', ''),
-        new ScoreElement('Elude kaotamine', ''),
-        new ScoreElement('Mängu läbikukkumine ja kordamine', ''),
-        new ScoreElement('Tähelepanu juhtimine animatsioonidega', ''),
+        new ScoreElement('Ootejärjekord', 'Oleks koht,<br> kus on mitu objekti,<br> mis ootavad sorteerimist'),
+        new ScoreElement('Sorteerimine', 'Objekte saab klõpsides või lohistades viia oodatud kuhja'),
+        new ScoreElement('Perioodiline lisaülesanne', 'Mingi aja tagant tuleb tavapärasest sorteerimisest teistsugune ülesanne'),
+        new ScoreElement('Elude kaotamine', 'Valesti tehtud sorteerimise peale kaovad elud'),
+        new ScoreElement('Mängu läbikukkumine ja kordamine', 'Elude otsalõppemisel tuleb mängu lõppemise ekraan,<br> kus on võimalik alustada uut mängu (ilma akent värskendamata)'),
+        new ScoreElement('Tähelepanu juhtimine animatsioonidega', `Animatsiooniga on mingi tegevuse juurde juhitud tähelepanu.<br> Näiteks elude kaotamisel juhitakse tähelepanu elude juurde`),
     ];
     this.maximumScore = 10;
     this.score = 0;
@@ -357,6 +357,17 @@ function Group() {
     }
 }
 
+Vue.directive('tooltip', {
+    inserted: function (el, binding) {
+        this.tooltipRef = new Tooltip(el, {
+            placement: 'right',
+            container: document.getElementById(binding.value.container),
+            title: binding.value.text,
+            html: true
+        })
+    }
+})
+
 var vm = new Vue({
     el: '#app',
     data: {
@@ -400,7 +411,7 @@ var vm = new Vue({
             }
             this.group.project.base.validate();
             if (!this.group.project.base.isValid) {
-                this.scrollToHeading(0);
+                this.scrollToHeading(1);
                 return false;
             }
             this.group.project.bonus.elements.forEach((e, i) => {

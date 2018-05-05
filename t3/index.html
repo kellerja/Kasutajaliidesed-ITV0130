@@ -10,6 +10,8 @@
     <link href="css/main.css" rel="stylesheet">  
     <script src="scripts/vue/vue.js"></script>
     <script src="scripts/vue-material.min.js"></script>
+    <script src="scripts/popper/popper.min.js"></script>
+    <script src="scripts/tooltip/tooltip.min.js"></script>
 </head>
 <body style="overflow-x:hidden">
     <span id="ruler"></span>
@@ -123,7 +125,7 @@
                     style="z-index: 99; position: fixed; top: 0; left: 1rem;" tabindex="-1" v-if="isSmallScreen">
                 <md-icon>menu</md-icon>
             </md-button>
-            <form class="md-layout md-alignment-top-left" @submit.prevent="" autocomplete="off">
+            <form id="main-form" class="md-layout md-alignment-top-left" @submit.prevent="" autocomplete="off">
                 <md-card class="md-layout-item md-size-60 md-small-size-100" style="overflow-x:hidden; margin-bottom: 4rem;">
                     <md-card-header>
                         <div class="md-title header-marker">Meeskond</div>
@@ -158,14 +160,14 @@
                     <md-card-header>
                         <div class="md-subheader">Baasosa elemendid</div>
                     </md-card-header>
-                    <md-card-content class="md-layout md-gutter md-alignment-center-left">
+                    <md-card-content id="base_score_content" class="md-layout md-gutter md-alignment-center-left">
                         <div class="md-layout-item md-size-33 md-medium-size-50 md-small-size-50 md-xsmall-size-100" 
                                 style="margin-bottom: 1.5rem"
                                 v-for="baseScore in group.project.base.elements" :key="baseScore.shortName">
                             <span>
                                 {{baseScore.shortName}}
-                                <md-tooltip md-direction="bottom">{{baseScore.description}}</md-tooltip>
                             </span>
+                            <md-icon v-tooltip="{text: baseScore.description, container: 'base_score_content'}">info</md-icon>
                         </div>
                     </md-card-content>
                     <md-card-header style="padding-top: 0; margin-top: 0">
@@ -204,15 +206,17 @@
                     <md-card-header>
                         <div class="md-title header-marker">Lisaosa hindamine ({{group.project.extra.getScore()}}/{{group.project.extra.maximumScore}})</div>
                     </md-card-header>
-                    <md-card-content class="md-layout md-gutter md-alignment-center-left">
-                        <div class="md-layout-item md-size-50 md-medium-size-50 md-small-size-50 md-xsmall-size-100" 
+                    <md-card-content id="extra_score_content" class="md-layout md-gutter md-alignment-center-left">
+                        <div class="md-layout-item md-size-50 md-medium-size-50 md-small-size-50 md-xsmall-size-100"
                                 v-for="(extraScore, extraScoreIdx) in group.project.extra.elements" :key="extraScore.shortName">
                             <md-switch v-model="extraScore.score" value="1">
                                 <span>
                                     {{extraScore.shortName}}
-                                    <md-tooltip md-direction="bottom">{{extraScore.description}}</md-tooltip>
                                 </span>
                             </md-switch>
+                            <div style="display: inline-flex;">
+                                <md-icon v-tooltip="{text: extraScore.description, container: 'extra_score_content'}">info</md-icon>
+                            </div>
                         </div>
                         <div class="md-layout-item md-size-100">
                             <md-field>
