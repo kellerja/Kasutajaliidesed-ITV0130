@@ -25,54 +25,67 @@
                         <span class="md-layout-item">Ülesande baas tähtaeg:</span>
                         <span class="md-layout-item">{{new Date(deadline).toLocaleString()}}</span>
                     </div>
+                    <md-divider></md-divider>
                     <div class="md-layout" v-if="isProjectSelected">
                         <span class="md-layout-item">Tudengid:</span>
                         <span class="md-layout-item">{{group.studentStrings.reduce((acc, curr) => acc + (!acc ? '' : ', ') + curr, '')}}</span>
                     </div>
+                    <md-divider v-if="isProjectSelected"></md-divider>
                     <div class="md-layout" v-if="isProjectSelected">
                         <span class="md-layout-item">Projektile antud pikendust:</span>
                         <span class="md-layout-item">{{group.project.deadlineExtensionCount}} {{group.project.deadlineExtensionCount === 1 ? 'nädal' : 'nädalat'}}</span>
                     </div>
+                    <md-divider v-if="isProjectSelected"></md-divider>
                     <div class="md-layout" v-if="isProjectSelected && group.project.deadlineExtensionCount > 0">
                         <span class="md-layout-item">Projekti tähtaeg pikendusega:</span>
                         <span class="md-layout-item">{{new Date(group.project.getExtendedDeadline()).toLocaleString()}}</span>
                     </div>
+                    <md-divider v-if="isProjectSelected && group.project.deadlineExtensionCount > 0"></md-divider>
                     <div class="md-layout" v-if="isProjectSelected && group.project.getTimeRemaining() >= 0">
                         <span class="md-layout-item">Aega jäänud:</span>
-                        <span class="md-layout-item">{{getTimeString(group.project.getTimeRemaining())}}</span>
+                        <span class="md-layout-item">{{getTimeString(group.project.getTimeRemaining(), {seconds:true})}}</span>
                     </div>
-                    <div class="md-layout" v-else-if="isProjectSelected">
+                    <md-divider v-if="isProjectSelected && group.project.getTimeRemaining() >= 0"></md-divider>
+                    <div class="md-layout" v-if="isProjectSelected && group.project.getTimeRemaining() < 0">
                         <span class="md-layout-item">Hilinenud:</span>
-                        <span class="md-layout-item">{{getTimeString(-group.project.getTimeRemaining())}}</span>
+                        <span class="md-layout-item">{{getTimeString(-group.project.getTimeRemaining(), {seconds:true})}}</span>
                     </div>
+                    <md-divider v-if="isProjectSelected && group.project.getTimeRemaining() < 0"></md-divider>
                     <div class="md-layout" v-if="isProjectSelected && group.project.getTimeRemaining() < 0">
                         <span class="md-layout-item">Hilinemise eest miinuseid:</span>
                         <span class="md-layout-item">{{Project.getDelayScore(-group.project.getTimeRemaining())}}</span>
                     </div>
+                    <md-divider v-if="isProjectSelected && group.project.getTimeRemaining() < 0"></md-divider>
                     <div class="md-layout" v-if="isProjectSelected">
                         <span class="md-layout-item">Skoor:</span>
                         <span class="md-layout-item">{{group.project.getScore() + '/' + (group.project.base.maximumScore + group.project.extra.maximumScore)}}</span>
                     </div>
+                    <md-divider v-if="isProjectSelected"></md-divider>
                     <div class="md-layout" v-if="isProjectSelected">
                         <span class="md-layout-item">Baasosa:</span>
                         <span class="md-layout-item">{{group.project.base.getScore() + '/' + group.project.base.maximumScore}}</span>
                     </div>
+                    <md-divider v-if="isProjectSelected"></md-divider>
                     <div class="md-layout" v-if="isProjectSelected">
                         <span class="md-layout-item">Lisaosa:</span>
                         <span class="md-layout-item">{{group.project.extra.getScore() + '/' + group.project.extra.maximumScore}}</span>
                     </div>
+                    <md-divider v-if="isProjectSelected"></md-divider>
                     <div class="md-layout" v-if="isProjectSelected">
                         <span class="md-layout-item">Boonuseid:</span>
                         <span class="md-layout-item">{{group.project.bonus.getScore()}}</span>
                     </div>
+                    <md-divider v-if="isProjectSelected"></md-divider>
                     <div class="md-layout" v-if="isProjectSelected">
                         <span class="md-layout-item">Miinuseid:</span>
                         <span class="md-layout-item">{{group.project.negative.getScore()}}</span>
                     </div>
+                    <md-divider v-if="isProjectSelected"></md-divider>
                     <div class="md-layout" v-if="isProjectSelected">
                         <span class="md-layout-item">Miinimum ületatud?</span>
                         <span class="md-layout-item">{{group.project.getScore() >= minimumPassingScore ? 'jah' : 'ei'}}</span>
                     </div>
+                    <md-divider v-if="isProjectSelected"></md-divider>
                     <div class="md-layout" v-if="isProjectSelected">
                         <span class="md-layout-item">Plagiaat?</span>
                         <span class="md-layout-item">{{group.project.plagiarism.isPlagiarized ? 'jah' : 'ei'}}</span>
@@ -88,7 +101,7 @@
                 <md-icon>menu</md-icon>
             </md-button>
             <form class="md-layout md-alignment-top-left" @submit.prevent="">
-                <md-card class="md-layout-item md-size-60 md-small-size-100">
+                <md-card class="md-layout-item md-size-60 md-small-size-100" style="overflow-x:hidden; margin-bottom: 4rem;">
                     <md-card-header>
                             <div class="md-title">Meeskond</div>
                     </md-card-header>
@@ -289,11 +302,11 @@
                     </md-card-content>
                     <md-card-content class="md-layout" v-if="group.project.getTimeRemaining() >= 0">
                         <div class="md-layout-item">Aega jäänud</div>
-                        <div class="md-layout-item">{{getTimeString(group.project.getTimeRemaining())}}</div>                        
+                        <div class="md-layout-item">{{getTimeString(group.project.getTimeRemaining(), {seconds: true})}}</div>                        
                     </md-card-content>
                     <md-card-content class="md-layout" v-else>
                         <div class="md-layout-item">Hilinenud</div>
-                        <div class="md-layout-item">{{getTimeString(-group.project.getTimeRemaining())}}</div>                        
+                        <div class="md-layout-item">{{getTimeString(-group.project.getTimeRemaining(), {seconds: true})}}</div>                        
                     </md-card-content>
 
                     <md-card-header>
@@ -305,7 +318,9 @@
                             <div class="md-layout">
                                 <div class="md-layout-item">{{group.project.plagiarism.isPlagiarized ? 'jah' : 'ei'}}</div>
                                 <div class="md-layout-item">
-                                    <md-button class="md-raised md-accent" @click="group.project.plagiarism.togglePlagiarism()">{{group.project.plagiarism.isPlagiarized ? 'Märgi originaalina' : 'Märgi plagiaat'}}</md-button>
+                                    <md-button class="md-raised md-accent" @click="group.project.plagiarism.togglePlagiarism()">
+                                        {{group.project.plagiarism.isPlagiarized ? 'Märgi originaalina' : 'Märgi plagiaadina'}}
+                                    </md-button>
                                 </div>
                             </div>
                         </div>
@@ -318,7 +333,10 @@
                                 <md-textarea md-autogrow v-model="group.project.plagiarism.reason"></md-textarea>
                             </md-field>
                         </div>
-                    </md-card-content>    
+                    </md-card-content> 
+                    <md-card-actions>
+                        <md-button class="md-raised md-accent" style="margin: 0 auto" type="submit">Lõpeta hindamine</md-button>
+                    </md-card-actions>   
                 </md-card>
             </form>
         </div>

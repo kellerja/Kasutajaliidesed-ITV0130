@@ -4,27 +4,28 @@ var deadline = Date.parse('26 April 2018');
 var minimumPassingScore = 10;
 var weekInMs = 6.048e+8;
 
-var getTimeString = function(timeInMs) {
+var getTimeString = function(timeInMs, exclude) {
+    var exclude = exclude || {};
     var seconds = timeInMs / 1000;
     var minutes = seconds / 60;
     var hours = minutes / 60;
     var days = hours / 24;
     var weeks = days / 7;
     var timeString = '';
-    if (weeks > 1) {
+    if (weeks > 1 && !exclude['weeks']) {
         timeString += Math.floor(weeks) + (Math.floor(weeks) === 1 ? ' nädal ' : ' nädalat ');
     }
-    if (days > 1) {
+    if (days > 1 && !exclude['days']) {
         timeString += Math.floor(days % 7) + (Math.floor(days % 7) === 1 ? ' päev ' : ' päeva ');
     }
-    if (hours > 0) {
+    if (hours > 0 && !exclude['hours']) {
         timeString += Math.floor(hours % 24) + (Math.floor(hours % 24) === 1 ? ' tund ' : ' tundi ');
     }
-    if (minutes > 0) {
+    if (minutes > 0 && !exclude['minutes']) {
         timeString += Math.floor(minutes % 60) + (Math.floor(minutes % 60) === 1 ? ' minut ' : ' minutit ');
     }
-    if (seconds > 0) {
-        timeString += Math.floor(seconds % 60) + (Math.floor(seconds % 60) === 1 ? ' sekund ' : ' sekundit');
+    if (seconds > 0 && !exclude['seconds']) {
+        timeString += Math.floor(seconds % 60) + (Math.floor(seconds % 60) === 1 ? ' sekund' : ' sekundit');
     }
     return timeString;
 }
