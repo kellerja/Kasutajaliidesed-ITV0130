@@ -67,6 +67,11 @@
                                 <div class="md-layout-item">Miinuspunktid</div>
                                 <div class="md-layout-item">{{ group.project.negative.getScore() }}</div>
                             </div>
+                            <md-divider v-if="group.project.getTimeRemaining() < 0"></md-divider>
+                            <div class="md-layout" v-if="group.project.getTimeRemaining() < 0">
+                                <span class="md-layout-item">Hilinemise eest miinuseid:</span>
+                                <span class="md-layout-item">{{-Project.getDelayScore(-group.project.getTimeRemaining())}}</span>
+                            </div>
                         </div>
                     </div>
                     <div v-if="isProjectSelected">
@@ -95,11 +100,6 @@
                             <div class="md-layout" v-if="group.project.getTimeRemaining() < 0">
                                 <span class="md-layout-item">Hilinenud:</span>
                                 <span class="md-layout-item">{{getTimeString(-group.project.getTimeRemaining(), {seconds:true})}}</span>
-                            </div>
-                            <md-divider v-if="group.project.getTimeRemaining() < 0"></md-divider>
-                            <div class="md-layout" v-if="group.project.getTimeRemaining() < 0">
-                                <span class="md-layout-item">Hilinemise eest miinuseid:</span>
-                                <span class="md-layout-item">{{-Project.getDelayScore(-group.project.getTimeRemaining())}}</span>
                             </div>
                         </div>
                     </div>
