@@ -87,10 +87,10 @@ function BaseScore() {
         new ScoreElement('Tähelepanu juhtimine animatsioonidega', ''),
     ];
     this.maximumScore = 10;
+    this.score = 0;
+    this.comment = '';
     this.getScore = function() {
-        return this.elements.reduce(function(accumulator, element) {
-            return accumulator + element.getScore();
-        }, 0);
+        return this.score;
     }
 }
 
@@ -224,10 +224,21 @@ var vm = new Vue({
         group: new Group(),
         showMenu: false,
         isSmallScreen: window.innerWidth < 600,
-        isProjectSelected: true
+        isProjectSelected: true,
+        isBaseScoreOther: false,
+        baseScoreValues: [0, 5, 10]
     },
     methods: {
-        getTimeString: getTimeString
+        getTimeString: getTimeString,
+        setIsBaseScoreOtherAndUpdate: function(value, idx) {
+            Vue.set(this, 'isBaseScoreOther', !!value);
+            if (this.isBaseScoreOther) {
+                Vue.set(this, 'baseScoreValues', [null, null, null])
+            } else {
+                Vue.set(this, 'baseScoreValues', [0, 5, 10]);
+                Vue.set(this.group.project.base, 'score', this.baseScoreValues[idx]);
+            }
+        }
     },
     computed: {
     },
