@@ -12,6 +12,7 @@
     <script src="scripts/vue-material.min.js"></script>
 </head>
 <body style="overflow-x:hidden">
+    <span id="ruler"></span>
     <div id="app" class="md-layout md-gutter">
 
         <md-toolbar style="z-index: 4; min-height: 4rem">
@@ -172,6 +173,7 @@
                             <md-field>
                                 <label>Kommentaar</label>
                                 <md-textarea style="resize:none" v-model="group.project.base.comment"></md-textarea>
+                                <span class="md-helper-text">Mittekohustuslik</span>
                             </md-field>
                         </div>
                     </md-card-content>
@@ -194,6 +196,7 @@
                             <md-field>
                                 <label>Kommentaar</label>
                                 <md-textarea style="resize:none" v-model="group.project.extra.comment"></md-textarea>
+                                <span class="md-helper-text">Mittekohustuslik</span>
                             </md-field>
                         </div>
                     </md-card-content>
@@ -219,8 +222,8 @@
                             <div class="md-layout-item md-size-70 md-xsmall-size-100">
                                 <md-field :class="{ 'md-invalid': !bonusScore.isReasonValid }">
                                     <label>Põhjendus</label>
-                                    <md-input @change="bonusScore.validateReason()" @blur.once="bonusScore.validateReason()"
-                                            v-model="bonusScore.reason" type="text"></md-input>
+                                    <md-textarea @change="bonusScore.validateReason()" @blur.once="bonusScore.validateReason()"
+                                            v-model="bonusScore.reason" md-autogrow></md-textarea>
                                 </md-field>
                             </div>
                             <div class="md-layout-item md-size-10" v-if="!isSmallScreen">
@@ -260,8 +263,9 @@
                             <div class="md-layout-item md-size-70 md-xsmall-size-100">
                                 <md-field :class="{ 'md-invalid': !minusScore.isReasonValid }">
                                     <label>Põhjendus</label>
-                                    <md-input @change="minusScore.validateReason()" @blur.once="minusScore.validateReason()"
-                                            v-model="minusScore.reason" type="text"></md-input>
+                                    <md-textarea @change="minusScore.validateReason" @blur.once="minusScore.validateReason()"
+                                            @keyup="evaluateAutogrow($event)"
+                                            v-model="minusScore.reason" md-autogrow></md-textarea>
                                 </md-field>
                             </div>
                             <div class="md-layout-item md-size-10" v-if="!isSmallScreen">

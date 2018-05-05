@@ -13,6 +13,8 @@ div .md-drawer {
     transform: translateZ(0);
 }
 
+#ruler { visibility: hidden; white-space: nowrap; }
+
 @media only screen and (max-width: 600px) {
     div .md-drawer {
         max-width: 80%;

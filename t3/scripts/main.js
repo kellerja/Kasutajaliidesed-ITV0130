@@ -4,6 +4,33 @@ var deadline = Date.parse('26 April 2018');
 var minimumPassingScore = 10;
 var weekInMs = 6.048e+8;
 
+String.prototype.visualLength = function(fontSize) {
+    var ruler = document.getElementById("ruler");
+    ruler.style.fontSize = fontSize;
+    ruler.innerHTML = this;
+    return ruler.offsetWidth;
+}
+
+var evaluateAutogrow = function(event) {
+    var element = event.srcElement;
+    element.style.height = 'auto';
+    var style = window.getComputedStyle(element);
+    var lineHeight = style.lineHeight;
+    var text = element.value;
+    var lines = text.split('\n');
+    var linesCount = lines.length;
+    for (line of lines) {
+        if (line.visualLength(style.fontSize) > element.offsetWidth) {
+            linesCount += 1
+        }
+    }
+    var maxHeight = style.maxHeight.substring(0, style.maxHeight.length - 2);
+    if (lineHeight * linesCount > maxHeight) {
+        return;
+    }
+    element.rows = linesCount;
+}
+
 var getTimeString = function(timeInMs, exclude) {
     var exclude = exclude || {};
     var seconds = timeInMs / 1000;
@@ -332,6 +359,7 @@ var vm = new Vue({
     },
     methods: {
         getTimeString: getTimeString,
+        evaluateAutogrow: evaluateAutogrow,
         setIsBaseScoreOtherFalseAndUpdate: function(idx) {
             Vue.set(this, 'isBaseScoreOther', false);
             Vue.set(this, 'baseScoreValues', [0, 5, 10]);
