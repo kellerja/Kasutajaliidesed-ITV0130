@@ -236,6 +236,17 @@ function Plagiarism() {
         Vue.set(this, 'isPlagiarized', !this.isPlagiarized);
         Vue.set(this, 'plagiarismModifierScore', this.isPlagiarized ? 0 : 1);
     }
+    this.errorMsg = '';
+    this.isValid = true;
+    this.validate = function() {
+        if (!this.reason) {
+            this.isValid = false;
+            this.errorMsg = 'Plagiaadina märkimisel on vaja põhjendust';
+        } else {
+            this.isValid = true;
+            this.errorMsg = '';
+        }
+    }
 }
 
 function ProjectUrl() {

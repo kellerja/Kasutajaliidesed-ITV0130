@@ -161,7 +161,7 @@
                                 <md-radio @change="setIsBaseScoreOtherFalseAndUpdate(2)" v-model="group.project.base.score" :value="baseScoreValues[2]">10</md-radio>
                             </div>
                             <div class="md-layout-item md-size-25 md-xsmall-size-50" style="display: inline-block;">
-                                <md-radio @change="setIsBaseScoreOtherTrueAndUpdate()" v-model="isBaseScoreOther" :value="true">Muu</md-radio>
+                                <md-radio @change="setIsBaseScoreOtherTrueAndUpdate()" v-model="isBaseScoreOther" :value="true" style="margin-bottom: 0; padding-bottom: 0">Muu</md-radio>
                                 <md-field :class="{'md-invalid': !group.project.base.isValid}">
                                     <label for="base_score">Skoor</label>
                                     <md-input @click="setIsBaseScoreOtherTrueAndUpdate" @change="group.project.base.validate()" min="0" max="10" id="base_score" type="number" v-model="group.project.base.score"></md-input>
@@ -253,7 +253,7 @@
                                 <md-field :class="{ 'md-invalid': !minusScore.isScoreValid }">
                                     <label>Miinus</label>
                                     <md-input onclick="this.select()" @change="minusScore.validateScore()"
-                                            v-model="minusScore.score" type="number"></md-input>
+                                            v-model="minusScore.score" type="number" min="0"></md-input>
                                 </md-field>
                             </div>
                             <div class="md-layout-item md-xsmall-size-20" v-if="isSmallScreen">
@@ -287,38 +287,7 @@
 
                     <md-divider></md-divider>
                     <md-card-header>
-                        <div class="md-title">Tulemus</div>
-                    </md-card-header>
-                    <md-card-header>
-                        <div class="md-subheader">Skoor</div>
-                    </md-card-header>
-                    <md-card-content class="md-layout">
-                        <div class="md-layout-item">Baasosa</div>
-                        <div class="md-layout-item">{{group.project.base.getScore() + '/' + group.project.base.maximumScore}}</div>                        
-                    </md-card-content>
-                    <md-card-content class="md-layout">
-                        <div class="md-layout-item">Lisaosa</div>
-                        <div class="md-layout-item">{{group.project.extra.getScore() + '/' + group.project.extra.maximumScore}}</div>                        
-                    </md-card-content>
-                    <md-card-content class="md-layout">
-                        <div class="md-layout-item">Boonuseid</div>
-                        <div class="md-layout-item">{{group.project.bonus.getScore()}}</div>                        
-                    </md-card-content>
-                    <md-card-content class="md-layout">
-                        <div class="md-layout-item">Miinuseid</div>
-                        <div class="md-layout-item">{{group.project.negative.getScore()}}</div>                        
-                    </md-card-content>
-                    <md-card-content class="md-layout">
-                        <div class="md-layout-item">Hilinemise eest miinuseid</div>
-                        <div class="md-layout-item">{{Project.getDelayScore(-group.project.getTimeRemaining())}}</div>                        
-                    </md-card-content>
-                    <md-card-content class="md-layout">
-                        <div class="md-layout-item">Kokku</div>
-                        <div class="md-layout-item">{{group.project.getScore() + '/' + (group.project.base.maximumScore + group.project.extra.maximumScore)}}</div>                        
-                    </md-card-content>
-
-                    <md-card-header>
-                        <div class="md-subheader">Tähtaeg</div>
+                        <div class="md-title">Tähtaeg</div>
                     </md-card-header>
                     <md-card-content class="md-layout">
                         <div class="md-layout-item">Ülesande tähtaeg</div>
@@ -350,7 +319,7 @@
                     </md-card-content>
 
                     <md-card-header>
-                        <div class="md-subheader">Plagiaat</div>
+                        <div class="md-title">Plagiaat</div>
                     </md-card-header>
                     <md-card-content class="md-layout">
                         <div class="md-layout-item">Plagiaat</div>
@@ -366,15 +335,17 @@
                         </div>
                     </md-card-content>
                     <md-card-content class="md-layout" v-if="group.project.plagiarism.isPlagiarized">
-                        <div class="md-layout-item"></div>
                         <div class="md-layout-item">
-                            <md-field>
+                            <md-field :class="{'md-invalid': !group.project.plagiarism.isValid}">
                                 <label>Põhjendus</label>
-                                <md-textarea md-autogrow v-model="group.project.plagiarism.reason"></md-textarea>
+                                <md-textarea @keyup="evaluateAutogrow($event)" 
+                                    @change="group.project.plagiarism.validate()" @blur.once="group.project.plagiarism.validate()"
+                                    md-autogrow v-model="group.project.plagiarism.reason"></md-textarea>
+                                <div class="md-error">{{ group.project.plagiarism.errorMsg }}</div>
                             </md-field>
                         </div>
                     </md-card-content> 
-                    <md-card-actions>
+                    <md-card-actions style="margin-top: 2rem">
                         <md-button class="md-raised md-accent" style="margin: 0 auto" type="submit">Lõpeta hindamine</md-button>
                     </md-card-actions>   
                 </md-card>
