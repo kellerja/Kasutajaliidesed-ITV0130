@@ -132,13 +132,23 @@
                     <md-card-header>
                         <div class="md-title">Baasosa hindamine ({{group.project.base.getScore()}}/{{group.project.base.maximumScore}})</div>
                     </md-card-header>
+                    <md-card-header>
+                        <div class="md-subheader">Baasosa elemendid</div>
+                    </md-card-header>
                     <md-card-content class="md-layout md-gutter md-alignment-center-left">
-                        <div class="md-layout-item md-size-33 md-medium-size-50 md-small-size-50 md-xsmall-size-100" v-for="baseScore in group.project.base.elements" :key="baseScore.shortName">
+                        <div class="md-layout-item md-size-33 md-medium-size-50 md-small-size-50 md-xsmall-size-100" 
+                                style="margin-bottom: 1.5rem"
+                                v-for="baseScore in group.project.base.elements" :key="baseScore.shortName">
                             <span>
                                 {{baseScore.shortName}}
                                 <md-tooltip md-direction="bottom">{{baseScore.description}}</md-tooltip>
                             </span>
                         </div>
+                    </md-card-content>
+                    <md-card-header style="padding-top: 0; margin-top: 0">
+                        <span class="md-subheader">Baasosa hinne</span>
+                    </md-card-header>
+                    <md-card-content>
                         <div class="md-layout-item md-size-100 md-layout">
                             <div class="md-layout-item md-size-25 md-xsmall-size-50">
                                 <md-radio @change="setIsBaseScoreOtherFalseAndUpdate(0)" v-model="group.project.base.score" :value="baseScoreValues[0]">0</md-radio>
@@ -195,9 +205,10 @@
                     <md-card-content>
                         <div class="md-layout md-gutter md-alignment-center-center" v-for="(bonusScore, bonusIdx) in group.project.bonus.elements" :key="'bonusScore_' + bonusIdx">
                             <div class="md-layout-item md-size-20 md-xsmall-size-80">
-                                <md-field>
+                                <md-field :class="{ 'md-invalid': !bonusScore.isScoreValid }">
                                     <label>Boonus</label>
-                                    <md-input onclick="this.select()" v-model="bonusScore.score" type="number"></md-input>
+                                    <md-input onclick="this.select()" @change="bonusScore.validateScore()" 
+                                            v-model="bonusScore.score" type="number" min="0"></md-input>
                                 </md-field>
                             </div>
                             <div class="md-layout-item md-xsmall-size-20" v-if="isSmallScreen">
@@ -206,15 +217,21 @@
                                 </md-button>
                             </div>
                             <div class="md-layout-item md-size-70 md-xsmall-size-100">
-                                <md-field>
+                                <md-field :class="{ 'md-invalid': !bonusScore.isReasonValid }">
                                     <label>Põhjendus</label>
-                                    <md-input v-model="bonusScore.reason" type="text"></md-input>
+                                    <md-input @change="bonusScore.validateReason()" @blur.once="bonusScore.validateReason()"
+                                            v-model="bonusScore.reason" type="text"></md-input>
                                 </md-field>
                             </div>
                             <div class="md-layout-item md-size-10" v-if="!isSmallScreen">
                                 <md-button @click="group.project.bonus.removeBonus(bonusIdx)" class="md-icon-button md-dense md-raised md-accent" tabindex="-1">
                                     <md-icon>remove</md-icon>
                                 </md-button>
+                            </div>
+                            <div class="md-layout-item md-size-100">
+                                <small class="error" style="position: relative; top: -1.3rem;">
+                                    {{ bonusScore.scoreErrorMsg || bonusScore.reasonErrorMsg }}
+                                </small>
                             </div>
                         </div>
                         <md-button @click="group.project.bonus.addBonus()" class="md-icon-button md-raised md-accent" tabindex="-1">
