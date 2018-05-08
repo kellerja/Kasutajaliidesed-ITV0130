@@ -137,10 +137,11 @@
                             <template slot="md-chip" slot-scope="{ chip }">
                                 <span>{{group.students[chip].username}}</span>
                             </template>
+                            <md-button class="md-dense md-accent md-raised" style="position: absolute; right: 0; bottom: -0.3rem;" @click="triggerEnter()">lisa</md-button>
                             <div class="md-helper-text">Nimele vajutades genereeritakse vastav dijkstra URL</div>
                             <div class="md-error">{{ group.studentsErrorMsg }}</div>
                         </md-chips>
-                        <md-field md-clearable style="margin-top: 2rem">
+                        <md-field md-clearable style="margin-top: 2.3rem">
                             <label for="project_url">Projekti URL</label>
                             <md-input id="project_url" type="url" @change="group.project.url.update" v-model="group.project.url.url"></md-input>
                             <md-button @click="group.project.url.open" class="md-icon-button md-dense" tabindex="-1" v-if="group.project.url.firstTouch && group.project.url.url">

@@ -452,6 +452,18 @@ var vm = new Vue({
             var lastGroup = this.history.pop();
             Vue.set(this, 'group', lastGroup);
             this.showSnackbar = false;
+        },
+        triggerEnter: function() {
+            var chirpInput = document.getElementById('team');
+            var ENTERKEY = 13;
+            var event = new KeyboardEvent('keydown', {
+                key: 'Enter',
+                code: ENTERKEY,
+                charCode: ENTERKEY,
+                keyCode: ENTERKEY,
+                which: ENTERKEY
+            })
+            chirpInput.dispatchEvent(event);
         }
     },
     computed: {
@@ -460,6 +472,23 @@ var vm = new Vue({
         this.$nextTick(() => window.addEventListener('resize', (e) => {
             Vue.set(this, 'isSmallScreen', window.innerWidth < 1280);
         }))
+        var chirpInput = document.getElementById('team');
+        var TABKEY = 9;
+        var COMMAKEY = 188;
+        chirpInput.addEventListener('keydown', (e) => {
+            var charCode = e.keyCode || e.which;
+            switch (charCode) {
+                case TABKEY:
+                    this.triggerEnter();
+                    e.preventDefault();
+                    break;
+                case COMMAKEY:
+                    this.triggerEnter();
+                    chirpInput.value = "";
+                    e.preventDefault();
+                    break;
+            }
+        });
     }
 });
 
