@@ -347,10 +347,10 @@
                     <md-card-header>
                         <div class="md-title header-marker">Plagiaat</div>
                     </md-card-header>
-                    <md-card-content class="md-layout">
+                    <md-card-content class="md-layout md-alignment-center-center">
                         <div class="md-layout-item">Plagiaat</div>
                         <div class="md-layout-item">
-                            <div class="md-layout">
+                            <div class="md-layout md-alignment-center-center">
                                 <div class="md-layout-item">{{group.project.plagiarism.isPlagiarized ? 'jah' : 'ei'}}</div>
                                 <div class="md-layout-item">
                                     <md-button class="md-raised md-accent" @click="group.project.plagiarism.togglePlagiarism()">
@@ -360,7 +360,7 @@
                             </div>
                         </div>
                     </md-card-content>
-                    <md-card-content class="md-layout" v-if="group.project.plagiarism.isPlagiarized">
+                    <md-card-content style="margin-top: 0; padding-top: 0" class="md-layout" v-if="group.project.plagiarism.isPlagiarized">
                         <div class="md-layout-item">
                             <md-field :class="{'md-invalid': !group.project.plagiarism.isValid}">
                                 <label>Põhjendus</label>
@@ -372,11 +372,19 @@
                         </div>
                     </md-card-content> 
                     <md-card-actions style="margin-top: 2rem">
-                        <md-button class="md-raised md-accent" @click="complete($event)" style="margin: 0 auto" type="button">Lõpeta hindamine</md-button>
+                        <md-button class="md-raised md-accent" @click.prevent="complete($event)" style="margin: 0 auto" type="button">Lõpeta hindamine</md-button>
                     </md-card-actions>   
                 </md-card>
             </form>
         </div>
+
+        <md-snackbar md-position="center" :md-duration="Infinity" :md-active.sync="showSnackbar" md-persistent>
+            <span>Hinded salvestatud</span>
+            <span>
+                <md-button class="md-accent" @click="revert()">Taasta</md-button>
+                <md-button class="md-primary" @click="showSnackbar = false">OK</md-button>
+            </span>
+        </md-snackbar>
     </div>
     <script src="scripts/main.js"></script>
 </body>

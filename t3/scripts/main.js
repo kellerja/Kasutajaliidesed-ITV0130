@@ -239,7 +239,7 @@ function Plagiarism() {
     this.errorMsg = '';
     this.isValid = true;
     this.validate = function() {
-        if (!this.reason) {
+        if (this.isPlagiarized && !this.reason) {
             this.isValid = false;
             this.errorMsg = 'Plagiaadina märkimisel on vaja põhjendust';
         } else {
@@ -373,13 +373,15 @@ var vm = new Vue({
     data: {
         Project: Project,
         deadline: deadline,
+        history: [],
         minimumPassingScore: minimumPassingScore,
         group: new Group(),
         showMenu: false,
         isSmallScreen: window.innerWidth < 600,
         isProjectSelected: true,
         isBaseScoreOther: false,
-        baseScoreValues: [0, 5, 10]
+        baseScoreValues: [0, 5, 10],
+        showSnackbar: false
     },
     methods: {
         getTimeString: getTimeString,
@@ -396,14 +398,14 @@ var vm = new Vue({
             event && event.srcElement.select();
             this.group.project.base.validate();
         },
-        scrollToHeading(headingNr) {
+        scrollToHeading: function(headingNr) {
             var elements = document.getElementsByClassName('header-marker');
             if (this.isSmallScreen) {
                 this.showMenu = false;
             }
             scrollIt(elements[headingNr], 200, 'easeOutQuad');
         },
-        validateAndScroll() {
+        validateAndScroll: function() {
             this.group.validateStudents();
             if (!this.group.isStudentsValid) {
                 this.scrollToHeading(0);
@@ -431,13 +433,25 @@ var vm = new Vue({
             this.group.project.plagiarism.validate();
             if (!this.group.project.plagiarism.isValid) {
                 this.scrollToHeading(6);
+                return false;
             }
             return true;
         },
-        complete() {
+        complete: function() {
             if (this.validateAndScroll()) {
-                console.log('COMPLETED');
+                this.history.push(this.group);
+                Vue.set(this, 'group', new Group());
+                scrollIt(document.body, 200, 'easeOutQuad');
+                this.showSnackbar = true;
             }
+        },
+        revert: function() {
+            if (!this.history) {
+                return;
+            }
+            var lastGroup = this.history.pop();
+            Vue.set(this, 'group', lastGroup);
+            this.showSnackbar = false;
         }
     },
     computed: {
@@ -513,8 +527,8 @@ function scrollIt(destination, duration = 200, easing = 'linear', callback) {
         const time = Math.min(1, ((now - startTime) / duration));
         const timeFunction = easings[easing](time);
         window.scroll(0, Math.ceil((timeFunction * (destinationOffsetToScroll - start)) + start));
-    
-        if (window.pageYOffset === destinationOffsetToScroll) {
+
+        if (Math.abs(window.pageYOffset - destinationOffsetToScroll) < 1) {
           if (callback) {
             callback();
           }
