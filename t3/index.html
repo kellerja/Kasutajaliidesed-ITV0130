@@ -141,16 +141,17 @@
                             <div class="md-helper-text">Nimele vajutades genereeritakse vastav dijkstra URL</div>
                             <div class="md-error">{{ group.studentsErrorMsg }}</div>
                         </md-chips>
-                        <md-field md-clearable style="margin-top: 2.3rem">
+                        <md-field md-clearable :class="{'md-invalid': !group.project.url.isValid }" style="margin-top: 2.3rem">
                             <label for="project_url">Projekti URL</label>
-                            <md-input id="project_url" type="url" @change="group.project.url.update" v-model="group.project.url.url"></md-input>
+                            <md-input id="project_url" type="url" @change="group.project.url.update" @blur.once="group.project.url.validate" v-model="group.project.url.url"></md-input>
                             <md-button @click="group.project.url.open" class="md-icon-button md-dense" tabindex="-1" v-if="group.project.url.firstTouch && group.project.url.url">
-                                    <md-icon>open_in_new</md-icon>
-                                </md-button>
+                                <md-icon>open_in_new</md-icon>
+                            </md-button>
                             <md-button @click="group.project.url.toggleUrl" class="md-icon-button md-dense" style="margin-right: 2.2rem;" tabindex="-1" v-if="group.project.url.firstTouch">
                                 <md-icon v-if="group.project.url.url === group.project.url.dijkstraUrl">undo</md-icon>
                                 <md-icon v-else>redo</md-icon>
                             </md-button>
+                            <div class="md-error">{{ group.project.url.errorMsg }}</div>
                         </md-field>
                     </md-card-content>
 

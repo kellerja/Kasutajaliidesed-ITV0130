@@ -255,6 +255,8 @@ function ProjectUrl() {
     this.dijkstraUrl = '';
     this.otherUrl = '';
     this.firstTouch = false;
+    this.isValid = true;
+    this.errorMsg = '';
     this.setDijkstraUrl = (username) => {
         this.firstTouch = true;
         if (!username) {
@@ -265,6 +267,7 @@ function ProjectUrl() {
         }
         Vue.set(this, 'dijkstraUrl', 'http://dijkstra.cs.ttu.ee/~' + username + '/ui/t2');
         Vue.set(this, 'url', this.dijkstraUrl);
+        this.validate();
     }
     this.toggleUrl = () => {
         this.firstTouch = true;
@@ -273,15 +276,26 @@ function ProjectUrl() {
         } else {
             Vue.set(this, 'url', this.dijkstraUrl);
         }
+        this.validate();
     }
     this.update = () => {
         this.firstTouch = true;
         if (this.url === this.dijkstraUrl) return;
         Vue.set(this, 'otherUrl', this.url);
+        this.validate();
     }
     this.open = () => {
         this.firstTouch = true;
         open(this.url);
+    }
+    this.validate = () => {
+        if (!this.url) {
+            this.isValid = false;
+            this.errorMsg = 'Palun sisesta projekti URL';
+        } else {
+            this.isValid = true;
+            this.errorMsg = '';
+        }
     }
 }
 
@@ -409,6 +423,11 @@ var vm = new Vue({
         validateAndScroll: function() {
             this.group.validateStudents();
             if (!this.group.isStudentsValid) {
+                this.scrollToHeading(0);
+                return false;
+            }
+            this.group.project.url.validate();
+            if (!this.group.project.url.isValid) {
                 this.scrollToHeading(0);
                 return false;
             }
