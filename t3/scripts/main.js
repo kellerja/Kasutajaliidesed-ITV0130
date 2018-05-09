@@ -59,9 +59,10 @@ var getTimeString = function(timeInMs, exclude) {
     return timeString;
 }
 
-function ScoreElement(shortName, description) {
+function ScoreElement(shortName, anchor, description) {
     this.shortName = shortName;
     this.description = description;
+    this.anchor = anchor;
     this.score = 0;
     this.reason = '';
     this.getScore = function() {
@@ -158,16 +159,16 @@ function BonusScore() {
 
 function ExtraScore() {
     this.elements = [
-        new ScoreElement('Ilus kujundus', 'Visuaalselt näeb kaunis välja'),
-        new ScoreElement('Kujundus toetab teemat', 'Mängus on läbiv teema'),
-        new ScoreElement('Head ilmumised', 'Sorteeritavad objektid ja lisaülesanded ilmuvad hästi (head animatsioonid)'),
-        new ScoreElement('Hea sorteerimise tagasiside', 'Peale sorteerimist saab vaevata aru kas valik oli õige või vale'),
-        new ScoreElement('Hea lisaülesande \'episood\'', 'Lisaülesanne ei tule liiga tihedalt ega liiga aeglaselt'),
-        new ScoreElement('Hea läbikukkumise tagasiside', 'Läbikukkumisel on hea animatsioon'),
-        new ScoreElement('Heliline tagasiside', 'Tegevustel on heliline tagasiside'),
-        new ScoreElement('Mängu õpitavus on hea', 'Lihtne on aru saada kuidas mängu mängida'),
-        new ScoreElement('Sorditavaid objekte saab lohistada', 'Pole ainult klikitav lahendus'),
-        new ScoreElement('Töötab ka mobiilil', 'Väikesel ekraanil ilma hiire ja klaviatuurita on võimalik mängida')
+        new ScoreElement('Ilus', 'kujundus', 'Visuaalselt näeb kaunis välja'),
+        new ScoreElement('Kujundus toetab', 'teemat', 'Mängus on läbiv teema'),
+        new ScoreElement('Head', 'ilmumised', 'Sorteeritavad objektid ja lisaülesanded ilmuvad hästi (head animatsioonid)'),
+        new ScoreElement('Hea sorteerimise', 'tagasiside', 'Peale sorteerimist saab vaevata aru kas valik oli õige või vale'),
+        new ScoreElement('Hea lisaülesande', "'episood'", 'Lisaülesanne ei tule liiga tihedalt ega liiga aeglaselt'),
+        new ScoreElement('Hea läbikukkumise', 'tagasiside', 'Läbikukkumisel on hea animatsioon'),
+        new ScoreElement('Heliline', 'tagasiside', 'Tegevustel on heliline tagasiside'),
+        new ScoreElement('Mängu õpitavus on', 'hea', 'Lihtne on aru saada kuidas mängu mängida'),
+        new ScoreElement('Sorditavaid objekte saab', 'lohistada', 'Pole ainult klikitav lahendus'),
+        new ScoreElement('Töötab ka', 'mobiilil', 'Väikesel ekraanil ilma hiire ja klaviatuurita on võimalik mängida')
     ];
     this.maximumScore = 10;
     this.comment = '';
@@ -180,12 +181,12 @@ function ExtraScore() {
 
 function BaseScore() {
     this.elements = [
-        new ScoreElement('Ootejärjekord', 'Oleks koht,<br> kus on mitu objekti,<br> mis ootavad sorteerimist'),
-        new ScoreElement('Sorteerimine', 'Objekte saab klõpsides või lohistades viia oodatud kuhja'),
-        new ScoreElement('Perioodiline lisaülesanne', 'Mingi aja tagant tuleb tavapärasest sorteerimisest teistsugune ülesanne'),
-        new ScoreElement('Elude kaotamine', 'Valesti tehtud sorteerimise peale kaovad elud'),
-        new ScoreElement('Mängu läbikukkumine ja kordamine', 'Elude otsalõppemisel tuleb mängu lõppemise ekraan,<br> kus on võimalik alustada uut mängu (ilma akent värskendamata)'),
-        new ScoreElement('Tähelepanu juhtimine animatsioonidega', `Animatsiooniga on mingi tegevuse juurde juhitud tähelepanu.<br> Näiteks elude kaotamisel juhitakse tähelepanu elude juurde`),
+        new ScoreElement('', 'Ootejärjekord', 'Oleks koht,<br> kus on mitu objekti,<br> mis ootavad sorteerimist'),
+        new ScoreElement('', 'Sorteerimine', 'Objekte saab klõpsides või lohistades viia oodatud kuhja'),
+        new ScoreElement('Perioodiline', 'lisaülesanne', 'Mingi aja tagant tuleb tavapärasest sorteerimisest teistsugune ülesanne'),
+        new ScoreElement('Elude', 'kaotamine', 'Valesti tehtud sorteerimise peale kaovad elud'),
+        new ScoreElement('Mängu läbikukkumine ja', 'kordamine', 'Elude otsalõppemisel tuleb mängu lõppemise ekraan,<br> kus on võimalik alustada uut mängu (ilma akent värskendamata)'),
+        new ScoreElement('Tähelepanu juhtimine', 'animatsioonidega', `Animatsiooniga on mingi tegevuse juurde juhitud tähelepanu.<br> Näiteks elude kaotamisel juhitakse tähelepanu elude juurde`),
     ];
     this.maximumScore = 10;
     this.score = 0;
@@ -464,6 +465,18 @@ var vm = new Vue({
                 which: ENTERKEY
             })
             chirpInput.dispatchEvent(event);
+        },
+        recreateNode: function(el, withChildren) {
+            if (withChildren) {
+                var newEl = el.cloneNode(true);
+                el.parentNode.replaceChild(newEl, el);
+            }
+            else {
+                var newEl = el.cloneNode(false);
+                while (el.hasChildNodes()) newEl.appendChild(el.firstChild);
+                el.parentNode.replaceChild(newEl, el);
+            }
+            return newEl;
         }
     },
     computed: {
@@ -480,7 +493,6 @@ var vm = new Vue({
             switch (charCode) {
                 case TABKEY:
                     this.triggerEnter();
-                    e.preventDefault();
                     break;
                 case COMMAKEY:
                     this.triggerEnter();
@@ -489,6 +501,22 @@ var vm = new Vue({
                     break;
             }
         });
+        for (var i = 0; i < this.group.project.extra.elements.length; i++) {
+            var switchId = 'extra_score_switch_' + i;
+            var labels = document.getElementsByTagName('label');
+            for (var label of labels) {
+                if (label.htmlFor === switchId) {
+                    label.htmlFor = null;
+                    var newEl = this.recreateNode(label);
+                    newEl.childNodes[0].addEventListener('click', (e) => {
+                        e.target.parentNode.parentNode.childNodes[0].childNodes[0].childNodes[0].childNodes[0].click();
+                    });
+                    newEl.childNodes[2].childNodes[0].addEventListener('click', (e) => {
+                        e.target.parentNode.parentNode.parentNode.childNodes[0].childNodes[0].childNodes[0].childNodes[0].click();
+                    });
+                }
+            }
+        }
     }
 });
 
