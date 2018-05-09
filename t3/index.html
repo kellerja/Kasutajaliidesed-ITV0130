@@ -14,13 +14,13 @@
     <script src="scripts/tooltip/tooltip.min.js"></script>
 </head>
 <body style="overflow-x:hidden">
-    <span id="ruler"></span>
+    <span id="ruler" style="position: absolute;"></span>
     <div id="app" class="md-layout md-gutter">
 
         <md-toolbar style="z-index: 4; min-height: 4rem">
             <h3 class="md-title" style="margin-left: 25%">Kodutöö 2 hindamine</h3>
         </md-toolbar>
-            
+
         <div class="md-layout-item">
             <md-drawer style="position: fixed;" :md-permanent="isSmallScreen ? null : 'full'" :md-active.sync="showMenu" md-fixed>
                 <div style="margin-top: 5rem">
