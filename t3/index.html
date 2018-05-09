@@ -325,13 +325,13 @@
                     </md-card-content>
                     <md-card-content class="md-layout md-alignment-center-center">
                         <div class="md-layout-item">Pikendust antud</div>
-                        <div class="md-layout-item" style="align-content: center">
+                        <div class="md-layout-item" style="align-content: center; display: flex;">
                             <md-button @click="group.project.decrementDeadline()" class="md-icon-button md-dense md-raised">
-                                <md-icon>remove</md-icon>
+                                <md-icon style="font-size: 32px!important;">remove</md-icon>
                             </md-button>
                             <span style="display: inline-block; margin-top: 0.35rem">{{group.project.deadlineExtensionCount}} {{group.project.deadlineExtensionCount === 1 ? 'nädal' : 'nädalat'}}</span>
                             <md-button @click="group.project.incrementDeadline()" class="md-icon-button md-dense md-raised">
-                                <md-icon>add</md-icon>
+                                <md-icon style="font-size: 32px!important;">add</md-icon>
                             </md-button>
                         </div>
                     </md-card-content>
