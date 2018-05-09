@@ -222,7 +222,7 @@
                                 </div>
                             </md-switch>
                         </div>
-                        <div class="md-layout-item md-size-100">
+                        <div class="md-layout-item md-size-100" style="margin-top: 0.5rem;">
                             <md-field>
                                 <label>Kommentaar</label>
                                 <md-textarea style="resize:none" v-model="group.project.extra.comment"></md-textarea>
@@ -237,19 +237,19 @@
                     </md-card-header>
                     <md-card-content>
                         <div class="md-layout md-gutter md-alignment-center-center" v-for="(bonusScore, bonusIdx) in group.project.bonus.elements" :id="'bonusScore_' + bonusIdx" :key="'bonusScore_' + bonusIdx">
-                            <div class="md-layout-item md-size-20 md-xsmall-size-80">
+                            <div class="md-layout-item md-size-20 md-medium-size-80">
                                 <md-field :class="{ 'md-invalid': !bonusScore.isScoreValid }">
                                     <label>Boonus</label>
                                     <md-input onclick="this.select()" @change="bonusScore.validateScore()" 
                                             v-model="bonusScore.score" type="number" min="0"></md-input>
                                 </md-field>
                             </div>
-                            <div class="md-layout-item md-xsmall-size-20" v-if="isSmallScreen">
+                            <div class="md-layout-item md-medium-size-20" v-if="isSmallScreen">
                                 <md-button @click="group.project.bonus.removeBonus(bonusIdx)" class="md-icon-button md-dense md-raised md-accent" tabindex="-1">
                                     <md-icon>remove</md-icon>
                                 </md-button>
                             </div>
-                            <div class="md-layout-item md-size-70 md-xsmall-size-100">
+                            <div class="md-layout-item md-size-70 md-medium-size-100">
                                 <md-field :class="{ 'md-invalid': !bonusScore.isReasonValid }">
                                     <label>Põhjendus</label>
                                     <md-textarea @change="bonusScore.validateReason()" @blur.once="bonusScore.validateReason()"
@@ -279,19 +279,19 @@
                     </md-card-header>
                     <md-card-content>
                         <div class="md-layout md-gutter md-alignment-center-center" v-for="(minusScore, minusIdx) in group.project.negative.elements" :id="'minusScore' + minusIdx" :key="'minusScore' + minusIdx">
-                            <div class="md-layout-item md-size-20 md-xsmall-size-80">
+                            <div class="md-layout-item md-size-20 md-medium-size-80">
                                 <md-field :class="{ 'md-invalid': !minusScore.isScoreValid }">
                                     <label>Miinus</label>
                                     <md-input onclick="this.select()" @change="minusScore.validateScore()"
                                             v-model="minusScore.score" type="number" min="0"></md-input>
                                 </md-field>
                             </div>
-                            <div class="md-layout-item md-xsmall-size-20" v-if="isSmallScreen">
+                            <div class="md-layout-item md-medium-size-20" v-if="isSmallScreen">
                                 <md-button @click="group.project.negative.removeNegative(minusIdx)" class="md-icon-button md-dense md-raised md-accent" tabindex="-1">
                                     <md-icon>remove</md-icon>
                                 </md-button>
                             </div>
-                            <div class="md-layout-item md-size-70 md-xsmall-size-100">
+                            <div class="md-layout-item md-size-70 md-medium-size-100">
                                 <md-field :class="{ 'md-invalid': !minusScore.isReasonValid }">
                                     <label>Põhjendus</label>
                                     <md-textarea @change="minusScore.validateReason" @blur.once="minusScore.validateReason()"
